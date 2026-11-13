@@ -7,6 +7,24 @@
     "bullet_life": 0.9,
     "bullet_radius": 5,
     "range": 520,
-    "visual": { "sides": 0, "color": "#1e3a8a" }
+    "visual": {
+      "sides": 0,
+      "color": "#1e3a8a"
+    }
+  },
+  "ink_bomb": {
+    "name": "Ink Bomb",
+    "damage": 40,
+    "blast_radius": 110,
+    "splat_radius": 110,
+    "cooldown": 8.0,
+    "kill_recharge": 0.25,
+    "throw_range": 320,
+    "flight_time": 0.45,
+    "bullet_radius": 10,
+    "visual": {
+      "sides": 0,
+      "color": "#0f1f4d"
+    }
   }
 }

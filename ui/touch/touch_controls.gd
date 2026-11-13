@@ -20,11 +20,21 @@ func _ready() -> void:
 	set_process_input(visible)
 	# offset is measured from the bottom-right (or top-right) corner.
 	_buttons = [
-		{"action": "fire", "label": "FIRE", "radius": 70.0, "offset": Vector2(-110, -110), "top": false, "ready": true, "touch": -1},
-		{"action": "secondary", "label": "2ND", "radius": 46.0, "offset": Vector2(-260, -70), "top": false, "ready": false, "touch": -1},
-		{"action": "pulse", "label": "PULSE", "radius": 46.0, "offset": Vector2(-80, -260), "top": false, "ready": false, "touch": -1},
-		{"action": "debug_toggle", "label": "DBG", "radius": 24.0, "offset": Vector2(-30, 80), "top": true, "ready": true, "touch": -1},
+		{"action": "fire", "label": "FIRE", "radius": 70.0, "offset": Vector2(-110, -110), "top": false, "ready": true, "charge": 1.0, "touch": -1},
+		{"action": "secondary", "label": "BOMB", "radius": 46.0, "offset": Vector2(-260, -70), "top": false, "ready": true, "charge": 1.0, "touch": -1},
+		{"action": "pulse", "label": "PULSE", "radius": 46.0, "offset": Vector2(-80, -260), "top": false, "ready": true, "charge": 1.0, "touch": -1},
+		{"action": "debug_toggle", "label": "DBG", "radius": 24.0, "offset": Vector2(-30, 80), "top": true, "ready": true, "charge": 1.0, "touch": -1},
 	]
+	Events.secondary_charge_changed.connect(_set_charge.bind("secondary"))
+	Events.pulse_charge_changed.connect(_set_charge.bind("pulse"))
+
+
+func _set_charge(ratio: float, action: String) -> void:
+	for button in _buttons:
+		if button["action"] == action:
+			button["charge"] = ratio
+			button["ready"] = ratio >= 1.0
+	queue_redraw()
 
 
 func _button_center(button: Dictionary) -> Vector2:
@@ -123,6 +133,9 @@ func _draw() -> void:
 		var dim := 1.0 if button["ready"] else 0.4
 		draw_circle(center, radius, Color(0, 0, 0, (0.55 if pressed else 0.3) * dim))
 		draw_arc(center, radius, 0.0, TAU, 48, Color(1, 1, 1, 0.6 * dim), 3.0)
+		var charge: float = button["charge"]
+		if charge < 1.0:
+			draw_arc(center, radius - 6.0, -PI * 0.5, -PI * 0.5 + TAU * charge, 48, Color(0.35, 0.6, 1.0, 0.9), 6.0)
 		var text: String = button["label"]
 		var font_size := 22 if radius > 40.0 else 13
 		var text_size := font.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size)

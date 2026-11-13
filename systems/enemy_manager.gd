@@ -13,12 +13,15 @@ var max_radius: float = 0.0
 
 var _pool: ObjectPool
 var _player: Player
+var _ink: InkSystem
+var _area_scratch: Array = []
 var _arena: Rect2
 var _scratch: Array = []
 
 
-func setup(player: Player, arena: Rect2) -> void:
+func setup(player: Player, arena: Rect2, ink: InkSystem) -> void:
 	_player = player
+	_ink = ink
 	_arena = arena
 	grid = SpatialGrid.new(arena.size, GRID_CELL)
 	_pool = ObjectPool.new(ENEMY_SCENE, self, 64)
@@ -44,6 +47,17 @@ func damage(enemy: Enemy, amount: float) -> void:
 		_kill(enemy)
 	else:
 		enemy.visual.flash()
+
+
+## Damages every enemy whose circle touches the blast circle.
+func damage_area(pos: Vector2, radius: float, amount: float) -> void:
+	grid.query(pos, radius + max_radius, _area_scratch)
+	for enemy: Enemy in _area_scratch:
+		if not enemy.active:
+			continue
+		var reach := radius + enemy.radius
+		if pos.distance_squared_to(enemy.position) <= reach * reach:
+			damage(enemy, amount)
 
 
 ## Nearest active enemy within max_range of pos, or null.
@@ -80,6 +94,8 @@ func _process(delta: float) -> void:
 	var min_y := _arena.position.y
 	var max_y := _arena.end.y
 
+	var ink_grid := _ink.grid
+
 	for enemy in active:
 		var pos := enemy.position
 		var to_player := player_pos - pos
@@ -105,6 +121,12 @@ func _process(delta: float) -> void:
 		pos.x = clampf(pos.x, min_x, max_x)
 		pos.y = clampf(pos.y, min_y, max_y)
 		enemy.position = pos
+
+		# Smudge trail, dropped at intervals so it reads as a dotted smear.
+		enemy.trail_left -= delta
+		if enemy.trail_left <= 0.0:
+			enemy.trail_left = enemy.trail_interval
+			ink_grid.paint_circle(pos, enemy.trail_radius, InkGrid.SMUDGE)
 
 		if dist < enemy.radius + player_radius:
 			_player.take_damage(enemy.damage)

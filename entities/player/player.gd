@@ -14,6 +14,10 @@ var aim_dir: Vector2 = Vector2.RIGHT
 var _enemies: EnemyManager
 var _bullets: BulletManager
 var _arena: Rect2
+var _ink: InkSystem
+var _trail_radius: float = 20.0
+var _ink_speed_bonus: float = 0.0
+var _last_trail_pos: Vector2 = Vector2.INF
 var _invuln_left: float = 0.0
 var _cooldown: float = 0.0
 
@@ -22,7 +26,8 @@ var _cooldown: float = 0.0
 @onready var barrel: Node2D = $AimPivot/Barrel
 
 
-func setup(enemies: EnemyManager, bullets: BulletManager, arena: Rect2) -> void:
+func setup(enemies: EnemyManager, bullets: BulletManager, arena: Rect2, ink: InkSystem) -> void:
+	_ink = ink
 	_enemies = enemies
 	_bullets = bullets
 	_arena = arena
@@ -32,6 +37,8 @@ func setup(enemies: EnemyManager, bullets: BulletManager, arena: Rect2) -> void:
 	max_hp = float(stats.get("max_hp", max_hp))
 	invuln_time = float(stats.get("invuln_time", invuln_time))
 	weapon = DataDB.weapons.get(String(stats.get("weapon", "")), {})
+	_trail_radius = float(stats.get("trail_radius", _trail_radius))
+	_ink_speed_bonus = float(stats.get("ink_speed_bonus", 0.0))
 	hp = max_hp
 	visual.setup(stats.get("visual", {}), radius)
 	barrel.position = Vector2(radius + 6.0, 0.0)
@@ -43,9 +50,16 @@ func _process(delta: float) -> void:
 	if not GameState.is_playing() or _enemies == null:
 		return
 	var move := Input.get_vector("move_left", "move_right", "move_up", "move_down")
-	position += move * speed * delta
+	var on_ink := _ink.grid.state_at(position) == InkGrid.INK
+	var current_speed := speed * (1.0 + _ink_speed_bonus) if on_ink else speed
+	position += move * current_speed * delta
 	position.x = clampf(position.x, _arena.position.x + radius, _arena.end.x - radius)
 	position.y = clampf(position.y, _arena.position.y + radius, _arena.end.y - radius)
+
+	# Footsteps: a thin trail of ink. Closing it into a loop sets up a pulse.
+	if position.distance_squared_to(_last_trail_pos) > 36.0:
+		_last_trail_pos = position
+		_ink.grid.paint_circle(position, _trail_radius, InkGrid.INK)
 
 	_invuln_left -= delta
 	_cooldown -= delta

@@ -8,6 +8,7 @@ const REFRESH := 0.25
 var _enemies: EnemyManager
 var _bullets: BulletManager
 var _director: SpawnDirector
+var _ink: InkSystem
 var _panel: PanelContainer
 var _label: Label
 var _refresh_left: float = 0.0
@@ -31,7 +32,8 @@ func _ready() -> void:
 	_panel.visible = false
 
 
-func setup(enemies: EnemyManager, bullets: BulletManager, director: SpawnDirector) -> void:
+func setup(enemies: EnemyManager, bullets: BulletManager, director: SpawnDirector, ink: InkSystem) -> void:
+	_ink = ink
 	_enemies = enemies
 	_bullets = bullets
 	_director = director
@@ -45,10 +47,12 @@ func _process(delta: float) -> void:
 	if _refresh_left > 0.0:
 		return
 	_refresh_left = REFRESH
-	_label.text = "FPS %d\nEnemies %d\nBullets %d\nRun time %s\nSpawn every %.2fs" % [
+	_label.text = "FPS %d\nEnemies %d\nBullets %d\nRun time %s\nSpawn every %.2fs\nInk %.1f%%  Smudge %.1f%%" % [
 		int(Engine.get_frames_per_second()),
 		_enemies.active.size(),
 		_bullets.active.size(),
 		GameState.format_time(GameState.run_time),
 		_director.spawn_interval,
+		_ink.ownership() * 100.0,
+		_ink.smudge_share() * 100.0,
 	]

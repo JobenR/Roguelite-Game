@@ -11,6 +11,9 @@ var radius: float = 0.0
 var damage: float = 0.0
 var xp: int = 0
 var splat_radius: float = 0.0
+var trail_interval: float = 0.0
+var trail_radius: float = 0.0
+var trail_left: float = 0.0
 var active: bool = false
 
 @onready var visual: Node2D = $Visual
@@ -25,6 +28,9 @@ func spawn(p_type_id: String, data: Dictionary, pos: Vector2, hp_mult: float) ->
 	damage = float(data.get("damage", 5.0))
 	xp = int(data.get("xp", 1))
 	splat_radius = float(data.get("splat_radius", radius * 2.0))
+	trail_interval = float(data.get("trail_interval", 0.5))
+	trail_radius = float(data.get("trail_radius", 0.0))
+	trail_left = randf() * trail_interval
 	position = pos
 	active = true
 	visual.setup(data.get("visual", {}), radius)

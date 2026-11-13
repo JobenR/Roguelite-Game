@@ -23,7 +23,7 @@ You are a drop of living ink on a blank page; the horde is a grey smudge.
 ## Milestones
 
 1. Foundation: movement, auto-aim, hold-to-fire, Walker, health, death/restart, debug overlay, arena, camera. (done)
-2. Ink: ink grid, kill splats, footsteps, enemy trails, loops, pulse, secondary weapon, ownership percent.
+2. Ink: ink grid, kill splats, footsteps, enemy trails, loops, pulse, ink bomb secondary, ownership percent. (done)
 3. Progression: waves, XP gems, level-up cards, about 14 upgrades with synergies, pause.
 4. Horde: Runner, Brute, Corruptor, mini-boss, spawn director tuning.
 5. Burning Page mode: shrink, dead ground, flow field, strip payouts.
@@ -34,14 +34,15 @@ Commit after each milestone and tell the user exactly what to test and report.
 
 ## Layout
 
-- `data/` JSON content: enemies, weapons, player, modes, waves. Loaded by `DataDB`.
+- `data/` JSON content: enemies, weapons, player, modes, waves, pulses. Loaded by `DataDB`.
 - `autoload/` `Events` (signal bus), `DataDB`, `GameState` (run state).
-- `core/` engine-agnostic helpers: `SpatialGrid`, `ObjectPool`.
+- `core/` engine-agnostic helpers: `SpatialGrid`, `ObjectPool`, `InkGrid`.
 - `entities/` one folder per entity: state script + scene. `entities/visuals/` holds visual components.
-- `systems/` managers that own and update entities: `EnemyManager`, `BulletManager`, `SpawnDirector`.
+- `systems/` managers that own and update entities: `EnemyManager`, `BulletManager`, `SpawnDirector`,
+  `InkSystem`, `PulseSystem`, `SecondarySystem`, `Effects`.
 - `ui/` HUD, touch controls, run summary, debug overlay, safe area.
 - `modes/` one root scene per game mode; the root script wires systems together.
-- `tools/` headless scripts: `setup_input_map.gd`, `smoke_test.gd`.
+- `tools/` headless scripts: `setup_input_map.gd`, `smoke_test.gd`, `ink_test.gd`.
 
 ## Conventions
 
@@ -69,11 +70,26 @@ Commit after each milestone and tell the user exactly what to test and report.
 - **Export note:** JSON files are not Godot resources. Export presets must list
   `data/*.json` under non-resource include filters.
 
+## Ink rules (as implemented)
+
+- `InkGrid`: 16px cells, one byte each (`NEUTRAL`, `INK`, `SMUDGE`), plus an RGBA
+  buffer uploaded as one texture and drawn by `entities/ground/ink.gdshader`.
+- Player footsteps paint a circle of `trail_radius`; kills paint `splat_radius`.
+- Enemies drop a smudge every `trail_interval` seconds (dotted on purpose, so a
+  thick ink wall survives a few crossings). Lower interval = better loop cutter.
+- Pulse (`InkGrid.find_enclosed`): flood-fills from the open sides of the pulse's
+  square reach through non-ink cells. Whatever the flood cannot reach is
+  enclosed and gets filled. Consequences: a shape must fit inside the reach, any
+  gap in the outline voids it, and the page edge counts as a wall. A pulse that
+  finds nothing fizzles and keeps its charge.
+
 ## Checking work
 
 ```bash
 godot --headless --path . --import
+godot --headless --path . --script res://tools/ink_test.gd
 godot --headless --path . --fixed-fps 60 --script res://tools/smoke_test.gd
 ```
 
-The smoke test must print frame lines with no script errors.
+The ink test must print ALL PASSED; the smoke test must print frame lines with
+no script errors.

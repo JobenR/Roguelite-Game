@@ -7,6 +7,12 @@
     "damage": 8,
     "xp": 1,
     "splat_radius": 40,
-    "visual": { "sides": 4, "color": "#4caf50", "rotation_deg": 45 }
+    "visual": {
+      "sides": 4,
+      "color": "#4caf50",
+      "rotation_deg": 45
+    },
+    "trail_interval": 0.6,
+    "trail_radius": 0
   }
 }

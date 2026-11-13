@@ -4,11 +4,16 @@ extends Node2D
 const MODE_ID := "survival"
 
 @onready var arena: Arena = $Arena
+@onready var ink: InkSystem = $Ink
+@onready var effects: Effects = $Effects
+@onready var secondary: SecondarySystem = $Secondary
+@onready var pulse: PulseSystem = $PulseSystem
 @onready var enemies: EnemyManager = $EnemyManager
 @onready var bullets: BulletManager = $BulletManager
 @onready var player: Player = $Player
 @onready var camera: Camera2D = $Player/Camera2D
 @onready var director: SpawnDirector = $SpawnDirector
+@onready var hud: Control = $UI/SafeArea/HUD
 @onready var debug_overlay: DebugOverlay = $UI/SafeArea/DebugOverlay
 
 
@@ -18,11 +23,15 @@ func _ready() -> void:
 
 	arena.setup(rect)
 	player.position = rect.get_center()
-	enemies.setup(player, rect)
+	ink.setup(rect)
+	enemies.setup(player, rect, ink)
 	bullets.setup(enemies, rect)
-	player.setup(enemies, bullets, rect)
+	player.setup(enemies, bullets, rect, ink)
+	secondary.setup(player, enemies, ink, effects)
+	pulse.setup(player, enemies, ink, effects)
 	director.setup(enemies, player, rect, MODE_ID)
-	debug_overlay.setup(enemies, bullets, director)
+	debug_overlay.setup(enemies, bullets, director, ink)
+	hud.setup(ink)
 
 	camera.limit_left = int(rect.position.x)
 	camera.limit_top = int(rect.position.y)

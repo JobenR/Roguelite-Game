@@ -6,6 +6,7 @@ var weapons: Dictionary = {}
 var player: Dictionary = {}
 var modes: Dictionary = {}
 var waves: Dictionary = {}
+var pulses: Dictionary = {}
 
 
 func _ready() -> void:
@@ -14,6 +15,7 @@ func _ready() -> void:
 	player = _load("res://data/player.json")
 	modes = _load("res://data/modes.json")
 	waves = _load("res://data/waves.json")
+	pulses = _load("res://data/pulses.json")
 
 
 func _load(path: String) -> Dictionary:
