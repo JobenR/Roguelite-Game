@@ -20,9 +20,9 @@ func setup(enemies: EnemyManager, arena: Rect2, effects: Effects) -> void:
 	_pool = ObjectPool.new(BULLET_SCENE, self, 32)
 
 
-func fire(pos: Vector2, dir: Vector2, weapon: Dictionary) -> void:
+func fire(pos: Vector2, dir: Vector2, weapon: Dictionary, damage_scale: float = 1.0) -> void:
 	var bullet: Bullet = _pool.acquire()
-	bullet.launch(pos, dir, weapon)
+	bullet.launch(pos, dir, weapon, damage_scale)
 	active.append(bullet)
 
 
@@ -55,7 +55,7 @@ func _process(delta: float) -> void:
 ## Applies a hit. Returns true when the bullet is spent.
 func _resolve_hit(bullet: Bullet, enemy: Enemy) -> bool:
 	var hit_pos := enemy.position
-	_enemies.damage(enemy, bullet.damage)
+	_enemies.damage(enemy, bullet.damage, bullet.velocity.normalized())
 	if bullet.burst_radius > 0.0:
 		_enemies.damage_area(hit_pos, bullet.burst_radius, bullet.damage * 0.5)
 		_effects.ring(hit_pos, bullet.burst_radius, Color(0.95, 0.55, 0.15, 0.8), 0.2)
@@ -68,6 +68,7 @@ func _resolve_hit(bullet: Bullet, enemy: Enemy) -> bool:
 		if next != null:
 			bullet.ricochet_left -= 1
 			bullet.velocity = (next.position - bullet.position).normalized() * bullet.speed
+			bullet.rotation = bullet.velocity.angle()
 			bullet.life = maxf(bullet.life, 0.5)
 			return false
 	return true

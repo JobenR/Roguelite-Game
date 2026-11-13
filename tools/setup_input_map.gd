@@ -5,10 +5,14 @@ extends SceneTree
 
 
 func _init() -> void:
-	_action("move_left", [_key(KEY_A), _key(KEY_LEFT), _axis(JOY_AXIS_LEFT_X, -1.0)])
-	_action("move_right", [_key(KEY_D), _key(KEY_RIGHT), _axis(JOY_AXIS_LEFT_X, 1.0)])
-	_action("move_up", [_key(KEY_W), _key(KEY_UP), _axis(JOY_AXIS_LEFT_Y, -1.0)])
-	_action("move_down", [_key(KEY_S), _key(KEY_DOWN), _axis(JOY_AXIS_LEFT_Y, 1.0)])
+	_action("move_left", [_key(KEY_A), _axis(JOY_AXIS_LEFT_X, -1.0)])
+	_action("move_right", [_key(KEY_D), _axis(JOY_AXIS_LEFT_X, 1.0)])
+	_action("move_up", [_key(KEY_W), _axis(JOY_AXIS_LEFT_Y, -1.0)])
+	_action("move_down", [_key(KEY_S), _axis(JOY_AXIS_LEFT_Y, 1.0)])
+	_action("aim_left", [_key(KEY_LEFT), _axis(JOY_AXIS_RIGHT_X, -1.0)])
+	_action("aim_right", [_key(KEY_RIGHT), _axis(JOY_AXIS_RIGHT_X, 1.0)])
+	_action("aim_up", [_key(KEY_UP), _axis(JOY_AXIS_RIGHT_Y, -1.0)])
+	_action("aim_down", [_key(KEY_DOWN), _axis(JOY_AXIS_RIGHT_Y, 1.0)])
 	_action("fire", [_key(KEY_SPACE), _button(JOY_BUTTON_A), _axis(JOY_AXIS_TRIGGER_RIGHT, 1.0)])
 	_action("secondary", [_key(KEY_E), _button(JOY_BUTTON_X)])
 	_action("pulse", [_key(KEY_Q), _button(JOY_BUTTON_Y)])

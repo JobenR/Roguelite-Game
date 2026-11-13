@@ -31,7 +31,7 @@ func setup(player: Player, enemies: EnemyManager, ink: InkSystem, effects: Effec
 	Events.secondary_charge_changed.emit(charge)
 
 
-func _on_enemy_killed(_type_id: String, _pos: Vector2, _splat_radius: float, _xp: int) -> void:
+func _on_enemy_killed(_type_id: String, _pos: Vector2, _splat_radius: float, _xp: int, _dir: Vector2) -> void:
 	_add_charge(float(_weapon.get("kill_recharge", 0.0)) / _cooldown())
 
 
@@ -80,6 +80,8 @@ func _explode() -> void:
 	visual.visible = false
 	var radius := float(_weapon.get("blast_radius", 100.0))
 	# Paint first, then damage: kill splats land on top either way.
-	_ink.grid.paint_circle(_to, float(_weapon.get("splat_radius", radius)), InkGrid.INK)
+	_ink.splat(_to, float(_weapon.get("splat_radius", radius)) * 1.25, Vector2.ZERO)
 	_enemies.damage_area(_to, radius, float(_weapon.get("damage", 30.0)))
 	_effects.ring(_to, radius, Color(0.12, 0.23, 0.54, 0.9), 0.35)
+	_effects.burst(_to, Vector2.ZERO, Color(0.15, 0.3, 0.8), 16)
+	Events.screen_shake.emit(7.0)

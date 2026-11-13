@@ -14,6 +14,9 @@ var splat_radius: float = 0.0
 var trail_interval: float = 0.0
 var trail_radius: float = 0.0
 var trail_left: float = 0.0
+var ink_cut_chance: float = 1.0
+var last_hit_dir: Vector2 = Vector2.ZERO
+var color: Color = Color.WHITE
 var active: bool = false
 
 @onready var visual: Node2D = $Visual
@@ -31,6 +34,10 @@ func spawn(p_type_id: String, data: Dictionary, pos: Vector2, hp_mult: float) ->
 	trail_interval = float(data.get("trail_interval", 0.5))
 	trail_radius = float(data.get("trail_radius", 0.0))
 	trail_left = randf() * trail_interval
+	ink_cut_chance = float(data.get("ink_cut_chance", 1.0))
+	last_hit_dir = Vector2.ZERO
+	var look: Dictionary = data.get("visual", {})
+	color = Color(String(look.get("color", "#ffffff")))
 	position = pos
 	active = true
 	visual.setup(data.get("visual", {}), radius)

@@ -14,13 +14,15 @@ var max_radius: float = 0.0
 var _pool: ObjectPool
 var _player: Player
 var _ink: InkSystem
+var _effects: Effects
 var _burn_left: float = 0.0
 var _burning: Array[Enemy] = []
 var _arena: Rect2
 var _scratch: Array = []
 
 
-func setup(player: Player, arena: Rect2, ink: InkSystem) -> void:
+func setup(player: Player, arena: Rect2, ink: InkSystem, effects: Effects) -> void:
+	_effects = effects
 	_player = player
 	_ink = ink
 	_arena = arena
@@ -40,9 +42,11 @@ func spawn(type_id: String, pos: Vector2, hp_mult: float = 1.0) -> Enemy:
 	return enemy
 
 
-func damage(enemy: Enemy, amount: float) -> void:
+## dir is the direction the blow travels; it shapes the kill splat.
+func damage(enemy: Enemy, amount: float, dir: Vector2 = Vector2.ZERO) -> void:
 	if not enemy.active:
 		return
+	enemy.last_hit_dir = dir
 	enemy.hp -= amount
 	if enemy.hp <= 0.0:
 		_kill(enemy)
@@ -60,7 +64,7 @@ func damage_area(pos: Vector2, radius: float, amount: float) -> void:
 			continue
 		var reach := radius + enemy.radius
 		if pos.distance_squared_to(enemy.position) <= reach * reach:
-			damage(enemy, amount)
+			damage(enemy, amount, (enemy.position - pos).normalized())
 
 
 ## Nearest active enemy within max_range of pos, or null.
@@ -91,7 +95,8 @@ func _kill(enemy: Enemy) -> void:
 	enemy.active = false
 	active.erase(enemy)
 	_pool.release(enemy)
-	Events.enemy_killed.emit(enemy.type_id, enemy.position, enemy.splat_radius, enemy.xp)
+	_effects.burst(enemy.position, enemy.last_hit_dir, enemy.color, 7)
+	Events.enemy_killed.emit(enemy.type_id, enemy.position, enemy.splat_radius, enemy.xp, enemy.last_hit_dir)
 
 
 func _process(delta: float) -> void:
@@ -151,7 +156,9 @@ func _process(delta: float) -> void:
 		enemy.trail_left -= delta
 		if enemy.trail_left <= 0.0:
 			enemy.trail_left = enemy.trail_interval
-			ink_grid.paint_circle(pos, enemy.trail_radius, InkGrid.SMUDGE)
+			# Most smudges slide over ink; only some bite through it.
+			var protect := -1 if randf() < enemy.ink_cut_chance else InkGrid.INK
+			ink_grid.paint_circle(pos, enemy.trail_radius, InkGrid.SMUDGE, protect)
 
 		if dist < enemy.radius + player_radius:
 			_player.take_damage(enemy.damage)

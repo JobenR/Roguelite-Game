@@ -1,0 +1,10 @@
+{
+  "auto_aim": {
+    "name": "Auto-Aim",
+    "duration": 8,
+    "drop_chance": 0.025,
+    "max_seconds_between": 40,
+    "lifetime": 20,
+    "color": "#e11d48"
+  }
+}

@@ -1,6 +1,7 @@
 {
   "survival": {
     "arena_width": 3840,
-    "arena_height": 2160
+    "arena_height": 2160,
+    "ink_cell_size": 8
   }
 }

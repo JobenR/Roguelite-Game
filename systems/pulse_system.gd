@@ -25,7 +25,7 @@ func setup(player: Player, enemies: EnemyManager, ink: InkSystem, effects: Effec
 	Events.pulse_charge_changed.emit(charge)
 
 
-func _on_enemy_killed(_type_id: String, _pos: Vector2, _splat_radius: float, _xp: int) -> void:
+func _on_enemy_killed(_type_id: String, _pos: Vector2, _splat_radius: float, _xp: int, _dir: Vector2) -> void:
 	_add_charge(float(_cfg.get("charge_per_kill", 5.0)) / 100.0)
 
 
@@ -79,4 +79,6 @@ func fire() -> int:
 	Events.pulse_charge_changed.emit(charge)
 	Events.pulse_fired.emit(enclosed.size())
 	_effects.ring(center, radius, Color(0.22, 0.45, 0.95, 0.9), 0.45)
+	_effects.ring(center, radius * 0.6, Color(0.6, 0.78, 1.0, 0.8), 0.35)
+	Events.screen_shake.emit(5.0)
 	return enclosed.size()

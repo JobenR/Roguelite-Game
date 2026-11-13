@@ -1,7 +1,10 @@
 class_name Player
 extends Node2D
-## Player: moves from InputMap actions, auto-aims at the nearest enemy, and
-## fires the main weapon while the "fire" action is held.
+## Player: moves and aims from InputMap actions and fires the main weapon
+## while "fire" is held. Aim order: the Auto-Aim power (nearest enemy), then
+## the aim stick, then the direction of travel.
+
+const AIM_DEADZONE := 0.25
 
 var radius: float = 14.0
 var speed: float = 230.0
@@ -15,7 +18,7 @@ var _enemies: EnemyManager
 var _bullets: BulletManager
 var _arena: Rect2
 var _ink: InkSystem
-var _trail_radius: float = 20.0
+var _trail_radius: float = 6.0
 var _ink_speed_bonus: float = 0.0
 var _last_trail_pos: Vector2 = Vector2.INF
 var _base_max_hp: float = 100.0
@@ -26,13 +29,14 @@ var _cooldown: float = 0.0
 @onready var visual: Node2D = $Visual
 @onready var aim_pivot: Node2D = $AimPivot
 @onready var barrel: Node2D = $AimPivot/Barrel
+@onready var aim_guide: Node2D = $AimPivot/AimGuide
 
 
 func setup(enemies: EnemyManager, bullets: BulletManager, arena: Rect2, ink: InkSystem) -> void:
-	_ink = ink
 	_enemies = enemies
 	_bullets = bullets
 	_arena = arena
+	_ink = ink
 	var stats: Dictionary = DataDB.player.get("default", {})
 	radius = float(stats.get("radius", radius))
 	speed = float(stats.get("speed", speed))
@@ -46,8 +50,8 @@ func setup(enemies: EnemyManager, bullets: BulletManager, arena: Rect2, ink: Ink
 	hp = max_hp
 	Events.upgrade_applied.connect(_on_upgrade_applied)
 	visual.setup(stats.get("visual", {}), radius)
-	barrel.position = Vector2(radius + 6.0, 0.0)
-	barrel.setup({"sides": 3, "color": "#1e3a8a"}, 7.0)
+	barrel.position = Vector2(radius + 7.0, 0.0)
+	barrel.setup({"sides": 3, "color": "#12235e", "outline": "#060d2b", "shadow": false}, 8.0)
 	Events.player_health_changed.emit(hp, max_hp)
 
 
@@ -66,28 +70,51 @@ func _process(delta: float) -> void:
 	position.x = clampf(position.x, _arena.position.x + radius, _arena.end.x - radius)
 	position.y = clampf(position.y, _arena.position.y + radius, _arena.end.y - radius)
 
-	# Footsteps: a thin trail of ink. Closing it into a loop sets up a pulse.
-	if position.distance_squared_to(_last_trail_pos) > 36.0:
+	# Footsteps: a thin line of ink. Closing it into a loop sets up a pulse.
+	if position.distance_squared_to(_last_trail_pos) > 9.0:
 		_last_trail_pos = position
 		_ink.grid.paint_circle(position, Upgrades.value("trail_radius", _trail_radius), InkGrid.INK)
 
 	_invuln_left -= delta
 	_cooldown -= delta
-
-	var target := _enemies.nearest(position, float(weapon.get("range", 500.0)))
-	if target != null:
-		aim_dir = (target.position - position).normalized()
-	elif move != Vector2.ZERO:
-		aim_dir = move.normalized()
-	aim_pivot.rotation = aim_dir.angle()
+	_update_aim(move)
 
 	if Input.is_action_pressed("fire") and _cooldown <= 0.0 and not weapon.is_empty():
 		_cooldown = float(weapon.get("fire_interval", 0.3)) / Upgrades.mult_of("fire_rate")
-		var shots := 1 + int(Upgrades.bonus("multishot"))
-		var spread := deg_to_rad(float(weapon.get("multishot_spread_deg", 12.0)))
-		for i in shots:
-			var dir := aim_dir.rotated((i - (shots - 1) * 0.5) * spread)
-			_bullets.fire(position + dir * (radius + 6.0), dir, weapon)
+		_fire_volley()
+
+
+func _update_aim(move: Vector2) -> void:
+	var auto := GameState.has_power("auto_aim")
+	var target: Enemy = null
+	if auto:
+		target = _enemies.nearest(position, float(weapon.get("range", 500.0)))
+	var stick := Input.get_vector("aim_left", "aim_right", "aim_up", "aim_down")
+	if target != null:
+		aim_dir = (target.position - position).normalized()
+	elif stick.length() > AIM_DEADZONE:
+		aim_dir = stick.normalized()
+	elif move != Vector2.ZERO:
+		aim_dir = move.normalized()
+	aim_pivot.rotation = aim_dir.angle()
+	aim_guide.set_locked(auto)
+
+
+## Parallel shots (Twin Nib) plus angled side shots (Scatter).
+func _fire_volley() -> void:
+	var muzzle := position + aim_dir * (radius + 8.0)
+	var side := aim_dir.orthogonal()
+	var parallel := 1 + int(Upgrades.bonus("multishot"))
+	var spacing := float(weapon.get("parallel_spacing", 14.0))
+	for i in parallel:
+		_bullets.fire(muzzle + side * (i - (parallel - 1) * 0.5) * spacing, aim_dir, weapon)
+	var scatter := int(Upgrades.bonus("scatter"))
+	var angle := deg_to_rad(float(weapon.get("scatter_angle_deg", 16.0)))
+	var scatter_damage := float(weapon.get("scatter_damage_mult", 0.6))
+	for i in scatter:
+		var ring := i / 2 + 1
+		var sign_dir := 1.0 if i % 2 == 0 else -1.0
+		_bullets.fire(muzzle, aim_dir.rotated(sign_dir * ring * angle), weapon, scatter_damage)
 
 
 func take_damage(amount: float) -> void:
@@ -96,6 +123,7 @@ func take_damage(amount: float) -> void:
 	hp = maxf(0.0, hp - amount)
 	_invuln_left = invuln_time
 	visual.flash()
+	Events.screen_shake.emit(8.0)
 	Events.player_health_changed.emit(hp, max_hp)
 	if hp <= 0.0:
 		Events.player_died.emit()

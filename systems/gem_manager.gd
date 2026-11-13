@@ -22,7 +22,7 @@ func setup(player: Player) -> void:
 	Events.enemy_killed.connect(_on_enemy_killed)
 
 
-func _on_enemy_killed(_type_id: String, pos: Vector2, _splat_radius: float, xp: int) -> void:
+func _on_enemy_killed(_type_id: String, pos: Vector2, _splat_radius: float, xp: int, _dir: Vector2) -> void:
 	if xp <= 0:
 		return
 	if active.size() >= _max_gems:

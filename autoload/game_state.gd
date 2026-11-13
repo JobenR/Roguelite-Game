@@ -10,6 +10,8 @@ var level: int = 1
 var xp: int = 0
 var xp_to_next: int = 5
 var debug_visible: bool = false
+## Temporary powers: id -> seconds left.
+var powers: Dictionary = {}
 
 
 func _ready() -> void:
@@ -24,12 +26,26 @@ func start_run() -> void:
 	level = 1
 	xp = 0
 	xp_to_next = _xp_needed(1)
+	powers.clear()
 	Events.run_started.emit()
 	Events.xp_changed.emit(xp, xp_to_next, level)
 
 
 func is_playing() -> bool:
 	return state == State.PLAYING
+
+
+func grant_power(id: String, seconds: float) -> void:
+	powers[id] = maxf(power_left(id), seconds)
+	Events.power_granted.emit(id, seconds)
+
+
+func has_power(id: String) -> bool:
+	return powers.has(id)
+
+
+func power_left(id: String) -> float:
+	return float(powers.get(id, 0.0))
 
 
 func add_xp(amount: int) -> void:
@@ -56,13 +72,17 @@ func _xp_needed(for_level: int) -> int:
 func _process(delta: float) -> void:
 	if state == State.PLAYING:
 		run_time += delta
+		for id: String in powers.keys():
+			powers[id] = float(powers[id]) - delta
+			if float(powers[id]) <= 0.0:
+				powers.erase(id)
 	# Actions are polled, never read from events: touch UI feeds them with
 	# Input.action_press(), which does not generate input events.
 	if Input.is_action_just_pressed("debug_toggle"):
 		debug_visible = not debug_visible
 
 
-func _on_enemy_killed(_type_id: String, _pos: Vector2, _splat_radius: float, _xp: int) -> void:
+func _on_enemy_killed(_type_id: String, _pos: Vector2, _splat_radius: float, _xp: int, _dir: Vector2) -> void:
 	kills += 1
 
 

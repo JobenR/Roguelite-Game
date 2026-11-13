@@ -1,17 +1,28 @@
 class_name ShapeVisual
 extends Node2D
-## Placeholder visual: a flat polygon drawn in code.
+## Placeholder visual: a polygon drawn in code with a drop shadow, dark
+## outline, highlight, and optional eyes or motion streak.
 ##
 ## Visual contract (any replacement, e.g. a sprite scene, must provide these):
 ##   setup(data: Dictionary, radius: float) -> void
 ##   flash() -> void
 ## Gameplay code only ever calls those two methods.
+##
+## Data keys: color, outline, sides (0 = circle), rotation_deg, eyes (bool),
+## streak (length of a motion trail behind the shape), shadow (bool).
 
 const FLASH_TIME := 0.08
 const FLASH_COLOR := Color(3.0, 3.0, 3.0)
 
 var _points: PackedVector2Array = PackedVector2Array()
+var _outline_points: PackedVector2Array = PackedVector2Array()
+var _highlight: PackedVector2Array = PackedVector2Array()
 var _color: Color = Color.WHITE
+var _outline: Color = Color.BLACK
+var _radius: float = 10.0
+var _eyes: bool = false
+var _streak: float = 0.0
+var _shadow: bool = true
 var _flash_left: float = 0.0
 
 
@@ -20,14 +31,24 @@ func _ready() -> void:
 
 
 func setup(data: Dictionary, radius: float) -> void:
+	_radius = radius
 	_color = Color(String(data.get("color", "#ffffff")))
+	_outline = Color(String(data.get("outline", _color.darkened(0.6).to_html())))
+	_eyes = bool(data.get("eyes", false))
+	_streak = float(data.get("streak", 0.0))
+	_shadow = bool(data.get("shadow", true))
 	var sides := int(data.get("sides", 0))
 	if sides < 3:
 		sides = 20  # circle
 	var offset := deg_to_rad(float(data.get("rotation_deg", 0.0)))
 	_points.resize(sides)
+	_highlight.resize(sides)
 	for i in sides:
-		_points[i] = Vector2.from_angle(offset + TAU * i / sides) * radius
+		var p := Vector2.from_angle(offset + TAU * i / sides) * radius
+		_points[i] = p
+		_highlight[i] = p * 0.5 + Vector2(-radius, -radius) * 0.22
+	_outline_points = _points.duplicate()
+	_outline_points.append(_points[0])
 	modulate = Color.WHITE
 	queue_redraw()
 
@@ -46,5 +67,21 @@ func _process(delta: float) -> void:
 
 
 func _draw() -> void:
-	if _points.size() >= 3:
-		draw_colored_polygon(_points, _color)
+	if _points.size() < 3:
+		return
+	if _streak > 0.0:
+		draw_line(Vector2(-_streak, 0.0), Vector2.ZERO, Color(_color, 0.45), _radius * 1.5)
+		draw_line(Vector2(-_streak * 1.8, 0.0), Vector2(-_streak, 0.0), Color(_color, 0.18), _radius)
+	if _shadow:
+		draw_set_transform(Vector2(_radius * 0.18, _radius * 0.32))
+		draw_colored_polygon(_points, Color(0.0, 0.0, 0.0, 0.28))
+		draw_set_transform(Vector2.ZERO)
+	draw_colored_polygon(_points, _color)
+	draw_colored_polygon(_highlight, _color.lightened(0.35))
+	draw_polyline(_outline_points, _outline, maxf(2.0, _radius * 0.2), true)
+	if _eyes:
+		var eye := _radius * 0.22
+		for side: float in [-1.0, 1.0]:
+			var c := Vector2(side * _radius * 0.3, -_radius * 0.08)
+			draw_circle(c, eye, Color.WHITE)
+			draw_circle(c + Vector2(0.0, eye * 0.25), eye * 0.55, Color(0.05, 0.05, 0.05))

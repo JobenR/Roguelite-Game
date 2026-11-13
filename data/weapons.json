@@ -9,8 +9,14 @@
     "range": 520,
     "visual": {
       "sides": 0,
-      "color": "#1e3a8a"
-    }
+      "color": "#12235e",
+      "outline": "#060d2b",
+      "streak": 16,
+      "shadow": false
+    },
+    "scatter_damage_mult": 0.6,
+    "scatter_angle_deg": 16,
+    "parallel_spacing": 14
   },
   "ink_bomb": {
     "name": "Ink Bomb",
@@ -24,7 +30,25 @@
     "bullet_radius": 10,
     "visual": {
       "sides": 0,
-      "color": "#0f1f4d"
+      "color": "#0f1f4d",
+      "outline": "#050a1f"
     }
+  },
+  "laser": {
+    "name": "Ink Jet",
+    "damage": 18,
+    "cooldown": 3.0,
+    "cooldown_per_level": 0.25,
+    "length": 700,
+    "width": 14,
+    "ink_radius": 5
+  },
+  "orbit": {
+    "name": "Orbiting Blots",
+    "damage": 8,
+    "radius": 78,
+    "ball_radius": 11,
+    "speed": 3.2,
+    "tick": 0.2
   }
 }

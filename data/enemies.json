@@ -3,16 +3,19 @@
     "name": "Walker",
     "hp": 20,
     "speed": 70,
-    "radius": 14,
+    "radius": 16,
     "damage": 8,
     "xp": 1,
     "splat_radius": 40,
     "visual": {
       "sides": 4,
-      "color": "#4caf50",
-      "rotation_deg": 45
+      "color": "#3fbf4f",
+      "outline": "#0f3d1a",
+      "rotation_deg": 45,
+      "eyes": true
     },
-    "trail_interval": 0.6,
-    "trail_radius": 0
+    "trail_interval": 0.9,
+    "trail_radius": 7,
+    "ink_cut_chance": 0.5
   }
 }

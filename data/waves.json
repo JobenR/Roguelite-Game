@@ -6,13 +6,63 @@
     "hp_growth_per_minute": 0.2,
     "overtime_batch_per_minute": 1,
     "waves": [
-      { "start": 0,   "interval": 0.9,  "batch": 1, "enemies": { "walker": 1 } },
-      { "start": 30,  "interval": 0.7,  "batch": 2, "enemies": { "walker": 1 } },
-      { "start": 60,  "interval": 0.55, "batch": 2, "enemies": { "walker": 1 } },
-      { "start": 120, "interval": 0.45, "batch": 3, "enemies": { "walker": 1 } },
-      { "start": 180, "interval": 0.35, "batch": 3, "enemies": { "walker": 1 } },
-      { "start": 240, "interval": 0.3,  "batch": 4, "enemies": { "walker": 1 } },
-      { "start": 300, "interval": 0.25, "batch": 5, "enemies": { "walker": 1 } }
-    ]
+      {
+        "start": 0,
+        "interval": 0.9,
+        "batch": 1,
+        "enemies": {
+          "walker": 1
+        }
+      },
+      {
+        "start": 30,
+        "interval": 0.7,
+        "batch": 2,
+        "enemies": {
+          "walker": 1
+        }
+      },
+      {
+        "start": 60,
+        "interval": 0.55,
+        "batch": 2,
+        "enemies": {
+          "walker": 1
+        }
+      },
+      {
+        "start": 120,
+        "interval": 0.45,
+        "batch": 3,
+        "enemies": {
+          "walker": 1
+        }
+      },
+      {
+        "start": 180,
+        "interval": 0.35,
+        "batch": 3,
+        "enemies": {
+          "walker": 1
+        }
+      },
+      {
+        "start": 240,
+        "interval": 0.3,
+        "batch": 4,
+        "enemies": {
+          "walker": 1
+        }
+      },
+      {
+        "start": 300,
+        "interval": 0.25,
+        "batch": 5,
+        "enemies": {
+          "walker": 1
+        }
+      }
+    ],
+    "warning_seconds": 5
   }
 }

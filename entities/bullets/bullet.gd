@@ -15,11 +15,12 @@ var hit: Array = []  # enemies already struck, so pierce and ricochet skip them
 @onready var visual: Node2D = $Visual
 
 
-func launch(pos: Vector2, dir: Vector2, weapon: Dictionary) -> void:
+func launch(pos: Vector2, dir: Vector2, weapon: Dictionary, damage_scale: float = 1.0) -> void:
 	position = pos
 	speed = float(weapon.get("bullet_speed", 600.0))
 	velocity = dir * speed
-	damage = Upgrades.value("damage", float(weapon.get("damage", 5.0)))
+	damage = Upgrades.value("damage", float(weapon.get("damage", 5.0))) * damage_scale
+	rotation = dir.angle()
 	radius = float(weapon.get("bullet_radius", 4.0))
 	life = float(weapon.get("bullet_life", 1.0))
 	pierce_left = int(Upgrades.bonus("pierce"))

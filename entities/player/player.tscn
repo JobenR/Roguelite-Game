@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=4 format=3]
 
 [ext_resource type="Script" path="res://entities/player/player.gd" id="1"]
 [ext_resource type="Script" path="res://entities/visuals/shape_visual.gd" id="2"]
+[ext_resource type="Script" path="res://entities/player/aim_guide.gd" id="3"]
 
 [node name="Player" type="Node2D"]
 z_index = 10
@@ -14,3 +15,6 @@ script = ExtResource("2")
 
 [node name="Barrel" type="Node2D" parent="AimPivot"]
 script = ExtResource("2")
+
+[node name="AimGuide" type="Node2D" parent="AimPivot"]
+script = ExtResource("3")

@@ -20,6 +20,8 @@ func _process(_delta: float) -> bool:
 		Input.action_press("fire")
 		scene.director.spawn_burst(200)
 		root.get_node("Upgrades").apply("caustic_ink")
+		root.get_node("Upgrades").apply("laser")
+		root.get_node("Upgrades").apply("orbit")
 		gs.add_xp(3)
 	if _frames % 400 == 120 and scene.levelup.is_open:
 		scene.levelup._choose(root.get_node("Upgrades").roll_choices(1)[0])

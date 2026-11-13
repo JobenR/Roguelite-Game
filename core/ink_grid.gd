@@ -65,9 +65,12 @@ func paint_point(pos: Vector2, state: int) -> void:
 	set_cell(cell_index(pos), state)
 
 
-func paint_circle(pos: Vector2, radius: float, state: int) -> void:
+## Paints a filled circle. Cells currently in `protect` state are left alone.
+func paint_circle(pos: Vector2, radius: float, state: int, protect: int = -1) -> void:
 	if radius < cell_size * 0.5:
-		paint_point(pos, state)
+		var single := cell_index(pos)
+		if cells[single] != protect:
+			set_cell(single, state)
 		return
 	var x0 := clampi(int((pos.x - radius) / cell_size), 0, cols - 1)
 	var x1 := clampi(int((pos.x + radius) / cell_size), 0, cols - 1)
@@ -78,8 +81,14 @@ func paint_circle(pos: Vector2, radius: float, state: int) -> void:
 		var dy := (y + 0.5) * cell_size - pos.y
 		for x in range(x0, x1 + 1):
 			var dx := (x + 0.5) * cell_size - pos.x
-			if dx * dx + dy * dy <= r_sq:
+			if dx * dx + dy * dy <= r_sq and cells[y * cols + x] != protect:
 				set_cell(y * cols + x, state)
+
+
+func paint_line(from: Vector2, to: Vector2, radius: float, state: int) -> void:
+	var steps := maxi(1, int(ceil(from.distance_to(to) / (cell_size * 0.5))))
+	for i in steps + 1:
+		paint_circle(from.lerp(to, float(i) / steps), radius, state)
 
 
 ## Finds every non-ink cell that is fully walled in by ink (or by ink plus the

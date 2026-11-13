@@ -13,6 +13,7 @@ var _arena: Rect2
 var _cfg: Dictionary = {}
 var _waves: Array = []
 var _timer: float = 0.0
+var _warned_index: int = -1
 
 
 func setup(enemies: EnemyManager, player: Player, arena: Rect2, mode_id: String) -> void:
@@ -43,6 +44,11 @@ func _process(delta: float) -> void:
 	while wave_index + 1 < _waves.size() and GameState.run_time >= float(_waves[wave_index + 1].get("start", 0.0)):
 		wave_index += 1
 		Events.wave_started.emit(wave_index)
+	# Warn a few seconds before the next wave.
+	var next_in := time_to_next_wave()
+	if next_in >= 0.0 and next_in <= float(_cfg.get("warning_seconds", 5.0)) and _warned_index != wave_index + 1:
+		_warned_index = wave_index + 1
+		Events.wave_warning.emit(wave_index + 2, next_in)
 	if wave_index < 0:
 		return
 	var wave: Dictionary = _waves[wave_index]

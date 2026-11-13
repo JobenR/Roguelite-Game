@@ -1,17 +1,18 @@
 {
   "default": {
     "max_hp": 100,
-    "speed": 230,
-    "radius": 14,
+    "speed": 265,
+    "radius": 16,
     "invuln_time": 0.6,
     "weapon": "ink_pistol",
     "visual": {
       "sides": 0,
-      "color": "#2563eb"
+      "color": "#3b82f6",
+      "outline": "#0b1b4d"
     },
     "secondary": "ink_bomb",
     "pulse": "ripple",
-    "trail_radius": 20,
+    "trail_radius": 6,
     "ink_speed_bonus": 0.1,
     "pickup_radius": 90
   }

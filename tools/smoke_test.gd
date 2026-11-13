@@ -32,6 +32,10 @@ func _process(_delta: float) -> bool:
 	elif _frames % 120 == 1:
 		Input.action_release("secondary")
 		Input.action_release("pulse")
+	gs.grant_power("auto_aim", 5.0)
+	if _frames == 600:
+		for id in ["scatter", "laser", "orbit", "multishot"]:
+			upgrades.apply(id)
 	# Keep the test player alive so a long run exercises every upgrade.
 	_scene.player.hp = _scene.player.max_hp
 	if _scene.levelup.is_open:

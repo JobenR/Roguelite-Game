@@ -68,32 +68,54 @@ func _open_next() -> void:
 	get_tree().paused = true
 
 
+const CATEGORY_COLORS := {"weapon": Color("#f97316"), "stat": Color("#22c55e"), "ink": Color("#3b82f6")}
+
+
 func _make_card(id: String) -> Button:
 	var def: Dictionary = DataDB.upgrades.get("upgrades", {}).get(id, {})
 	var level := Upgrades.level_of(id)
+	var max_level := int(def.get("max_level", 1))
+	var accent: Color = CATEGORY_COLORS.get(String(def.get("category", "")), Color.WHITE)
 	var card := Button.new()
-	card.custom_minimum_size = Vector2(300.0, 320.0)
+	card.custom_minimum_size = Vector2(300.0, 400.0)
 	card.disabled = true
 	card.pressed.connect(_choose.bind(id))
+	# Cards are colour-coded by category: orange weapon, green stat, blue ink.
+	for state in ["normal", "hover", "pressed", "focus", "disabled"]:
+		var style := StyleBoxFlat.new()
+		style.bg_color = Color("#f6f1e3") if state != "pressed" else Color("#e6dcc0")
+		style.border_color = accent if state != "focus" else Color.WHITE
+		style.set_border_width_all(8 if state in ["hover", "focus"] else 5)
+		style.set_corner_radius_all(18)
+		card.add_theme_stylebox_override(state, style)
 
 	var margin := MarginContainer.new()
 	margin.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	for side in ["margin_left", "margin_right", "margin_top", "margin_bottom"]:
-		margin.add_theme_constant_override(side, 18)
+		margin.add_theme_constant_override(side, 16)
 	card.add_child(margin)
 	margin.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	var box := VBoxContainer.new()
 	box.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	box.add_theme_constant_override("separation", 12)
+	box.add_theme_constant_override("separation", 8)
 	margin.add_child(box)
 
-	box.add_child(_card_label(String(def.get("name", id)), 28, Color.WHITE))
-	var level_text := "NEW" if level == 0 else "Level %d > %d" % [level, level + 1]
-	box.add_child(_card_label(level_text, 18, Color("#9db8ff")))
-	box.add_child(_card_label(String(def.get("desc", "")), 22, Color("#e6e6e6")))
+	var icon := UpgradeIcon.new()
+	icon.icon_id = String(def.get("icon", id))
+	icon.tint = accent
+	icon.custom_minimum_size = Vector2(0.0, 170.0)
+	icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	box.add_child(icon)
+	box.add_child(_card_label(String(def.get("name", id)), 26, Color("#1c1917")))
+	# Level pips: filled for owned levels, a ring for the one on offer.
+	var pips := ""
+	for i in max_level:
+		pips += "● " if i < level else ("◉ " if i == level else "○ ")
+	box.add_child(_card_label(pips.strip_edges(), 20, accent.darkened(0.2)))
+	box.add_child(_card_label(String(def.get("desc", "")), 17, Color("#44403c")))
 	var hint := Upgrades.synergy_hint(id)
 	if hint != "":
-		box.add_child(_card_label("Unlocks synergy: " + hint, 20, Color("#f2b01e")))
+		box.add_child(_card_label("Synergy: " + hint, 17, Color("#b45309")))
 	return card
 
 

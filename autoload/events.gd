@@ -2,7 +2,8 @@ extends Node
 ## Global signal bus. Systems talk through these signals, not direct references.
 
 signal run_started
-signal enemy_killed(type_id: String, pos: Vector2, splat_radius: float, xp: int)
+## dir is the direction of the killing blow (zero when there is none).
+signal enemy_killed(type_id: String, pos: Vector2, splat_radius: float, xp: int, dir: Vector2)
 signal player_health_changed(hp: float, max_hp: float)
 signal player_died
 signal secondary_charge_changed(ratio: float)
@@ -15,3 +16,7 @@ signal level_up(level: int)
 signal upgrade_applied(id: String)
 signal synergy_unlocked(synergy_name: String, desc: String)
 signal wave_started(index: int)
+## number is the 1-based wave about to start.
+signal wave_warning(number: int, seconds: float)
+signal power_granted(id: String, seconds: float)
+signal screen_shake(amount: float)

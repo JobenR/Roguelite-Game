@@ -3,10 +3,10 @@ extends Node2D
 ## Owns the ink grid and draws it as one texture. Kill splats are painted here;
 ## trails, bombs, and pulses paint through the grid directly.
 
-const CELL_SIZE := 16.0
 const INK_SHADER := preload("res://entities/ground/ink.gdshader")
 
 var grid: InkGrid
+var cell_size: float = 8.0
 
 var _image: Image
 var _texture: ImageTexture
@@ -15,19 +15,21 @@ var _enemies: EnemyManager
 var _pending_blasts: Array[Vector3] = []  # x, y, radius
 
 
-func setup(arena: Rect2, enemies: EnemyManager) -> void:
+func setup(arena: Rect2, enemies: EnemyManager, p_cell_size: float) -> void:
 	_enemies = enemies
-	grid = InkGrid.new(arena.size, CELL_SIZE)
+	cell_size = p_cell_size
+	grid = InkGrid.new(arena.size, cell_size)
 	_image = Image.create_from_data(grid.cols, grid.rows, false, Image.FORMAT_RGBA8, grid.pixels)
 	_texture = ImageTexture.create_from_image(_image)
 	_sprite = Sprite2D.new()
 	_sprite.centered = false
 	_sprite.texture = _texture
 	_sprite.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
-	_sprite.scale = Vector2(CELL_SIZE, CELL_SIZE)
+	_sprite.scale = Vector2(cell_size, cell_size)
 	_sprite.position = arena.position
 	var material := ShaderMaterial.new()
 	material.shader = INK_SHADER
+	material.set_shader_parameter("grid_size", Vector2(grid.cols, grid.rows))
 	_sprite.material = material
 	add_child(_sprite)
 	Events.enemy_killed.connect(_on_enemy_killed)
@@ -42,13 +44,43 @@ func smudge_share() -> float:
 	return float(grid.smudge_count) / float(grid.total_cells())
 
 
-func _on_enemy_killed(_type_id: String, pos: Vector2, splat_radius: float, _xp: int) -> void:
+func _on_enemy_killed(_type_id: String, pos: Vector2, splat_radius: float, _xp: int, dir: Vector2) -> void:
 	var radius := Upgrades.value("splat_size", splat_radius)
-	grid.paint_circle(pos, radius, InkGrid.INK)
+	splat(pos, radius, dir)
 	# Splat damage (Acid Bath) is applied next frame, so chain reactions
 	# spread over frames instead of recursing.
 	if Upgrades.bonus("splat_damage") > 0.0:
 		_pending_blasts.append(Vector3(pos.x, pos.y, radius))
+
+
+## An irregular ink splat. With a direction it throws a streak and droplets
+## that way, like ink flung by the hit; without one it bursts evenly.
+func splat(pos: Vector2, radius: float, dir: Vector2) -> void:
+	var directed := dir.length_squared() > 0.01
+	grid.paint_circle(pos + _jitter(radius * 0.15), radius * randf_range(0.5, 0.65), InkGrid.INK)
+	# Lobes make the core lumpy instead of a perfect disc.
+	for i in 3:
+		grid.paint_circle(pos + _jitter(radius * 0.5), radius * randf_range(0.25, 0.4), InkGrid.INK)
+	if directed:
+		# Streak: shrinking blobs thrown along the hit direction.
+		var side := dir.orthogonal()
+		var reach := radius * randf_range(1.4, 2.2)
+		var blobs := 4
+		for i in blobs:
+			var t := float(i + 1) / blobs
+			var p := pos + dir * reach * t + side * randf_range(-0.12, 0.12) * radius
+			grid.paint_circle(p, radius * 0.4 * (1.0 - t * 0.7), InkGrid.INK)
+	# Droplets: small flecks, mostly ahead of the hit.
+	for i in randi_range(5, 9):
+		var angle := randf() * TAU
+		if directed:
+			angle = dir.angle() + randfn(0.0, 0.7)
+		var dist := radius * randf_range(0.9, 2.6)
+		grid.paint_circle(pos + Vector2.from_angle(angle) * dist, randf_range(cell_size * 0.5, radius * 0.16), InkGrid.INK)
+
+
+func _jitter(amount: float) -> Vector2:
+	return Vector2(randf_range(-amount, amount), randf_range(-amount, amount))
 
 
 func _process(_delta: float) -> void:

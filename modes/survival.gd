@@ -13,6 +13,8 @@ const MODE_ID := "survival"
 @onready var player: Player = $Player
 @onready var camera: Camera2D = $Player/Camera2D
 @onready var director: SpawnDirector = $SpawnDirector
+@onready var aux: AuxWeapons = $AuxWeapons
+@onready var pickups: PickupManager = $PickupManager
 @onready var gems: GemManager = $GemManager
 @onready var levelup: Control = $UI/LevelUpCards
 @onready var pause_menu: Control = $UI/PauseMenu
@@ -26,13 +28,15 @@ func _ready() -> void:
 
 	arena.setup(rect)
 	player.position = rect.get_center()
-	ink.setup(rect, enemies)
-	enemies.setup(player, rect, ink)
+	ink.setup(rect, enemies, float(mode.get("ink_cell_size", 8.0)))
+	enemies.setup(player, rect, ink, effects)
 	bullets.setup(enemies, rect, effects)
 	player.setup(enemies, bullets, rect, ink)
 	secondary.setup(player, enemies, ink, effects)
 	pulse.setup(player, enemies, ink, effects)
 	gems.setup(player)
+	aux.setup(player, enemies, ink, effects)
+	pickups.setup(player, effects)
 	pause_menu.setup(levelup)
 	director.setup(enemies, player, rect, MODE_ID)
 	debug_overlay.setup(enemies, bullets, director, ink)
