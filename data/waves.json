@@ -1,0 +1,13 @@
+{
+  "survival": {
+    "enemy": "walker",
+    "interval_start": 0.9,
+    "interval_end": 0.12,
+    "batch_start": 1,
+    "batch_end": 4,
+    "ramp_seconds": 180,
+    "max_enemies": 450,
+    "spawn_distance_min": 900,
+    "spawn_distance_max": 1100
+  }
+}

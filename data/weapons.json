@@ -1,0 +1,12 @@
+{
+  "ink_pistol": {
+    "name": "Ink Pistol",
+    "damage": 10,
+    "fire_interval": 0.28,
+    "bullet_speed": 720,
+    "bullet_life": 0.9,
+    "bullet_radius": 5,
+    "range": 520,
+    "visual": { "sides": 0, "color": "#1e3a8a" }
+  }
+}

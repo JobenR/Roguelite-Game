@@ -1,0 +1,110 @@
+class_name EnemyManager
+extends Node2D
+## Owns every enemy: pooling, movement, separation, contact damage, death.
+## One loop per frame over a flat array; collisions use the spatial grid.
+
+const ENEMY_SCENE := preload("res://entities/enemies/enemy.tscn")
+const GRID_CELL := 64.0
+const SEPARATION_STRENGTH := 8.0
+
+var active: Array[Enemy] = []
+var grid: SpatialGrid
+var max_radius: float = 0.0
+
+var _pool: ObjectPool
+var _player: Player
+var _arena: Rect2
+var _scratch: Array = []
+
+
+func setup(player: Player, arena: Rect2) -> void:
+	_player = player
+	_arena = arena
+	grid = SpatialGrid.new(arena.size, GRID_CELL)
+	_pool = ObjectPool.new(ENEMY_SCENE, self, 64)
+
+
+func spawn(type_id: String, pos: Vector2, hp_mult: float = 1.0) -> Enemy:
+	var data: Dictionary = DataDB.enemies.get(type_id, {})
+	if data.is_empty():
+		push_error("EnemyManager: unknown enemy type '%s'" % type_id)
+		return null
+	var enemy: Enemy = _pool.acquire()
+	enemy.spawn(type_id, data, pos, hp_mult)
+	active.append(enemy)
+	max_radius = maxf(max_radius, enemy.radius)
+	return enemy
+
+
+func damage(enemy: Enemy, amount: float) -> void:
+	if not enemy.active:
+		return
+	enemy.hp -= amount
+	if enemy.hp <= 0.0:
+		_kill(enemy)
+	else:
+		enemy.visual.flash()
+
+
+## Nearest active enemy within max_range of pos, or null.
+func nearest(pos: Vector2, max_range: float) -> Enemy:
+	var best: Enemy = null
+	var best_sq := max_range * max_range
+	for enemy in active:
+		var d_sq := pos.distance_squared_to(enemy.position)
+		if d_sq < best_sq:
+			best_sq = d_sq
+			best = enemy
+	return best
+
+
+func _kill(enemy: Enemy) -> void:
+	enemy.active = false
+	active.erase(enemy)
+	_pool.release(enemy)
+	Events.enemy_killed.emit(enemy.type_id, enemy.position, enemy.splat_radius)
+
+
+func _process(delta: float) -> void:
+	if grid == null or not GameState.is_playing():
+		return
+	grid.clear()
+	for enemy in active:
+		grid.insert(enemy, enemy.position)
+
+	var player_pos := _player.position
+	var player_radius := _player.radius
+	var push_factor := minf(1.0, SEPARATION_STRENGTH * delta)
+	var min_x := _arena.position.x
+	var max_x := _arena.end.x
+	var min_y := _arena.position.y
+	var max_y := _arena.end.y
+
+	for enemy in active:
+		var pos := enemy.position
+		var to_player := player_pos - pos
+		var dist := to_player.length()
+		var step := Vector2.ZERO
+		if dist > 0.001:
+			step = to_player / dist * enemy.speed * delta
+
+		# Push away from overlapping neighbours so the horde does not stack.
+		var push := Vector2.ZERO
+		grid.query(pos, enemy.radius + max_radius, _scratch)
+		for other: Enemy in _scratch:
+			if other == enemy:
+				continue
+			var offset := pos - other.position
+			var min_dist := enemy.radius + other.radius
+			var d_sq := offset.length_squared()
+			if d_sq < min_dist * min_dist and d_sq > 0.0001:
+				var d := sqrt(d_sq)
+				push += offset / d * (min_dist - d)
+
+		pos += step + push * push_factor
+		pos.x = clampf(pos.x, min_x, max_x)
+		pos.y = clampf(pos.y, min_y, max_y)
+		enemy.position = pos
+
+		if dist < enemy.radius + player_radius:
+			_player.take_damage(enemy.damage)
