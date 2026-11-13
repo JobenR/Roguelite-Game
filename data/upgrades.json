@@ -1,0 +1,25 @@
+{
+  "upgrades": {
+    "rapid_fire":    { "name": "Quick Quill",    "desc": "+15% fire rate",                                  "max_level": 5, "effects": [ { "stat": "fire_rate", "mult": 0.15 } ] },
+    "damage":        { "name": "Dense Ink",      "desc": "+20% damage",                                     "max_level": 5, "effects": [ { "stat": "damage", "mult": 0.2 } ] },
+    "move_speed":    { "name": "Light Feet",     "desc": "+8% move speed",                                  "max_level": 5, "effects": [ { "stat": "move_speed", "mult": 0.08 } ] },
+    "max_hp":        { "name": "Deep Well",      "desc": "+20 max health, and heal 20",                     "max_level": 5, "effects": [ { "stat": "max_hp", "add": 20 } ] },
+    "pickup_radius": { "name": "Blotting Paper", "desc": "+30% pickup radius",                              "max_level": 4, "effects": [ { "stat": "pickup_radius", "mult": 0.3 } ] },
+    "pierce":        { "name": "Sharp Nib",      "desc": "Shots pass through +1 enemy",                     "max_level": 3, "effects": [ { "stat": "pierce", "add": 1 } ] },
+    "multishot":     { "name": "Split Nib",      "desc": "+1 shot per volley",                              "max_level": 3, "effects": [ { "stat": "multishot", "add": 1 } ] },
+    "ricochet":      { "name": "Skipping Stone", "desc": "Shots bounce to +1 nearby enemy",                 "max_level": 3, "effects": [ { "stat": "ricochet", "add": 1 } ] },
+    "explosive":     { "name": "Burst Cartridge","desc": "Shots burst on impact for 50% damage (+35 burst radius)", "max_level": 3, "effects": [ { "stat": "explosive", "add": 35 } ] },
+    "healing_ink":   { "name": "Healing Ink",    "desc": "Regenerate +1.5 health per second while on your ink", "max_level": 3, "effects": [ { "stat": "ink_regen", "add": 1.5 } ] },
+    "caustic_ink":   { "name": "Caustic Ink",    "desc": "Enemies standing on your ink take +6 damage per second", "max_level": 4, "effects": [ { "stat": "ink_burn", "add": 6 } ] },
+    "broad_stroke":  { "name": "Broad Stroke",   "desc": "+25% trail width",                                "max_level": 3, "effects": [ { "stat": "trail_radius", "mult": 0.25 } ] },
+    "wide_ripple":   { "name": "Wide Ripple",    "desc": "+25% pulse reach",                                "max_level": 3, "effects": [ { "stat": "pulse_radius", "mult": 0.25 } ] },
+    "heavy_blots":   { "name": "Heavy Blots",    "desc": "+25% kill splat size",                            "max_level": 3, "effects": [ { "stat": "splat_size", "mult": 0.25 } ] },
+    "slick_page":    { "name": "Slick Page",     "desc": "+10% extra move speed on your ink",               "max_level": 3, "effects": [ { "stat": "ink_speed", "add": 0.1 } ] }
+  },
+  "synergies": {
+    "cluster_rounds": { "name": "Cluster Rounds", "desc": "Bursts are 60% larger",                         "requires": [ "multishot", "explosive" ],     "effects": [ { "stat": "explosive_size", "mult": 0.6 } ] },
+    "pinball":        { "name": "Pinball",        "desc": "+2 bounces per shot",                           "requires": [ "ricochet", "pierce" ],         "effects": [ { "stat": "ricochet", "add": 2 } ] },
+    "acid_bath":      { "name": "Acid Bath",      "desc": "Kill splats deal 15 damage to enemies they land on", "requires": [ "caustic_ink", "heavy_blots" ], "effects": [ { "stat": "splat_damage", "add": 15 } ] },
+    "tidal_pulse":    { "name": "Tidal Pulse",    "desc": "A successful pulse heals 15 health",            "requires": [ "wide_ripple", "healing_ink" ], "effects": [ { "stat": "pulse_heal", "add": 15 } ] }
+  }
+}

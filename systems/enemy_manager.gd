@@ -14,7 +14,8 @@ var max_radius: float = 0.0
 var _pool: ObjectPool
 var _player: Player
 var _ink: InkSystem
-var _area_scratch: Array = []
+var _burn_left: float = 0.0
+var _burning: Array[Enemy] = []
 var _arena: Rect2
 var _scratch: Array = []
 
@@ -51,8 +52,10 @@ func damage(enemy: Enemy, amount: float) -> void:
 
 ## Damages every enemy whose circle touches the blast circle.
 func damage_area(pos: Vector2, radius: float, amount: float) -> void:
-	grid.query(pos, radius + max_radius, _area_scratch)
-	for enemy: Enemy in _area_scratch:
+	# Local array: a kill here can trigger another blast while we iterate.
+	var found: Array = []
+	grid.query(pos, radius + max_radius, found)
+	for enemy: Enemy in found:
 		if not enemy.active:
 			continue
 		var reach := radius + enemy.radius
@@ -72,11 +75,23 @@ func nearest(pos: Vector2, max_range: float) -> Enemy:
 	return best
 
 
+## Nearest active enemy to pos within max_range, skipping `exclude`.
+func nearest_excluding(pos: Vector2, max_range: float, exclude: Array) -> Enemy:
+	var best: Enemy = null
+	var best_sq := max_range * max_range
+	for enemy in active:
+		var d_sq := pos.distance_squared_to(enemy.position)
+		if d_sq < best_sq and not exclude.has(enemy):
+			best_sq = d_sq
+			best = enemy
+	return best
+
+
 func _kill(enemy: Enemy) -> void:
 	enemy.active = false
 	active.erase(enemy)
 	_pool.release(enemy)
-	Events.enemy_killed.emit(enemy.type_id, enemy.position, enemy.splat_radius)
+	Events.enemy_killed.emit(enemy.type_id, enemy.position, enemy.splat_radius, enemy.xp)
 
 
 func _process(delta: float) -> void:
@@ -95,6 +110,16 @@ func _process(delta: float) -> void:
 	var max_y := _arena.end.y
 
 	var ink_grid := _ink.grid
+
+	# Caustic ink ticks four times a second. Victims are collected during the
+	# loop and damaged after it, because a kill edits `active`.
+	var burn := Upgrades.bonus("ink_burn")
+	var burn_tick := false
+	if burn > 0.0:
+		_burn_left -= delta
+		if _burn_left <= 0.0:
+			_burn_left = 0.25
+			burn_tick = true
 
 	for enemy in active:
 		var pos := enemy.position
@@ -130,3 +155,10 @@ func _process(delta: float) -> void:
 
 		if dist < enemy.radius + player_radius:
 			_player.take_damage(enemy.damage)
+		if burn_tick and ink_grid.state_at(pos) == InkGrid.INK:
+			_burning.append(enemy)
+
+	if burn_tick:
+		for enemy in _burning:
+			damage(enemy, burn * 0.25)
+		_burning.clear()

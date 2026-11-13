@@ -24,7 +24,7 @@ You are a drop of living ink on a blank page; the horde is a grey smudge.
 
 1. Foundation: movement, auto-aim, hold-to-fire, Walker, health, death/restart, debug overlay, arena, camera. (done)
 2. Ink: ink grid, kill splats, footsteps, enemy trails, loops, pulse, ink bomb secondary, ownership percent. (done)
-3. Progression: waves, XP gems, level-up cards, about 14 upgrades with synergies, pause.
+3. Progression: wave timeline, XP gems, level-up cards, 15 upgrades, 4 synergies, pause. (done)
 4. Horde: Runner, Brute, Corruptor, mini-boss, spawn director tuning.
 5. Burning Page mode: shrink, dead ground, flow field, strip payouts.
 6. Mobile: touch polish, iOS export, performance pass (60fps with 300+ enemies).
@@ -34,13 +34,15 @@ Commit after each milestone and tell the user exactly what to test and report.
 
 ## Layout
 
-- `data/` JSON content: enemies, weapons, player, modes, waves, pulses. Loaded by `DataDB`.
-- `autoload/` `Events` (signal bus), `DataDB`, `GameState` (run state).
+- `data/` JSON content: enemies, weapons, player, modes, waves, pulses, upgrades,
+  progression. Loaded by `DataDB`.
+- `autoload/` `Events` (signal bus), `DataDB`, `GameState` (run clock, XP, level),
+  `Upgrades` (run-scoped stat modifiers).
 - `core/` engine-agnostic helpers: `SpatialGrid`, `ObjectPool`, `InkGrid`.
 - `entities/` one folder per entity: state script + scene. `entities/visuals/` holds visual components.
 - `systems/` managers that own and update entities: `EnemyManager`, `BulletManager`, `SpawnDirector`,
-  `InkSystem`, `PulseSystem`, `SecondarySystem`, `Effects`.
-- `ui/` HUD, touch controls, run summary, debug overlay, safe area.
+  `InkSystem`, `PulseSystem`, `SecondarySystem`, `GemManager`, `Effects`.
+- `ui/` HUD, touch controls, level-up cards, pause menu, run summary, debug overlay, safe area.
 - `modes/` one root scene per game mode; the root script wires systems together.
 - `tools/` headless scripts: `setup_input_map.gd`, `smoke_test.gd`, `ink_test.gd`.
 
@@ -69,6 +71,22 @@ Commit after each milestone and tell the user exactly what to test and report.
   under `UI/SafeArea`, which applies iOS safe-area margins.
 - **Export note:** JSON files are not Godot resources. Export presets must list
   `data/*.json` under non-resource include filters.
+
+## Upgrades and stats
+
+- Every stat is `(base + add) * (1 + mult)`. Systems read stats on demand:
+  `Upgrades.value(stat, base)`, `Upgrades.bonus(stat)` (base 0), `Upgrades.mult_of(stat)`.
+- `data/upgrades.json` has `upgrades` (name, desc, max_level, effects) and
+  `synergies` (requires two upgrade ids, effects). Effects are
+  `{stat, add}` or `{stat, mult}`. A synergy unlocks automatically once every
+  required upgrade is owned.
+- An upgrade that reuses an existing stat needs no code. Stats in use:
+  `fire_rate, damage, move_speed, max_hp, pickup_radius, pierce, multishot,
+  ricochet, explosive, explosive_size, ink_regen, ink_burn, trail_radius,
+  pulse_radius, splat_size, splat_damage, ink_speed, pulse_heal`.
+- Pausing uses `get_tree().paused`. UI that must run while paused
+  (level-up cards, pause menu) sets `PROCESS_MODE_ALWAYS`. Never kill enemies
+  while iterating `EnemyManager.active`; collect and apply after the loop.
 
 ## Ink rules (as implemented)
 

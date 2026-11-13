@@ -8,6 +8,9 @@ var _bomb_bar: ProgressBar
 var _pulse_bar: ProgressBar
 var _time_label: Label
 var _kills_label: Label
+var _xp_bar: ProgressBar
+var _banner: Label
+var _banner_left: float = 0.0
 
 
 func _ready() -> void:
@@ -19,7 +22,20 @@ func _ready() -> void:
 	_pulse_bar.max_value = 1.0
 	_time_label = _make_label(Control.PRESET_CENTER_TOP, HORIZONTAL_ALIGNMENT_CENTER)
 	_kills_label = _make_label(Control.PRESET_TOP_RIGHT, HORIZONTAL_ALIGNMENT_RIGHT)
+	_xp_bar = _make_bar(Vector2.ZERO, Vector2(320.0, 10.0), Color("#f2b01e"))
+	_xp_bar.anchor_left = 0.5
+	_xp_bar.anchor_right = 0.5
+	_xp_bar.offset_left = -160.0
+	_xp_bar.offset_right = 160.0
+	_xp_bar.offset_top = 40.0
+	_xp_bar.offset_bottom = 50.0
+	_banner = _make_label(Control.PRESET_CENTER_TOP, HORIZONTAL_ALIGNMENT_CENTER)
+	_banner.add_theme_color_override("font_color", Color("#f2b01e"))
+	_banner.offset_top = 64.0
+	_banner.visible = false
 	Events.player_health_changed.connect(_on_health_changed)
+	Events.xp_changed.connect(_on_xp_changed)
+	Events.synergy_unlocked.connect(_on_synergy)
 	Events.secondary_charge_changed.connect(func(ratio: float) -> void: _bomb_bar.value = ratio)
 	Events.pulse_charge_changed.connect(func(ratio: float) -> void: _pulse_bar.value = ratio)
 
@@ -59,14 +75,28 @@ func _make_label(preset: Control.LayoutPreset, align: HorizontalAlignment) -> La
 	return label
 
 
-func _process(_delta: float) -> void:
+func _process(delta: float) -> void:
+	if _banner_left > 0.0:
+		_banner_left -= delta
+		_banner.visible = _banner_left > 0.0
 	var ink_text := ""
 	if _ink != null and _ink.grid != null:
 		ink_text = "   Ink %d%%" % int(round(_ink.ownership() * 100.0))
-	_time_label.text = GameState.format_time(GameState.run_time) + ink_text
+	_time_label.text = "%s   Lv %d%s" % [GameState.format_time(GameState.run_time), GameState.level, ink_text]
 	_kills_label.text = "Kills %d" % GameState.kills
 
 
 func _on_health_changed(hp: float, max_hp: float) -> void:
 	_hp_bar.max_value = max_hp
 	_hp_bar.value = hp
+
+
+func _on_xp_changed(xp: int, xp_to_next: int, _level: int) -> void:
+	_xp_bar.max_value = xp_to_next
+	_xp_bar.value = xp
+
+
+func _on_synergy(synergy_name: String, desc: String) -> void:
+	_banner.text = "SYNERGY: %s\n%s" % [synergy_name, desc]
+	_banner.visible = true
+	_banner_left = 4.0

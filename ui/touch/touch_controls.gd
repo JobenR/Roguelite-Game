@@ -23,6 +23,7 @@ func _ready() -> void:
 		{"action": "fire", "label": "FIRE", "radius": 70.0, "offset": Vector2(-110, -110), "top": false, "ready": true, "charge": 1.0, "touch": -1},
 		{"action": "secondary", "label": "BOMB", "radius": 46.0, "offset": Vector2(-260, -70), "top": false, "ready": true, "charge": 1.0, "touch": -1},
 		{"action": "pulse", "label": "PULSE", "radius": 46.0, "offset": Vector2(-80, -260), "top": false, "ready": true, "charge": 1.0, "touch": -1},
+		{"action": "pause", "label": "II", "radius": 24.0, "offset": Vector2(-30, 140), "top": true, "ready": true, "charge": 1.0, "touch": -1},
 		{"action": "debug_toggle", "label": "DBG", "radius": 24.0, "offset": Vector2(-30, 80), "top": true, "ready": true, "charge": 1.0, "touch": -1},
 	]
 	Events.secondary_charge_changed.connect(_set_charge.bind("secondary"))
@@ -100,7 +101,8 @@ func _feed(action: String, strength: float) -> void:
 
 
 func _notification(what: int) -> void:
-	if what == NOTIFICATION_APPLICATION_FOCUS_OUT or what == NOTIFICATION_EXIT_TREE:
+	# Pausing stops this node, so drop every held action first.
+	if what == NOTIFICATION_APPLICATION_FOCUS_OUT or what == NOTIFICATION_EXIT_TREE or what == NOTIFICATION_PAUSED:
 		_release_all()
 
 
@@ -115,6 +117,7 @@ func _release_all() -> void:
 		if button["touch"] != -1:
 			button["touch"] = -1
 			Input.action_release(button["action"])
+	queue_redraw()
 
 
 func _draw() -> void:

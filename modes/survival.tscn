@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=3]
+[gd_scene load_steps=21 format=3]
 
 [ext_resource type="Script" path="res://modes/survival.gd" id="1"]
 [ext_resource type="Script" path="res://modes/arena.gd" id="2"]
@@ -16,6 +16,9 @@
 [ext_resource type="Script" path="res://systems/secondary_system.gd" id="14"]
 [ext_resource type="Script" path="res://systems/pulse_system.gd" id="15"]
 [ext_resource type="Script" path="res://entities/visuals/shape_visual.gd" id="16"]
+[ext_resource type="Script" path="res://systems/gem_manager.gd" id="17"]
+[ext_resource type="Script" path="res://ui/levelup/levelup_cards.gd" id="18"]
+[ext_resource type="Script" path="res://ui/pause/pause_menu.gd" id="19"]
 
 [node name="Survival" type="Node2D"]
 script = ExtResource("1")
@@ -25,6 +28,9 @@ script = ExtResource("2")
 
 [node name="Ink" type="Node2D" parent="."]
 script = ExtResource("12")
+
+[node name="GemManager" type="Node2D" parent="."]
+script = ExtResource("17")
 
 [node name="EnemyManager" type="Node2D" parent="."]
 script = ExtResource("3")
@@ -78,6 +84,24 @@ script = ExtResource("9")
 layout_mode = 2
 mouse_filter = 2
 script = ExtResource("10")
+
+[node name="LevelUpCards" type="Control" parent="UI"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("18")
+
+[node name="PauseMenu" type="Control" parent="UI"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("19")
 
 [node name="RunSummary" type="Control" parent="UI"]
 layout_mode = 3

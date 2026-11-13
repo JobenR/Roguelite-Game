@@ -19,6 +19,7 @@ config/features=PackedStringArray("4.4", "Mobile")
 Events="*res://autoload/events.gd"
 DataDB="*res://autoload/data_db.gd"
 GameState="*res://autoload/game_state.gd"
+Upgrades="*res://autoload/upgrades.gd"
 
 [display]
 

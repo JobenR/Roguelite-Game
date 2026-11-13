@@ -43,7 +43,7 @@ func _ready() -> void:
 
 
 func _on_player_died() -> void:
-	_stats.text = "Survived %s\nKills %d" % [GameState.format_time(GameState.run_time), GameState.kills]
+	_stats.text = "Survived %s\nLevel %d\nKills %d" % [GameState.format_time(GameState.run_time), GameState.level, GameState.kills]
 	visible = true
 
 

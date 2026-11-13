@@ -31,7 +31,7 @@ func setup(player: Player, enemies: EnemyManager, ink: InkSystem, effects: Effec
 	Events.secondary_charge_changed.emit(charge)
 
 
-func _on_enemy_killed(_type_id: String, _pos: Vector2, _splat_radius: float) -> void:
+func _on_enemy_killed(_type_id: String, _pos: Vector2, _splat_radius: float, _xp: int) -> void:
 	_add_charge(float(_weapon.get("kill_recharge", 0.0)) / _cooldown())
 
 

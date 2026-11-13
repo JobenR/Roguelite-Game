@@ -21,10 +21,11 @@ func setup(player: Player, enemies: EnemyManager, ink: InkSystem, effects: Effec
 	var stats: Dictionary = DataDB.player.get("default", {})
 	_cfg = DataDB.pulses.get(String(stats.get("pulse", "")), {})
 	Events.enemy_killed.connect(_on_enemy_killed)
+	Events.xp_collected.connect(func(amount: int) -> void: _add_charge(amount * float(_cfg.get("charge_per_xp", 0.0)) / 100.0))
 	Events.pulse_charge_changed.emit(charge)
 
 
-func _on_enemy_killed(_type_id: String, _pos: Vector2, _splat_radius: float) -> void:
+func _on_enemy_killed(_type_id: String, _pos: Vector2, _splat_radius: float, _xp: int) -> void:
 	_add_charge(float(_cfg.get("charge_per_kill", 5.0)) / 100.0)
 
 
@@ -45,7 +46,7 @@ func _process(_delta: float) -> void:
 ## Returns the number of cells filled (0 = fizzled).
 func fire() -> int:
 	var center := _player.position
-	var radius := float(_cfg.get("radius", 320.0))
+	var radius := Upgrades.value("pulse_radius", float(_cfg.get("radius", 320.0)))
 	var grid := _ink.grid
 	var enclosed := grid.find_enclosed(center, radius)
 	if enclosed.is_empty():
@@ -73,6 +74,7 @@ func fire() -> int:
 	for index in enclosed:
 		grid.set_cell(index, InkGrid.INK)
 
+	_player.heal(Upgrades.bonus("pulse_heal"))
 	charge = 0.0
 	Events.pulse_charge_changed.emit(charge)
 	Events.pulse_fired.emit(enclosed.size())
