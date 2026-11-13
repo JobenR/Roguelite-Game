@@ -1,6 +1,7 @@
 # Inkbound (working title)
 
-Top-down roguelite horde-survival shooter. Godot 4.4, GDScript, 2D only.
+Top-down roguelite horde-survival shooter. Godot 4.7 (the user runs 4.7.2), GDScript,
+2D only. Compatibility renderer (OpenGL), the most widely supported one for 2D.
 Primary target: iPhone landscape. Secondary: PC (Windows/Mac).
 
 ## The game
@@ -44,7 +45,8 @@ Commit after each milestone and tell the user exactly what to test and report.
   `InkSystem`, `PulseSystem`, `SecondarySystem`, `GemManager`, `Effects`.
 - `ui/` HUD, touch controls, level-up cards, pause menu, run summary, debug overlay, safe area.
 - `modes/` one root scene per game mode; the root script wires systems together.
-- `tools/` headless scripts: `setup_input_map.gd`, `smoke_test.gd`, `ink_test.gd`.
+- `tools/` headless scripts: `setup_input_map.gd`, `smoke_test.gd`, `ink_test.gd`,
+  `restart_test.gd`.
 
 ## Conventions
 
@@ -107,6 +109,7 @@ Commit after each milestone and tell the user exactly what to test and report.
 godot --headless --path . --import
 godot --headless --path . --script res://tools/ink_test.gd
 godot --headless --path . --fixed-fps 60 --script res://tools/smoke_test.gd
+godot --headless --path . --fixed-fps 60 --script res://tools/restart_test.gd
 ```
 
 The ink test must print ALL PASSED; the smoke test must print frame lines with

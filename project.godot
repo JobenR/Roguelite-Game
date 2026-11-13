@@ -12,7 +12,7 @@ config_version=5
 
 config/name="Inkbound"
 run/main_scene="res://modes/survival.tscn"
-config/features=PackedStringArray("4.4", "Mobile")
+config/features=PackedStringArray("4.7", "GL Compatibility")
 
 [autoload]
 
@@ -107,6 +107,6 @@ pointing/emulate_touch_from_mouse=true
 
 [rendering]
 
-renderer/rendering_method="mobile"
-textures/vram_compression/import_etc2_astc=true
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"
 environment/defaults/default_clear_color=Color(0.13, 0.12, 0.11, 1)
