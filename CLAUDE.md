@@ -88,6 +88,11 @@ Commit after each milestone and tell the user exactly what to test and report.
 - **Web build:** `.github/workflows/pages.yml` exports the Web preset and deploys
   it to GitHub Pages on every push to main (single-threaded build, so no special
   headers). The user tests on iPhone Safari through that link.
+- **After every push, give the user a fresh Safari link.** Wait for the "Deploy web
+  build" run for that commit to succeed (`gh api repos/JobenR/Roguelite-Game/actions/runs`),
+  then give `https://jobenr.github.io/Roguelite-Game/?v=<short commit hash>`. The
+  `?v=` part changes each time so Safari cannot show a cached old version. If the
+  run fails, say so and do not give a link.
 
 ## Upgrades and stats
 
