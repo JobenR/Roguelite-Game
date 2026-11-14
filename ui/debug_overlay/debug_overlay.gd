@@ -47,7 +47,7 @@ func _process(delta: float) -> void:
 	if _refresh_left > 0.0:
 		return
 	_refresh_left = REFRESH
-	_label.text = "FPS %d\nEnemies %d\nBullets %d\nRun time %s\nWave %d, next in %s\nEnemy health x%.2f\nBoss in %s\nSpawn every %.2fs\nInk %.1f%%  Smudge %.1f%%" % [
+	_label.text = "FPS %d\nEnemies %d\nBullets %d\nRun time %s\nWave %d, next in %s\nEnemy health x%.2f\nBoss in %s, final in %s\nSpawn every %.2fs\nInk %.1f%%  Smudge %.1f%%" % [
 		int(Engine.get_frames_per_second()),
 		_enemies.active.size(),
 		_bullets.active.size(),
@@ -56,6 +56,7 @@ func _process(delta: float) -> void:
 		("%ds" % int(_director.time_to_next_wave())) if _director.time_to_next_wave() >= 0.0 else "-",
 		_director.hp_multiplier(),
 		("%ds" % int(_director.time_to_boss())) if _director.time_to_boss() >= 0.0 else "-",
+		("%ds" % int(_director.time_to_final())) if _director.time_to_final() >= 0.0 else "-",
 		_director.spawn_interval,
 		_ink.ownership() * 100.0,
 		_ink.smudge_share() * 100.0,

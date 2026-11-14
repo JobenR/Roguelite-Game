@@ -68,6 +68,12 @@ static func ink_button(button: Button, size: int = 26) -> void:
 	button.add_theme_color_override("font_focus_color", INK)
 	button.add_theme_color_override("font_pressed_color", PAPER)
 	button.add_theme_color_override("font_disabled_color", FADED)
+	if not button.pressed.is_connected(_click):
+		button.pressed.connect(_click)
+
+
+static func _click() -> void:
+	Audio.play("click")
 
 
 ## A meter: an ink-edged trough with a coloured fill.

@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="Blotline"
-run/main_scene="res://modes/survival.tscn"
+run/main_scene="res://menus/title.tscn"
 config/features=PackedStringArray("4.7", "GL Compatibility")
 config/icon="res://icon.svg"
 
@@ -19,8 +19,10 @@ config/icon="res://icon.svg"
 
 Events="*res://autoload/events.gd"
 DataDB="*res://autoload/data_db.gd"
+SaveData="*res://autoload/save_data.gd"
 GameState="*res://autoload/game_state.gd"
 Upgrades="*res://autoload/upgrades.gd"
+Audio="*res://autoload/audio.gd"
 
 [display]
 

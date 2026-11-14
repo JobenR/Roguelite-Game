@@ -142,6 +142,7 @@ func _resolve_hit(bullet: Bullet, enemy: Enemy) -> bool:
 		enemy.position += dir * bullet.knockback
 
 	_enemies.damage(enemy, amount, dir)
+	Audio.play("hit")
 	if bullet.crit and not enemy.active:
 		_ink.splat(hit_pos, 34.0, dir)
 	if bullet.burst_radius > 0.0:

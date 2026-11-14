@@ -173,5 +173,33 @@
       "color": "#141210"
     },
     "flank": 0.0
+  },
+  "great_eraser": {
+    "name": "The Great Eraser",
+    "hp": 7000,
+    "speed": 44,
+    "radius": 76,
+    "damage": 40,
+    "xp": 200,
+    "splat_radius": 320,
+    "heavy": true,
+    "boss": true,
+    "trail_interval": 0.2,
+    "trail_radius": 0,
+    "ink_cut_chance": 1.0,
+    "behavior": "boss",
+    "erase_radius": 170,
+    "slam_cooldown": 4.5,
+    "slam_windup": 1.0,
+    "slam_radius": 290,
+    "slam_damage": 36,
+    "visual": {
+      "sides": 10,
+      "color": "#141210",
+      "core": "#ffd04d",
+      "ring": true
+    },
+    "flank": 0.0,
+    "final": true
   }
 }

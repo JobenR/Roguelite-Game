@@ -14,6 +14,7 @@ var glyphs: Dictionary = {}
 var milestones: Dictionary = {}
 var arsenal: Dictionary = {}
 var inks: Dictionary = {}
+var meta: Dictionary = {}
 
 
 func _ready() -> void:
@@ -30,6 +31,7 @@ func _ready() -> void:
 	milestones = _load("res://data/milestones.json")
 	arsenal = _load("res://data/arsenal.json")
 	inks = _load("res://data/inks.json")
+	meta = _load("res://data/meta.json")
 
 
 func _load(path: String) -> Dictionary:

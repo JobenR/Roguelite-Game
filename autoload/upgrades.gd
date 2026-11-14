@@ -26,6 +26,12 @@ func reset() -> void:
 	_mult.clear()
 	# The chosen ink's strengths and weaknesses apply for the whole run.
 	_apply_effects(DataDB.inks.get(GameState.ink_id, {}).get("effects", []))
+	# Permanent boosts bought with Seals.
+	var boosts: Dictionary = DataDB.meta.get("boosts", {})
+	for id: String in boosts:
+		var owned := SaveData.boost_level(id)
+		if owned > 0:
+			_apply_effects([boosts[id]], float(owned))
 	Events.upgrade_applied.emit("")
 
 

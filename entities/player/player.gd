@@ -276,6 +276,7 @@ func _fire_volley(scale: float) -> void:
 	for i in parallel:
 		_bullets.fire(muzzle + side * (i - (parallel - 1) * 0.5) * spacing, aim_dir, weapon, parallel_scale)
 	_effects.muzzle(muzzle, aim_dir, GameState.ink_color)
+	Audio.play("shoot")
 	var scatter := int(Upgrades.bonus("scatter"))
 	var angle := deg_to_rad(float(weapon.get("scatter_angle_deg", 16.0)))
 	var scatter_damage := float(weapon.get("scatter_damage_mult", 0.6)) * scale

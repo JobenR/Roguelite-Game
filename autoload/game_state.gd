@@ -11,9 +11,8 @@ var xp: int = 0
 var xp_to_next: int = 5
 var debug_visible: bool = false
 ## The ink chosen for the run: a play style and a colour (data/inks.json).
-## Kept between runs. `pick_ink` asks the mode to show the ink choice first.
+## Chosen on the title screen and remembered in the save.
 var ink_id: String = "blue"
-var pick_ink: bool = true
 var ink_color: Color = Color("#1a4df2")
 var ink_light: Color = Color("#4d8fff")
 ## Temporary powers: id -> seconds left.
@@ -22,12 +21,17 @@ var powers: Dictionary = {}
 ## moving...). Set by the player each frame; applied to every weapon.
 var damage_bonus: float = 0.0
 var _xp_fraction: float = 0.0
+var milestones: int = 0
+var won: bool = false
+var _rewarded: bool = false
 
 
 func _ready() -> void:
 	Events.enemy_killed.connect(_on_enemy_killed)
 	Events.player_died.connect(_on_player_died)
-	set_ink(ink_id)
+	Events.milestone_reached.connect(func(_p: int, _t: String) -> void: milestones += 1)
+	Events.final_boss_defeated.connect(func() -> void: won = true)
+	set_ink(String(SaveData.data.get("ink", "blue")))
 
 
 func set_ink(id: String) -> void:
@@ -49,8 +53,38 @@ func start_run() -> void:
 	powers.clear()
 	damage_bonus = 0.0
 	_xp_fraction = 0.0
+	milestones = 0
+	won = false
+	_rewarded = false
 	Events.run_started.emit()
 	Events.xp_changed.emit(xp, xp_to_next, level)
+
+
+## Seals this run is worth so far.
+func seals_earned() -> int:
+	var earn: Dictionary = DataDB.meta.get("earn", {})
+	var total := run_time / 60.0 * float(earn.get("per_minute", 4.0))
+	total += kills / maxf(1.0, float(earn.get("kills_per_seal", 25.0)))
+	total += level * float(earn.get("per_level", 1.0))
+	total += milestones * float(earn.get("per_milestone", 3.0))
+	if won:
+		total += float(earn.get("win_bonus", 50.0))
+	return int(total)
+
+
+## Banks the run: pays out Seals and updates records. Safe to call twice.
+func finish_run() -> int:
+	if _rewarded:
+		return 0
+	_rewarded = true
+	var earned := seals_earned()
+	SaveData.add_seals(earned)
+	SaveData.data["runs"] = int(SaveData.data.get("runs", 0)) + 1
+	SaveData.data["best_time"] = maxf(float(SaveData.data.get("best_time", 0.0)), run_time)
+	if won:
+		SaveData.data["wins"] = int(SaveData.data.get("wins", 0)) + 1
+	SaveData.save()
+	return earned
 
 
 func is_playing() -> bool:

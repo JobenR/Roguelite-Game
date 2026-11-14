@@ -7,7 +7,6 @@ var _restarts: int = 0
 
 
 func _initialize() -> void:
-	root.get_node("GameState").pick_ink = false  # skip the ink choice screen
 	change_scene_to_file("res://modes/survival.tscn")
 
 

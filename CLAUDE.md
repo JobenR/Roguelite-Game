@@ -97,7 +97,13 @@ reward.** The user picked mock-up A plus E and rejected a first attempt that
    chose to keep ink-blending visual only, the 30% touch zoom, and 3-second mines.
 5. Burning Page mode: shrink, dead ground, flow field, strip payouts.
 6. Mobile: touch polish, iOS export, performance pass (60fps with 300+ enemies).
-7. Meta: currency, unlocks, JSON save, menus, audio, haptics.
+7. Meta (done): title screen (`menus/title.tscn`, the main scene) with ink
+   unlocks, permanent boosts and settings; Seals currency paid at run end; JSON
+   save (`SaveData`, `user://blotline_save.json`); generated sound and music
+   (`Audio`, `tools/gen_audio.py`); vibration; a final boss at 15:00 whose death
+   wins the run, after which the player may keep going.
+   Sounds were generated in code and have NOT been heard by anyone but the
+   user: treat feedback on them as the first real review.
 
 Commit after each milestone and tell the user exactly what to test and report.
 
@@ -110,8 +116,11 @@ explicitly. This includes end-of-update feedback questions: offer choices.
 - `data/` JSON content: enemies, weapons, player, modes, waves, pulses, upgrades,
   progression, pickups, glyphs, milestones, inks, arsenal (numbers for upgrade
   effects, read with `DataDB.arsenal_num(id, key, default)`). Loaded by `DataDB`.
-- `autoload/` `Events` (signal bus), `DataDB`, `GameState` (run clock, XP, level),
-  `Upgrades` (run-scoped stat modifiers).
+- `autoload/` `Events` (signal bus), `DataDB`, `SaveData` (persistent save),
+  `GameState` (run clock, XP, level, chosen ink, Seals earned), `Upgrades`
+  (run-scoped stat modifiers), `Audio` (sound, music, vibration; listens to
+  `Events`, and a few systems call `Audio.play(id)` directly).
+- `menus/` the title screen. `assets/audio/` generated WAV files.
 - `core/` engine-agnostic helpers: `SpatialGrid`, `ObjectPool`, `InkGrid`,
   `ShapeClassifier` (circle/triangle/square from a filled region).
 - `entities/` one folder per entity: state script + scene. `entities/visuals/` holds visual components.
@@ -125,7 +134,8 @@ explicitly. This includes end-of-update feedback questions: offer choices.
 - `ui/` `common/sumi.gd` (shared look), HUD, touch controls, level-up cards, pause menu, run summary, debug overlay, safe area.
 - `modes/` one root scene per game mode; the root script wires systems together.
 - `tools/` headless scripts: `setup_input_map.gd`, `smoke_test.gd`, `ink_test.gd`,
-  `glyph_test.gd`, `restart_test.gd`.
+  `glyph_test.gd`, `restart_test.gd`, `meta_test.gd` (final boss, victory,
+  payout, unlocks); and `gen_audio.py` (regenerates every sound; needs numpy).
 
 ## Conventions
 
@@ -249,7 +259,8 @@ godot --headless --path . --script res://tools/ink_test.gd
 godot --headless --path . --script res://tools/glyph_test.gd
 godot --headless --path . --fixed-fps 60 --script res://tools/smoke_test.gd
 godot --headless --path . --fixed-fps 60 --script res://tools/restart_test.gd
+godot --headless --path . --fixed-fps 60 --script res://tools/meta_test.gd
 ```
 
-The ink and glyph tests must print ALL PASSED; the smoke test must print frame lines with
+The ink, glyph and meta tests must print ALL PASSED; the smoke test must print frame lines with
 no script errors.

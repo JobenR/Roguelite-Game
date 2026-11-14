@@ -41,6 +41,7 @@ func _ready() -> void:
 	box.add_child(help)
 	box.add_child(_make_button("Resume", _resume))
 	box.add_child(_make_button("Restart run", _restart))
+	box.add_child(_make_button("Quit to menu", _quit))
 
 
 func setup(levelup: Control) -> void:
@@ -71,6 +72,13 @@ func _process(_delta: float) -> void:
 func _resume() -> void:
 	visible = false
 	get_tree().paused = false
+
+
+func _quit() -> void:
+	visible = false
+	get_tree().paused = false
+	GameState.finish_run()
+	get_tree().change_scene_to_file("res://menus/title.tscn")
 
 
 func _restart() -> void:

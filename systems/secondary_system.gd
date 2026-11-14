@@ -196,4 +196,6 @@ func _explode(pos: Vector2, size: float, main: bool) -> void:
 	_effects.burst(pos, Vector2.ZERO, GameState.ink_color, 16 if main else 6)
 	if main:
 		_effects.ink_burst(pos, radius)
+		Audio.play("bomb")
+		Audio.buzz(40)
 		Events.screen_shake.emit(7.0)

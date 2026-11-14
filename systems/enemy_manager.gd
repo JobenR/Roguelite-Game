@@ -205,6 +205,8 @@ func _kill(enemy: Enemy) -> void:
 		_effects.big_moment(enemy.position, enemy.splat_radius * 1.5, Color(String(enemy.data.get("visual", {}).get("core", "#ffffff"))), 0.9)
 		Events.screen_shake.emit(14.0)
 		Events.boss_defeated.emit(enemy.display_name)
+		if bool(enemy.data.get("final", false)):
+			Events.final_boss_defeated.emit()
 		queue_redraw()
 	Events.enemy_killed.emit(enemy.type_id, enemy.position, enemy.splat_radius, enemy.xp, enemy.last_hit_dir)
 	# Splitters break into smaller enemies.

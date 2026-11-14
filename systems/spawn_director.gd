@@ -18,6 +18,8 @@ var _boss_cfg: Dictionary = {}
 var _next_boss: float = INF
 var _boss_count: int = 0
 var _boss_warned: bool = false
+var _final_cfg: Dictionary = {}
+var _final_stage: int = 0  # 0 waiting, 1 warned, 2 spawned
 
 
 func setup(enemies: EnemyManager, player: Player, arena: Rect2, mode_id: String) -> void:
@@ -27,6 +29,7 @@ func setup(enemies: EnemyManager, player: Player, arena: Rect2, mode_id: String)
 	_cfg = DataDB.waves.get(mode_id, {})
 	_waves = _cfg.get("waves", [])
 	_boss_cfg = _cfg.get("miniboss", {})
+	_final_cfg = _cfg.get("final_boss", {})
 	if not _boss_cfg.is_empty():
 		_next_boss = float(_boss_cfg.get("first", 150.0))
 
@@ -94,6 +97,7 @@ func _process(delta: float) -> void:
 
 ## Mini-boss schedule: a warning a few seconds ahead, then the spawn.
 func _update_boss() -> void:
+	_update_final_boss()
 	if _next_boss == INF:
 		return
 	var warn := float(_cfg.get("warning_seconds", 5.0))
@@ -108,6 +112,27 @@ func _update_boss() -> void:
 			var boss_hp := hp_multiplier() * (1.0 + float(_boss_cfg.get("hp_mult_per_spawn", 0.5)) * _boss_count)
 			_enemies.spawn(String(_boss_cfg.get("enemy", "eraser")), _spawn_point(), boss_hp)
 			_boss_count += 1
+
+
+## The final boss: one fixed time in the run. Beating it wins the run.
+func _update_final_boss() -> void:
+	if _final_cfg.is_empty() or _final_stage == 2:
+		return
+	var at := float(_final_cfg.get("time", 900.0))
+	if _final_stage == 0 and GameState.run_time >= at - 6.0:
+		_final_stage = 1
+		Events.alert.emit(String(_final_cfg.get("alert", "THE FINAL BOSS RISES")), 7.5)
+	if GameState.run_time >= at:
+		_final_stage = 2
+		_next_boss = INF  # no more mini-bosses once the final boss is out
+		_enemies.spawn(String(_final_cfg.get("enemy", "eraser")), _spawn_point(), 1.0)
+
+
+## Seconds until the final boss, or -1 once it has appeared.
+func time_to_final() -> float:
+	if _final_cfg.is_empty() or _final_stage == 2:
+		return -1.0
+	return float(_final_cfg.get("time", 900.0)) - GameState.run_time
 
 
 ## Debug stress test: drops `count` enemies around the player at once.
