@@ -113,8 +113,8 @@ func fire() -> int:
 	charge = clampf(charge - 1.0 + refund, 0.0, _max_charge())
 	Events.pulse_charge_changed.emit(minf(charge, 1.0))
 	Events.pulse_fired.emit(enclosed.size())
-	_effects.ring(center, radius, Color(0.08, 0.07, 0.06, 0.9), 0.45)
-	_effects.ring(center, radius * 0.6, Color(0.08, 0.07, 0.06, 0.8), 0.35)
+	_effects.ring(center, radius, Color(0.16, 0.40, 1.0, 0.9), 0.45)
+	_effects.ring(center, radius * 0.6, Color(0.16, 0.40, 1.0, 0.8), 0.35)
 	if not enclosed.is_empty():
 		_effects.big_moment(center, radius * 0.55, Color(0.24, 0.52, 1.0), 0.7)
 	Events.screen_shake.emit(5.0)
@@ -142,4 +142,4 @@ func _reward_fill(enclosed: PackedInt32Array) -> void:
 		var reach := 0.0
 		for i in range(0, enclosed.size(), 8):
 			reach = maxf(reach, middle.distance_to(grid.cell_center(enclosed[i])))
-		_hazards.add_burn(middle, reach, burn, DataDB.arsenal_num("aftershock", "seconds", 3.0), Color(0.08, 0.07, 0.06))
+		_hazards.add_burn(middle, reach, burn, DataDB.arsenal_num("aftershock", "seconds", 3.0), Color(0.16, 0.40, 1.0))

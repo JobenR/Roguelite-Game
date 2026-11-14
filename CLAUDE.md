@@ -13,17 +13,18 @@ reward.** The user picked mock-up A plus E and rejected a first attempt that
 "looked like a recoloured version of the last one", so hold to this closely:
 
 - Rice paper with fibres, a brushed black frame, a red seal. No notebook lines.
-- ALL ink is black: the player's trail, splats, shots and blasts, and the
-  horde. Ink has dry-brush edges, bristle streaks, and a soft grey bleed halo
+- The player's ink is luminous blue (trail, splats, shots, blasts, extra
+  weapons); the horde is black. The user tried all-black ink and asked for
+  blue back. Ink has dry-brush edges, bristle streaks, and a soft bleed halo
   where it soaked into the paper. Splats throw streaks and many droplets.
 - Enemies are ragged black brush shapes with a pooled shade underneath, told
-  apart only by a small glowing core colour. The player is a black drop with a
-  glowing cyan square seal.
-- Shots are black tapered brush flicks. Ordinary blasts (`Effects.ink_burst`)
-  are black strokes flung outward with a broken red ring. Red is the only
-  accent in normal play.
+  apart only by a small glowing core colour. The player is a blue drop with a
+  white square seal.
+- Shots are blue tapered brush flicks. Ordinary blasts (`Effects.ink_burst`)
+  are blue strokes flung outward with a broken pale ring. Red is for danger
+  and the UI seal.
 - Glow is rare and earned (`Effects.big_moment`, and ink marked with
-  `InkGrid.set_glow`): pulse-filled ground shines blue, glyphs burst gold,
+  `InkGrid.set_glow`): pulse-filled ground shines brighter, near white; glyphs burst gold,
   bosses burst in their core colour, Legendary cards shimmer.
 - UI takes every colour, font and panel style from `ui/common/sumi.gd`
   (`Sumi`): paper panels, ink borders, seal red, Kaushan Script titles.

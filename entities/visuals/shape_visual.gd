@@ -178,10 +178,12 @@ func _draw_brush() -> void:
 
 func _draw_plain() -> void:
 	if _brush_shot:
-		# A flick of the brush: a black wedge tapering to nothing behind a
-		# round head, with a faint dry drag and a speck of wet shine.
+		# A flick of the brush: a wedge of ink tapering to nothing behind a
+		# round head, with a soft glow, a faint dry drag and a speck of shine.
+		for i in 3:
+			draw_circle(Vector2.ZERO, _radius * (2.6 - i * 0.5), Color(_glow, 0.10 + 0.06 * i))
 		draw_polygon(PackedVector2Array([Vector2(0.0, -_radius * 1.6), Vector2(-_streak * 3.4, 0.0), Vector2(0.0, _radius * 1.6)]),
-				PackedColorArray([Color(_color, 0.22), Color(_color, 0.0), Color(_color, 0.22)]))
+				PackedColorArray([Color(_glow, 0.3), Color(_glow, 0.0), Color(_glow, 0.3)]))
 		draw_colored_polygon(PackedVector2Array([Vector2(0.0, -_radius), Vector2(-_streak * 2.4, 0.0), Vector2(0.0, _radius)]), _color)
 		draw_circle(Vector2.ZERO, _radius * 1.1, _color)
 		draw_circle(Vector2(_radius * 0.3, -_radius * 0.25), _radius * 0.3, Color(0.96, 0.93, 0.85, 0.95))

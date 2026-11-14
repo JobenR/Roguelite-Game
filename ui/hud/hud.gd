@@ -40,7 +40,7 @@ func _ready() -> void:
 	_hurt.offset_right = 400.0
 	_hurt.offset_bottom = 400.0
 	_hp_bar = _make_bar(Vector2(0.0, 0.0), Vector2(260.0, 22.0), Sumi.SEAL)
-	_bomb_bar = _make_bar(Vector2(0.0, 27.0), Vector2(126.0, 10.0), Sumi.INK)
+	_bomb_bar = _make_bar(Vector2(0.0, 27.0), Vector2(126.0, 10.0), Sumi.GLOW.darkened(0.35))
 	_pulse_bar = _make_bar(Vector2(134.0, 27.0), Vector2(126.0, 10.0), Sumi.GLOW)
 	_bomb_bar.max_value = 1.0
 	_pulse_bar.max_value = 1.0

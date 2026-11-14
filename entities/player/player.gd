@@ -88,7 +88,7 @@ func setup(enemies: EnemyManager, bullets: BulletManager, arena: Rect2, ink: Ink
 	Events.enemy_killed.connect(_on_enemy_killed)
 	visual.setup(stats.get("visual", {}), radius)
 	barrel.position = Vector2(radius + 7.0, 0.0)
-	barrel.setup({"sides": 3, "color": "#141210", "outline": "#141210", "shadow": false}, 8.0)
+	barrel.setup({"sides": 3, "color": "#1f4fe0", "outline": "#1f4fe0", "shadow": false}, 8.0)
 	Events.player_health_changed.emit(hp, max_hp)
 
 
@@ -267,7 +267,7 @@ func _fire_volley(scale: float) -> void:
 	var parallel_scale := scale / (1.0 + float(weapon.get("parallel_damage_falloff", 0.0)) * (parallel - 1))
 	for i in parallel:
 		_bullets.fire(muzzle + side * (i - (parallel - 1) * 0.5) * spacing, aim_dir, weapon, parallel_scale)
-	_effects.muzzle(muzzle, aim_dir, Color(0.08, 0.07, 0.06))
+	_effects.muzzle(muzzle, aim_dir, Color(0.16, 0.40, 1.0))
 	var scatter := int(Upgrades.bonus("scatter"))
 	var angle := deg_to_rad(float(weapon.get("scatter_angle_deg", 16.0)))
 	var scatter_damage := float(weapon.get("scatter_damage_mult", 0.6)) * scale
@@ -316,7 +316,7 @@ func _update_dash(move: Vector2, delta: float) -> void:
 		_dash_left = float(_stats.get("dash_time", 0.18))
 		_dash_cooldown_left = cooldown
 		_invuln_left = maxf(_invuln_left, _dash_left + 0.15)
-		_effects.ring(position, 40.0, Color(0.08, 0.07, 0.06, 0.8), 0.25)
+		_effects.ring(position, 40.0, Color(0.16, 0.40, 1.0, 0.8), 0.25)
 		Events.dash_charge_changed.emit(0.0)
 
 
@@ -402,6 +402,6 @@ func _draw() -> void:
 	if Upgrades.bonus("paper_shield") > 0.0 and _paper_left <= 0.0:
 		draw_arc(Vector2.ZERO, radius + 9.0, 0.0, TAU, 28, Color(1.0, 0.85, 0.3, 0.9), 3.0)
 	if _shield > 0.5:
-		draw_arc(Vector2.ZERO, radius + 14.0, 0.0, TAU, 28, Color(0.08, 0.07, 0.06, 0.8), 3.0)
+		draw_arc(Vector2.ZERO, radius + 14.0, 0.0, TAU, 28, Color(0.16, 0.40, 1.0, 0.8), 3.0)
 	if GameState.has_power("invincible"):
 		draw_arc(Vector2.ZERO, radius + 19.0, 0.0, TAU, 28, Color(1, 1, 1, 0.9), 4.0)

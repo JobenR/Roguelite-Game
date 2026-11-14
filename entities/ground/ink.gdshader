@@ -3,19 +3,20 @@ shader_type canvas_item;
 // cell: R = the player's ink, G = smudge, B = permanent ink, A = pulse-filled
 // ink. `bleed_tex` is a quarter-resolution blur of the ink.
 //
-//   Ink:    dense black with dry-brush edges and bristle streaks.
-//   Bleed:  a soft grey halo where the ink soaked into the paper.
+//   Ink:    the player's luminous blue, with dry-brush edges and bristle streaks.
+//   Bleed:  a soft blue halo where the ink soaked into the paper; it reads as glow.
 //   Smudge: the horde's thin grey wash.
-//   Glow:   ink filled by a pulse shines blue. This is the only glowing ink.
+//   Glow:   ink filled by a pulse shines brighter, almost white.
 
 uniform sampler2D bleed_tex : filter_linear, repeat_disable;
 uniform vec2 bleed_scale = vec2(1.0, 1.0);
-uniform vec4 ink_color : source_color = vec4(0.078, 0.07, 0.063, 0.97);
-uniform vec4 glow_color : source_color = vec4(0.14, 0.38, 1.0, 0.82);
-uniform vec4 glow_light : source_color = vec4(0.45, 0.72, 1.0, 1.0);
+uniform vec4 ink_color : source_color = vec4(0.10, 0.30, 0.95, 0.94);
+uniform vec4 ink_light : source_color = vec4(0.30, 0.56, 1.0, 1.0);
+uniform vec4 glow_color : source_color = vec4(0.42, 0.74, 1.0, 0.92);
+uniform vec4 glow_light : source_color = vec4(0.88, 0.96, 1.0, 1.0);
 uniform vec4 locked_color : source_color = vec4(0.05, 0.14, 0.62, 0.95);
 uniform vec4 smudge_color : source_color = vec4(0.12, 0.11, 0.10, 0.36);
-uniform float bleed_strength = 0.34;
+uniform float bleed_strength = 0.42;
 uniform vec2 grid_size = vec2(480.0, 270.0);
 
 float hash(vec2 p) {
@@ -70,7 +71,7 @@ void fragment() {
 	float shine = smoothstep(0.03, 0.42, wide_glow) * (1.0 - ink) * 0.5;
 	over(col, a, glow_color.rgb, shine);
 
-	vec3 black = ink_color.rgb * (0.8 + 0.5 * bristle);
+	vec3 black = mix(ink_color.rgb, ink_light.rgb, core * 0.5) * (0.86 + 0.28 * bristle);
 	vec3 blue = mix(glow_color.rgb, glow_light.rgb, core * 0.6) * (0.92 + 0.16 * bristle);
 	blue = mix(blue, locked_color.rgb, smoothstep(0.4, 0.6, t.b) * core);
 	vec3 ink_rgb = mix(black, blue, lit);

@@ -137,11 +137,11 @@ func _draw() -> void:
 	if not _aiming:
 		return
 	var radius := float(_weapon.get("blast_radius", 100.0)) * Upgrades.mult_of("bomb_size")
-	draw_dashed_line(_player.position, _reticle, Color(0.08, 0.07, 0.06, 0.7), 4.0, 14.0)
-	draw_circle(_reticle, radius, Color(0.08, 0.07, 0.06, 0.18))
-	draw_arc(_reticle, radius, 0.0, TAU, 48, Color(0.08, 0.07, 0.06, 0.9), 4.0)
-	draw_line(_reticle - Vector2(14, 0), _reticle + Vector2(14, 0), Color(0.08, 0.07, 0.06), 4.0)
-	draw_line(_reticle - Vector2(0, 14), _reticle + Vector2(0, 14), Color(0.08, 0.07, 0.06), 4.0)
+	draw_dashed_line(_player.position, _reticle, Color(0.16, 0.40, 1.0, 0.7), 4.0, 14.0)
+	draw_circle(_reticle, radius, Color(0.16, 0.40, 1.0, 0.18))
+	draw_arc(_reticle, radius, 0.0, TAU, 48, Color(0.16, 0.40, 1.0, 0.9), 4.0)
+	draw_line(_reticle - Vector2(14, 0), _reticle + Vector2(14, 0), Color(0.16, 0.40, 1.0), 4.0)
+	draw_line(_reticle - Vector2(0, 14), _reticle + Vector2(0, 14), Color(0.16, 0.40, 1.0), 4.0)
 
 
 func _explode(pos: Vector2, size: float, main: bool) -> void:
@@ -165,7 +165,7 @@ func _explode(pos: Vector2, size: float, main: bool) -> void:
 		var steps := int(ceil(TAU * ring / 6.0))
 		for i in steps:
 			_ink.grid.paint_circle(pos + Vector2.from_angle(TAU * i / steps) * ring, thickness, InkGrid.INK)
-		_effects.ring(pos, ring, Color(0.08, 0.07, 0.06, 0.9), 0.4)
+		_effects.ring(pos, ring, Color(0.16, 0.40, 1.0, 0.9), 0.4)
 	else:
 		_ink.splat(pos, float(_weapon.get("splat_radius", radius)) * Upgrades.mult_of("bomb_size") * size * 1.25, Vector2.ZERO)
 
@@ -185,12 +185,12 @@ func _explode(pos: Vector2, size: float, main: bool) -> void:
 		var width := DataDB.arsenal_num("bomb_core", "width", 26.0)
 		_enemies.damage_segment(pos, end, width, bomb_damage * DataDB.arsenal_num("bomb_core", "damage_scale", 1.5))
 		_ink.grid.paint_line(pos, end, 9.0, InkGrid.INK)
-		_effects.beam(pos, end, Color(0.08, 0.07, 0.06), width, 0.4)
+		_effects.beam(pos, end, Color(0.16, 0.40, 1.0), width, 0.4)
 		_ink.splat(end, radius * 0.6, dir)
 		_enemies.damage_area(end, radius * 0.7, bomb_damage * 0.6)
-		_effects.ring(end, radius * 0.7, Color(0.08, 0.07, 0.06, 0.9), 0.3)
-	_effects.ring(pos, radius, Color(0.08, 0.07, 0.06, 0.9), 0.35)
-	_effects.burst(pos, Vector2.ZERO, Color(0.08, 0.07, 0.06), 16 if main else 6)
+		_effects.ring(end, radius * 0.7, Color(0.16, 0.40, 1.0, 0.9), 0.3)
+	_effects.ring(pos, radius, Color(0.16, 0.40, 1.0, 0.9), 0.35)
+	_effects.burst(pos, Vector2.ZERO, Color(0.16, 0.40, 1.0), 16 if main else 6)
 	if main:
 		_effects.ink_burst(pos, radius)
 		Events.screen_shake.emit(7.0)
