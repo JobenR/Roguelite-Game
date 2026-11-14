@@ -25,6 +25,12 @@ func _ready() -> void:
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	title.add_theme_font_size_override("font_size", 48)
 	box.add_child(title)
+	var help := Label.new()
+	help.text = "GLYPHS\nClose a shape with your trail, then PULSE it.\nCircle: Maelstrom pulls enemies in and grinds them.\nTriangle: Spike Burst fires a beam from each corner.\nSquare: Fortress turns it to permanent ink and shelters you.\nThe bigger the shape, the stronger the effect."
+	help.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	help.add_theme_font_size_override("font_size", 20)
+	help.add_theme_color_override("font_color", Color("#fbd34d"))
+	box.add_child(help)
 	box.add_child(_make_button("Resume", _resume))
 	box.add_child(_make_button("Restart run", _restart))
 

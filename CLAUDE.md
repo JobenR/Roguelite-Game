@@ -13,6 +13,11 @@ You are a drop of living ink on a blank page; the horde is a grey smudge.
 - A charged pulse fills any shape fully enclosed by your ink inside its radius.
   A loop cut by an enemy trail does not fill.
 - Own-ink gives a small base speed bonus; upgrade cards add the real ground effects.
+- Glyphs: a pulse reads each shape it fills. Circle = Maelstrom (pull and grind),
+  triangle = Spike Burst (beam from each corner), square = Fortress (permanent
+  ink that shelters the player). Strength scales with the shape's area.
+- Ink milestones: the first time the player's share reaches each threshold
+  (5%, 10%, 15%...) a one-time reward is paid: heal, pulse charge, or bonus card.
 - Controls: left stick moves. Right thumb: hold FIRE for the main weapon and drag
   it to aim (it is a fire-stick). With no aim input, shots go the way you move.
   Aim assist snaps to the nearest enemy inside a cone (`aim_assist_deg` in
@@ -40,8 +45,9 @@ You are a drop of living ink on a blank page; the horde is a grey smudge.
    Second feedback pass (done): slower XP curve, rarer pickups, smaller per-level
    upgrade steps with more levels, comet-style shots. The user wants gradual
    power growth: keep new upgrades to small steps over many levels.
-   Pending the user's choice: a pattern system (draw a recognised shape with the
-   trail, unbroken, to trigger a mega action scaled by its size).
+   Glyphs and ink milestones (done): the user chose free-hand glyphs and
+   one-time milestone rewards. Offered but not chosen: panels, a capped peak-ink
+   currency multiplier, a finish-the-page boss, stencils that teach glyphs.
 4. Horde: Runner, Brute, Corruptor, mini-boss, spawn director tuning.
 5. Burning Page mode: shrink, dead ground, flow field, strip payouts.
 6. Mobile: touch polish, iOS export, performance pass (60fps with 300+ enemies).
@@ -52,18 +58,20 @@ Commit after each milestone and tell the user exactly what to test and report.
 ## Layout
 
 - `data/` JSON content: enemies, weapons, player, modes, waves, pulses, upgrades,
-  progression, pickups. Loaded by `DataDB`.
+  progression, pickups, glyphs, milestones. Loaded by `DataDB`.
 - `autoload/` `Events` (signal bus), `DataDB`, `GameState` (run clock, XP, level),
   `Upgrades` (run-scoped stat modifiers).
-- `core/` engine-agnostic helpers: `SpatialGrid`, `ObjectPool`, `InkGrid`.
+- `core/` engine-agnostic helpers: `SpatialGrid`, `ObjectPool`, `InkGrid`,
+  `ShapeClassifier` (circle/triangle/square from a filled region).
 - `entities/` one folder per entity: state script + scene. `entities/visuals/` holds visual components.
 - `systems/` managers that own and update entities: `EnemyManager`, `BulletManager`, `SpawnDirector`,
   `InkSystem`, `PulseSystem`, `SecondarySystem`, `AuxWeapons` (laser, orbit),
-  `PickupManager` (temporary powers), `GemManager`, `Effects`.
+  `PickupManager` (temporary powers), `GlyphSystem`, `MilestoneSystem`,
+  `GemManager`, `Effects`.
 - `ui/` HUD, touch controls, level-up cards, pause menu, run summary, debug overlay, safe area.
 - `modes/` one root scene per game mode; the root script wires systems together.
 - `tools/` headless scripts: `setup_input_map.gd`, `smoke_test.gd`, `ink_test.gd`,
-  `restart_test.gd`.
+  `glyph_test.gd`, `restart_test.gd`.
 
 ## Conventions
 
@@ -144,14 +152,27 @@ Commit after each milestone and tell the user exactly what to test and report.
   finds nothing fizzles and keeps its charge (unless Shockwave is owned).
   `gap_cells` (Forgiving Pulse) thickens walls before the flood to plug small gaps.
 
+## Glyph recognition (as implemented)
+
+- `PulseSystem.fire` passes the filled cells to `GlyphSystem.resolve`, which
+  splits them into connected regions and classifies each one above `min_area`.
+- `ShapeClassifier`: convex hull of the region; hull roundness
+  (4*pi*area/perimeter^2) >= 0.88 is a circle. Otherwise delete insignificant
+  hull corners (triangle with neighbours under `corner_threshold` of hull area),
+  merge corners closer than 0.45 of the radius (a thick trail blunts sharp
+  corners), then 3 corners = triangle, 4 = square, 5+ = circle. A region filling
+  under `min_fill_ratio` of its hull is no glyph.
+- When changing the classifier, add the failing shape to `tools/glyph_test.gd`.
+
 ## Checking work
 
 ```bash
 godot --headless --path . --import
 godot --headless --path . --script res://tools/ink_test.gd
+godot --headless --path . --script res://tools/glyph_test.gd
 godot --headless --path . --fixed-fps 60 --script res://tools/smoke_test.gd
 godot --headless --path . --fixed-fps 60 --script res://tools/restart_test.gd
 ```
 
-The ink test must print ALL PASSED; the smoke test must print frame lines with
+The ink and glyph tests must print ALL PASSED; the smoke test must print frame lines with
 no script errors.

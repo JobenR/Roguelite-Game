@@ -11,9 +11,11 @@ var _enemies: EnemyManager
 var _ink: InkSystem
 var _effects: Effects
 var _cfg: Dictionary = {}
+var _glyphs: GlyphSystem
 
 
-func setup(player: Player, enemies: EnemyManager, ink: InkSystem, effects: Effects) -> void:
+func setup(player: Player, enemies: EnemyManager, ink: InkSystem, effects: Effects, glyphs: GlyphSystem) -> void:
+	_glyphs = glyphs
 	_player = player
 	_enemies = enemies
 	_ink = ink
@@ -27,6 +29,11 @@ func setup(player: Player, enemies: EnemyManager, ink: InkSystem, effects: Effec
 
 func _on_enemy_killed(_type_id: String, _pos: Vector2, _splat_radius: float, _xp: int, _dir: Vector2) -> void:
 	_add_charge(float(_cfg.get("charge_per_kill", 5.0)) / 100.0)
+
+
+func fill_charge() -> void:
+	charge = 1.0
+	Events.pulse_charge_changed.emit(charge)
 
 
 func _add_charge(amount: float) -> void:
@@ -84,6 +91,8 @@ func fire() -> int:
 		for index in enclosed:
 			grid.set_cell(index, fill_state)
 		_player.heal(Upgrades.bonus("pulse_heal"))
+		# Read the filled shapes: a circle, triangle or square is a glyph.
+		_glyphs.resolve(enclosed)
 
 	charge = 0.0
 	Events.pulse_charge_changed.emit(charge)

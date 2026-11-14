@@ -3,6 +3,7 @@ extends Control
 ## Built in code for now.
 
 var _ink: InkSystem
+var _milestones: MilestoneSystem
 var _hp_bar: ProgressBar
 var _bomb_bar: ProgressBar
 var _pulse_bar: ProgressBar
@@ -64,12 +65,14 @@ func _ready() -> void:
 	Events.player_health_changed.connect(_on_health_changed)
 	Events.xp_changed.connect(_on_xp_changed)
 	Events.synergy_unlocked.connect(_on_synergy)
+	Events.milestone_reached.connect(func(percent: int, text: String) -> void: _show_banner("INK %d%% REACHED\n%s" % [percent, text]))
 	Events.secondary_charge_changed.connect(func(ratio: float) -> void: _bomb_bar.value = ratio)
 	Events.pulse_charge_changed.connect(func(ratio: float) -> void: _pulse_bar.value = ratio)
 
 
-func setup(ink: InkSystem) -> void:
+func setup(ink: InkSystem, milestones: MilestoneSystem) -> void:
 	_ink = ink
+	_milestones = milestones
 
 
 func _make_bar(pos: Vector2, bar_size: Vector2, color: Color) -> ProgressBar:
@@ -116,7 +119,10 @@ func _process(delta: float) -> void:
 	_power_label.text = power_text.strip_edges()
 	var ink_text := ""
 	if _ink != null and _ink.grid != null:
-		ink_text = "   Ink %d%%" % int(round(_ink.ownership() * 100.0))
+		# Floor, so the number never shows a milestone before it is reached.
+		ink_text = "   Ink %d%%" % int(_ink.ownership() * 100.0)
+		if _milestones != null and _milestones.next_percent() > 0:
+			ink_text += " > %d%%" % _milestones.next_percent()
 	_time_label.text = "%s   Lv %d%s" % [GameState.format_time(GameState.run_time), GameState.level, ink_text]
 	_kills_label.text = "Kills %d" % GameState.kills
 
@@ -135,7 +141,11 @@ func _on_xp_changed(xp: int, xp_to_next: int, _level: int) -> void:
 
 
 func _on_synergy(synergy_name: String, desc: String) -> void:
-	_banner.text = "SYNERGY: %s\n%s" % [synergy_name, desc]
+	_show_banner("SYNERGY: %s\n%s" % [synergy_name, desc])
+
+
+func _show_banner(text: String) -> void:
+	_banner.text = text
 	_banner.visible = true
 	_banner_left = 4.0
 

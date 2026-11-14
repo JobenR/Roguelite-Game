@@ -13,6 +13,8 @@ var hp: float = 100.0
 var invuln_time: float = 0.6
 var weapon: Dictionary = {}
 var aim_dir: Vector2 = Vector2.RIGHT
+## Share of incoming damage blocked (set each frame by a Fortress glyph).
+var shelter: float = 0.0
 
 var _enemies: EnemyManager
 var _bullets: BulletManager
@@ -178,7 +180,7 @@ func _update_dash(move: Vector2, delta: float) -> void:
 func take_damage(amount: float) -> void:
 	if _invuln_left > 0.0 or not GameState.is_playing():
 		return
-	hp = maxf(0.0, hp - amount)
+	hp = maxf(0.0, hp - amount * (1.0 - clampf(shelter, 0.0, 0.95)))
 	_invuln_left = invuln_time
 	visual.flash()
 	Events.screen_shake.emit(8.0)

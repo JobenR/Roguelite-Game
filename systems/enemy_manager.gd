@@ -79,6 +79,17 @@ func nearest(pos: Vector2, max_range: float) -> Enemy:
 	return best
 
 
+## Damages every enemy within `width` of the segment (beams, spikes).
+func damage_segment(from: Vector2, to: Vector2, width: float, amount: float) -> void:
+	var dir := (to - from).normalized()
+	# Copy the list: a kill removes from `active` while we loop.
+	for enemy: Enemy in active.duplicate():
+		var closest := Geometry2D.get_closest_point_to_segment(enemy.position, from, to)
+		var reach := width + enemy.radius
+		if closest.distance_squared_to(enemy.position) <= reach * reach:
+			damage(enemy, amount, dir)
+
+
 ## Pushes enemies inside the circle away from its centre.
 func knockback(center: Vector2, radius: float, distance: float) -> void:
 	for enemy in active:

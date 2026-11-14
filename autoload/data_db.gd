@@ -10,6 +10,8 @@ var pulses: Dictionary = {}
 var upgrades: Dictionary = {}
 var progression: Dictionary = {}
 var pickups: Dictionary = {}
+var glyphs: Dictionary = {}
+var milestones: Dictionary = {}
 
 
 func _ready() -> void:
@@ -22,6 +24,8 @@ func _ready() -> void:
 	upgrades = _load("res://data/upgrades.json")
 	progression = _load("res://data/progression.json")
 	pickups = _load("res://data/pickups.json")
+	glyphs = _load("res://data/glyphs.json")
+	milestones = _load("res://data/milestones.json")
 
 
 func _load(path: String) -> Dictionary:

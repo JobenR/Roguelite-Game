@@ -7,7 +7,7 @@ const INPUT_GUARD := 0.45  # seconds before cards accept input, so a thumb
 
 var is_open: bool = false
 
-var _pending: int = 0
+var _queue: Array[String] = []  # titles of card picks waiting to be shown
 var _title: Label
 var _row: HBoxContainer
 var _guard_left: float = 0.0
@@ -50,25 +50,31 @@ func _ready() -> void:
 	box.add_child(_reroll)
 
 	Events.level_up.connect(_on_level_up)
-	Events.player_died.connect(_close)
+	Events.bonus_card.connect(_enqueue)
+	Events.player_died.connect(func() -> void:
+		_queue.clear()
+		_close())
 
 
-func _on_level_up(_level: int) -> void:
-	_pending += 1
+func _on_level_up(level: int) -> void:
+	_enqueue("LEVEL %d: CHOOSE AN UPGRADE" % level)
+
+
+func _enqueue(title: String) -> void:
+	_queue.append(title)
 	if not is_open:
 		_open_next()
 
 
 func _open_next() -> void:
-	if not GameState.is_playing():
-		_pending = 0
+	if not GameState.is_playing() or _queue.is_empty():
+		_queue.clear()
 		_close()
 		return
-	_pending -= 1
+	_title.text = _queue.pop_front()
 	_rerolls_left = int(Upgrades.bonus("reroll"))
-	_title.text = "LEVEL %d: CHOOSE AN UPGRADE" % (GameState.level - _pending)
 	if not _deal():
-		_pending = 0
+		_queue.clear()
 		_close()
 		return
 	is_open = true
@@ -175,7 +181,7 @@ func _choose(id: String) -> void:
 	if not is_open:
 		return
 	Upgrades.apply(id)
-	if _pending > 0:
+	if not _queue.is_empty():
 		_open_next()
 	else:
 		_close()

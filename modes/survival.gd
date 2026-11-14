@@ -13,6 +13,8 @@ const MODE_ID := "survival"
 @onready var player: Player = $Player
 @onready var camera: Camera2D = $Player/Camera2D
 @onready var director: SpawnDirector = $SpawnDirector
+@onready var glyphs: GlyphSystem = $GlyphSystem
+@onready var milestones: MilestoneSystem = $MilestoneSystem
 @onready var aux: AuxWeapons = $AuxWeapons
 @onready var pickups: PickupManager = $PickupManager
 @onready var gems: GemManager = $GemManager
@@ -33,14 +35,16 @@ func _ready() -> void:
 	bullets.setup(enemies, rect, effects, ink)
 	player.setup(enemies, bullets, rect, ink, effects)
 	secondary.setup(player, enemies, ink, effects)
-	pulse.setup(player, enemies, ink, effects)
+	glyphs.setup(player, enemies, ink, effects)
+	pulse.setup(player, enemies, ink, effects, glyphs)
+	milestones.setup(ink, player, pulse)
 	gems.setup(player)
 	aux.setup(player, enemies, ink, effects)
 	pickups.setup(player, effects)
 	pause_menu.setup(levelup)
 	director.setup(enemies, player, rect, MODE_ID)
 	debug_overlay.setup(enemies, bullets, director, ink)
-	hud.setup(ink)
+	hud.setup(ink, milestones)
 
 	camera.limit_left = int(rect.position.x)
 	camera.limit_top = int(rect.position.y)
