@@ -43,8 +43,12 @@ func _process(_delta: float) -> bool:
 	if _scene.levelup.is_open:
 		_scene.levelup._choose(upgrades.roll_choices(1)[0])
 	if _frames % 1500 == 0:
+		var counts := {}
+		for enemy: Enemy in _scene.enemies.active:
+			counts[enemy.type_id] = int(counts.get(enemy.type_id, 0)) + 1
+		print("  types ", counts, " boss ", _scene.enemies.boss != null, " hp_mult %.2f" % _scene.director.hp_multiplier())
 		print("frame %d enemies=%d gems=%d kills=%d hp=%.0f/%.0f level=%d wave=%d ink=%.1f%% upgrades=%s synergies=%s" % [
 			_frames, _scene.enemies.active.size(), _scene.gems.active.size(), gs.kills,
 			_scene.player.hp, _scene.player.max_hp, gs.level, _scene.director.wave_index + 1,
 			_scene.ink.ownership() * 100.0, upgrades.levels, upgrades.synergies.keys()])
-	return _frames >= 18000
+	return _frames >= 25200

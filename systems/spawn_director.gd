@@ -14,6 +14,10 @@ var _cfg: Dictionary = {}
 var _waves: Array = []
 var _timer: float = 0.0
 var _warned_index: int = -1
+var _boss_cfg: Dictionary = {}
+var _next_boss: float = INF
+var _boss_count: int = 0
+var _boss_warned: bool = false
 
 
 func setup(enemies: EnemyManager, player: Player, arena: Rect2, mode_id: String) -> void:
@@ -22,6 +26,9 @@ func setup(enemies: EnemyManager, player: Player, arena: Rect2, mode_id: String)
 	_arena = arena
 	_cfg = DataDB.waves.get(mode_id, {})
 	_waves = _cfg.get("waves", [])
+	_boss_cfg = _cfg.get("miniboss", {})
+	if not _boss_cfg.is_empty():
+		_next_boss = float(_boss_cfg.get("first", 150.0))
 
 
 ## Seconds until the next wave starts, or -1 after the last one.
@@ -32,7 +39,15 @@ func time_to_next_wave() -> float:
 
 
 func hp_multiplier() -> float:
-	return 1.0 + float(_cfg.get("hp_growth_per_minute", 0.0)) * GameState.run_time / 60.0
+	# Linear plus squared growth: gentle early, steep late, so a strong build
+	# keeps meeting resistance.
+	var minutes := GameState.run_time / 60.0
+	return 1.0 + float(_cfg.get("hp_growth_per_minute", 0.0)) * minutes + float(_cfg.get("hp_growth_per_minute_squared", 0.0)) * minutes * minutes
+
+
+## Seconds until the next mini-boss, or -1 when none is scheduled.
+func time_to_boss() -> float:
+	return _next_boss - GameState.run_time if _next_boss < INF else -1.0
 
 
 func _process(delta: float) -> void:
@@ -48,7 +63,8 @@ func _process(delta: float) -> void:
 	var next_in := time_to_next_wave()
 	if next_in >= 0.0 and next_in <= float(_cfg.get("warning_seconds", 5.0)) and _warned_index != wave_index + 1:
 		_warned_index = wave_index + 1
-		Events.wave_warning.emit(wave_index + 2, next_in)
+		Events.wave_warning.emit(wave_index + 2, next_in, String(_waves[wave_index + 1].get("label", "")))
+	_update_boss()
 	if wave_index < 0:
 		return
 	var wave: Dictionary = _waves[wave_index]
@@ -67,6 +83,24 @@ func _process(delta: float) -> void:
 	var hp_mult := hp_multiplier()
 	for i in mini(batch, room):
 		_enemies.spawn(_pick_type(wave), _spawn_point(), hp_mult)
+
+
+## Mini-boss schedule: a warning a few seconds ahead, then the spawn.
+func _update_boss() -> void:
+	if _next_boss == INF:
+		return
+	var warn := float(_cfg.get("warning_seconds", 5.0))
+	if not _boss_warned and GameState.run_time >= _next_boss - warn:
+		_boss_warned = true
+		Events.alert.emit(String(_boss_cfg.get("alert", "BOSS APPROACHES")), warn + 1.5)
+	if GameState.run_time >= _next_boss:
+		_boss_warned = false
+		_next_boss += float(_boss_cfg.get("every", 180.0))
+		# Wait for the current boss to die before sending another.
+		if _enemies.boss == null:
+			var boss_hp := hp_multiplier() * (1.0 + float(_boss_cfg.get("hp_mult_per_spawn", 0.5)) * _boss_count)
+			_enemies.spawn(String(_boss_cfg.get("enemy", "eraser")), _spawn_point(), boss_hp)
+			_boss_count += 1
 
 
 ## Debug stress test: drops `count` enemies around the player at once.

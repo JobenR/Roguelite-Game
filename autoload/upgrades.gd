@@ -59,7 +59,9 @@ func apply(id: String) -> void:
 		push_error("Upgrades: unknown upgrade '%s'" % id)
 		return
 	levels[id] = level_of(id) + 1
-	_apply_effects(defs[id].get("effects", []))
+	# Some upgrades count double at level 1, so a first pick is felt at once.
+	var first_double := level_of(id) == 1 and bool(defs[id].get("first_level_double", false))
+	_apply_effects(defs[id].get("effects", []), 2.0 if first_double else 1.0)
 	Events.upgrade_applied.emit(id)
 	_check_synergies()
 
@@ -100,10 +102,10 @@ func _check_synergies() -> void:
 			Events.synergy_unlocked.emit(String(defs[sid].get("name", sid)), String(defs[sid].get("desc", "")))
 
 
-func _apply_effects(effects: Array) -> void:
+func _apply_effects(effects: Array, scale: float = 1.0) -> void:
 	for effect: Dictionary in effects:
 		var stat := String(effect.get("stat", ""))
 		if effect.has("add"):
-			_add[stat] = float(_add.get(stat, 0.0)) + float(effect["add"])
+			_add[stat] = float(_add.get(stat, 0.0)) + float(effect["add"]) * scale
 		if effect.has("mult"):
-			_mult[stat] = float(_mult.get(stat, 0.0)) + float(effect["mult"])
+			_mult[stat] = float(_mult.get(stat, 0.0)) + float(effect["mult"]) * scale

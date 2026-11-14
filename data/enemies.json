@@ -7,15 +7,171 @@
     "damage": 8,
     "xp": 1,
     "splat_radius": 40,
+    "trail_interval": 0.9,
+    "trail_radius": 7,
+    "ink_cut_chance": 0.5,
     "visual": {
       "sides": 4,
       "color": "#3fbf4f",
       "outline": "#0f3d1a",
       "rotation_deg": 45,
-      "eyes": true
-    },
+      "eyes": "two"
+    }
+  },
+  "runner": {
+    "name": "Runner",
+    "hp": 12,
+    "speed": 150,
+    "radius": 13,
+    "damage": 6,
+    "xp": 1,
+    "splat_radius": 30,
+    "trail_interval": 0.1,
+    "trail_radius": 5,
+    "ink_cut_chance": 1.0,
+    "face_move": true,
+    "visual": {
+      "sides": 3,
+      "color": "#facc15",
+      "outline": "#713f12",
+      "eyes": "two"
+    }
+  },
+  "spitter": {
+    "name": "Spitter",
+    "hp": 30,
+    "speed": 60,
+    "radius": 16,
+    "damage": 6,
+    "xp": 2,
+    "splat_radius": 45,
     "trail_interval": 0.9,
     "trail_radius": 7,
-    "ink_cut_chance": 0.5
+    "ink_cut_chance": 0.5,
+    "behavior": "ranged",
+    "keep_distance": 320,
+    "shot_interval": 2.6,
+    "shot_speed": 190,
+    "shot_damage": 9,
+    "shot_radius": 9,
+    "shot_smudge": 34,
+    "visual": {
+      "sides": 5,
+      "color": "#a855f7",
+      "outline": "#3b0764",
+      "rotation_deg": -90,
+      "eyes": "one"
+    }
+  },
+  "brute": {
+    "name": "Brute",
+    "hp": 160,
+    "speed": 45,
+    "radius": 30,
+    "damage": 22,
+    "xp": 6,
+    "splat_radius": 85,
+    "heavy": true,
+    "trail_interval": 0.5,
+    "trail_radius": 13,
+    "ink_cut_chance": 0.8,
+    "behavior": "charge",
+    "charge_range": 460,
+    "charge_cooldown": 5.0,
+    "charge_windup": 0.7,
+    "charge_speed": 340,
+    "charge_time": 0.55,
+    "visual": {
+      "sides": 6,
+      "color": "#ef4444",
+      "outline": "#450a0a",
+      "eyes": "two",
+      "brow": true
+    }
+  },
+  "splitter": {
+    "name": "Splitter",
+    "hp": 45,
+    "speed": 65,
+    "radius": 19,
+    "damage": 9,
+    "xp": 2,
+    "splat_radius": 50,
+    "trail_interval": 0.8,
+    "trail_radius": 8,
+    "ink_cut_chance": 0.5,
+    "split_into": "mite",
+    "split_count": 3,
+    "visual": {
+      "sides": 4,
+      "color": "#14b8a6",
+      "outline": "#042f2e",
+      "eyes": "two"
+    }
+  },
+  "mite": {
+    "name": "Mite",
+    "hp": 8,
+    "speed": 125,
+    "radius": 9,
+    "damage": 4,
+    "xp": 1,
+    "splat_radius": 20,
+    "trail_interval": 0.6,
+    "trail_radius": 0,
+    "ink_cut_chance": 0.4,
+    "visual": {
+      "sides": 4,
+      "color": "#5eead4",
+      "outline": "#042f2e",
+      "eyes": "two"
+    }
+  },
+  "corruptor": {
+    "name": "Corruptor",
+    "hp": 90,
+    "speed": 50,
+    "radius": 22,
+    "damage": 10,
+    "xp": 5,
+    "splat_radius": 70,
+    "trail_interval": 0.08,
+    "trail_radius": 30,
+    "ink_cut_chance": 1.0,
+    "visual": {
+      "sides": 0,
+      "color": "#3f3f46",
+      "outline": "#09090b",
+      "eyes": "one",
+      "aura": "#52525b"
+    }
+  },
+  "eraser": {
+    "name": "The Eraser",
+    "hp": 1400,
+    "speed": 38,
+    "radius": 52,
+    "damage": 30,
+    "xp": 60,
+    "splat_radius": 220,
+    "heavy": true,
+    "boss": true,
+    "trail_interval": 0.2,
+    "trail_radius": 0,
+    "ink_cut_chance": 1.0,
+    "behavior": "boss",
+    "erase_radius": 120,
+    "slam_cooldown": 6.0,
+    "slam_windup": 1.1,
+    "slam_radius": 210,
+    "slam_damage": 28,
+    "visual": {
+      "sides": 8,
+      "color": "#f472b6",
+      "outline": "#500724",
+      "rotation_deg": 22.5,
+      "eyes": "two",
+      "brow": true
+    }
   }
 }

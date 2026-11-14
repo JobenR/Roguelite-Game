@@ -3,8 +3,17 @@
     "max_enemies": 450,
     "spawn_distance_min": 900,
     "spawn_distance_max": 1100,
-    "hp_growth_per_minute": 0.2,
+    "hp_growth_per_minute": 0.12,
+    "hp_growth_per_minute_squared": 0.035,
     "overtime_batch_per_minute": 1,
+    "warning_seconds": 5,
+    "miniboss": {
+      "enemy": "eraser",
+      "first": 150,
+      "every": 180,
+      "hp_mult_per_spawn": 0.6,
+      "alert": "THE ERASER APPROACHES"
+    },
     "waves": [
       {
         "start": 0,
@@ -24,45 +33,91 @@
       },
       {
         "start": 60,
-        "interval": 0.55,
+        "interval": 0.6,
         "batch": 2,
+        "label": "RUNNERS",
         "enemies": {
-          "walker": 1
+          "walker": 6,
+          "runner": 2
         }
       },
       {
         "start": 120,
-        "interval": 0.45,
+        "interval": 0.5,
         "batch": 3,
+        "label": "SPITTERS",
         "enemies": {
-          "walker": 1
+          "walker": 6,
+          "runner": 2,
+          "spitter": 1.2
         }
       },
       {
         "start": 180,
-        "interval": 0.35,
+        "interval": 0.45,
         "batch": 3,
+        "label": "BRUTES",
         "enemies": {
-          "walker": 1
+          "walker": 6,
+          "runner": 2,
+          "spitter": 1,
+          "brute": 0.36
         }
       },
       {
         "start": 240,
-        "interval": 0.3,
-        "batch": 4,
+        "interval": 0.4,
+        "batch": 3,
+        "label": "SPLITTERS",
         "enemies": {
-          "walker": 1
+          "walker": 5,
+          "runner": 2,
+          "spitter": 1,
+          "brute": 0.36,
+          "splitter": 1.5
         }
       },
       {
         "start": 300,
-        "interval": 0.25,
+        "interval": 0.35,
+        "batch": 4,
+        "label": "CORRUPTORS",
+        "enemies": {
+          "walker": 5,
+          "runner": 2,
+          "spitter": 1,
+          "brute": 0.42,
+          "splitter": 1.5,
+          "corruptor": 0.28
+        }
+      },
+      {
+        "start": 360,
+        "interval": 0.3,
+        "batch": 4,
+        "label": "THE HORDE",
+        "enemies": {
+          "walker": 4,
+          "runner": 2.5,
+          "spitter": 1.5,
+          "brute": 0.6,
+          "splitter": 1.5,
+          "corruptor": 0.39
+        }
+      },
+      {
+        "start": 420,
+        "interval": 0.28,
         "batch": 5,
         "enemies": {
-          "walker": 1
+          "walker": 4,
+          "runner": 2.5,
+          "spitter": 1.5,
+          "brute": 0.72,
+          "splitter": 1.5,
+          "corruptor": 0.44
         }
       }
-    ],
-    "warning_seconds": 5
+    ]
   }
 }

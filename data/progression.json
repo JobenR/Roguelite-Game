@@ -1,7 +1,7 @@
 {
-  "xp_base": 8,
-  "xp_add_per_level": 6,
-  "xp_growth": 1.14,
+  "xp_base": 4,
+  "xp_add_per_level": 4,
+  "xp_growth": 1.22,
   "max_gems": 400,
   "gem_magnet_speed": 520
 }

@@ -11,7 +11,8 @@
         }
       ],
       "category": "weapon",
-      "icon": "rapid_fire"
+      "icon": "rapid_fire",
+      "first_level_double": true
     },
     "damage": {
       "name": "Dense Ink",
@@ -24,7 +25,8 @@
         }
       ],
       "category": "weapon",
-      "icon": "damage"
+      "icon": "damage",
+      "first_level_double": true
     },
     "move_speed": {
       "name": "Light Feet",
@@ -37,7 +39,8 @@
         }
       ],
       "category": "stat",
-      "icon": "move_speed"
+      "icon": "move_speed",
+      "first_level_double": true
     },
     "max_hp": {
       "name": "Deep Well",
@@ -50,7 +53,8 @@
         }
       ],
       "category": "stat",
-      "icon": "max_hp"
+      "icon": "max_hp",
+      "first_level_double": true
     },
     "pickup_radius": {
       "name": "Blotting Paper",
@@ -63,7 +67,8 @@
         }
       ],
       "category": "stat",
-      "icon": "pickup_radius"
+      "icon": "pickup_radius",
+      "first_level_double": true
     },
     "pierce": {
       "name": "Sharp Nib",
@@ -128,7 +133,8 @@
         }
       ],
       "category": "ink",
-      "icon": "healing_ink"
+      "icon": "healing_ink",
+      "first_level_double": true
     },
     "caustic_ink": {
       "name": "Caustic Ink",
@@ -141,7 +147,8 @@
         }
       ],
       "category": "ink",
-      "icon": "caustic_ink"
+      "icon": "caustic_ink",
+      "first_level_double": true
     },
     "broad_stroke": {
       "name": "Broad Stroke",
@@ -154,7 +161,8 @@
         }
       ],
       "category": "ink",
-      "icon": "broad_stroke"
+      "icon": "broad_stroke",
+      "first_level_double": true
     },
     "wide_ripple": {
       "name": "Wide Ripple",
@@ -167,7 +175,8 @@
         }
       ],
       "category": "ink",
-      "icon": "wide_ripple"
+      "icon": "wide_ripple",
+      "first_level_double": true
     },
     "heavy_blots": {
       "name": "Heavy Blots",
@@ -180,7 +189,8 @@
         }
       ],
       "category": "ink",
-      "icon": "heavy_blots"
+      "icon": "heavy_blots",
+      "first_level_double": true
     },
     "slick_page": {
       "name": "Slick Page",
@@ -193,7 +203,8 @@
         }
       ],
       "category": "ink",
-      "icon": "slick_page"
+      "icon": "slick_page",
+      "first_level_double": true
     },
     "scatter": {
       "name": "Scatter",

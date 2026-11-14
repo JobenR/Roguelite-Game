@@ -19,6 +19,11 @@ var _wave_show_left: float = 0.0
 var _power_label: Label
 var _hurt: ColorRect
 var _last_hp: float = -1.0
+var _wave_tag: String = ""
+var _alert_text: String = ""
+var _alert_left: float = 0.0
+var _boss_bar: ProgressBar
+var _boss_label: Label
 
 
 func _ready() -> void:
@@ -60,6 +65,35 @@ func _ready() -> void:
 	_power_label.add_theme_font_size_override("font_size", 22)
 	_power_label.add_theme_color_override("font_color", Color("#fb7185"))
 	_power_label.offset_top = 52.0
+	# Boss health: a wide bar along the bottom, shown only during a boss.
+	_boss_bar = _make_bar(Vector2.ZERO, Vector2(520.0, 18.0), Color("#f472b6"))
+	_boss_bar.anchor_left = 0.5
+	_boss_bar.anchor_right = 0.5
+	_boss_bar.anchor_top = 1.0
+	_boss_bar.anchor_bottom = 1.0
+	_boss_bar.offset_left = -260.0
+	_boss_bar.offset_right = 260.0
+	_boss_bar.offset_top = -30.0
+	_boss_bar.offset_bottom = -12.0
+	_boss_bar.max_value = 1.0
+	_boss_bar.visible = false
+	_boss_label = _make_label(Control.PRESET_CENTER_BOTTOM, HORIZONTAL_ALIGNMENT_CENTER)
+	_boss_label.add_theme_font_size_override("font_size", 22)
+	_boss_label.offset_top = -66.0
+	_boss_label.offset_bottom = -34.0
+	_boss_label.visible = false
+	Events.boss_spawned.connect(func(boss_name: String) -> void:
+		_boss_label.text = boss_name.to_upper()
+		_boss_label.visible = true
+		_boss_bar.visible = true)
+	Events.boss_health_changed.connect(func(ratio: float) -> void: _boss_bar.value = ratio)
+	Events.boss_defeated.connect(func(boss_name: String) -> void:
+		_boss_label.visible = false
+		_boss_bar.visible = false
+		_show_banner("%s DEFEATED" % boss_name.to_upper()))
+	Events.alert.connect(func(text: String, seconds: float) -> void:
+		_alert_text = text
+		_alert_left = seconds)
 	Events.wave_warning.connect(_on_wave_warning)
 	Events.wave_started.connect(_on_wave_started)
 	Events.player_health_changed.connect(_on_health_changed)
@@ -150,8 +184,9 @@ func _show_banner(text: String) -> void:
 	_banner_left = 4.0
 
 
-func _on_wave_warning(number: int, seconds: float) -> void:
+func _on_wave_warning(number: int, seconds: float, label: String) -> void:
 	_wave_number = number
+	_wave_tag = label
 	_wave_countdown = seconds
 	_wave_show_left = 0.0
 
@@ -163,15 +198,23 @@ func _on_wave_started(index: int) -> void:
 
 
 func _update_wave_label(delta: float) -> void:
-	if _wave_countdown > 0.0:
+	if _alert_left > 0.0:
+		# Boss alerts take the slot over wave messages.
+		_alert_left -= delta
+		_wave_countdown = maxf(0.0, _wave_countdown - delta)
+		_wave_label.text = _alert_text
+		_wave_label.modulate.a = 0.55 + 0.45 * absf(sin(Time.get_ticks_msec() * 0.01))
+		_wave_label.visible = true
+	elif _wave_countdown > 0.0:
 		_wave_countdown -= delta
-		_wave_label.text = "WAVE %d INCOMING  %d" % [_wave_number, int(ceil(maxf(_wave_countdown, 0.0)))]
+		var what := "WAVE %d" % _wave_number if _wave_tag == "" else "WAVE %d: %s" % [_wave_number, _wave_tag]
+		_wave_label.text = "%s INCOMING  %d" % [what, int(ceil(maxf(_wave_countdown, 0.0)))]
 		# Pulse the warning so it catches the eye.
 		_wave_label.modulate.a = 0.55 + 0.45 * absf(sin(Time.get_ticks_msec() * 0.008))
 		_wave_label.visible = true
 	elif _wave_show_left > 0.0:
 		_wave_show_left -= delta
-		_wave_label.text = "WAVE %d" % _wave_number
+		_wave_label.text = "WAVE %d" % _wave_number if _wave_tag == "" else "WAVE %d: %s" % [_wave_number, _wave_tag]
 		_wave_label.modulate.a = clampf(_wave_show_left, 0.0, 1.0)
 		_wave_label.visible = true
 	else:

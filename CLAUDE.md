@@ -48,7 +48,10 @@ You are a drop of living ink on a blank page; the horde is a grey smudge.
    Glyphs and ink milestones (done): the user chose free-hand glyphs and
    one-time milestone rewards. Offered but not chosen: panels, a capped peak-ink
    currency multiplier, a finish-the-page boss, stencils that teach glyphs.
-4. Horde: Runner, Brute, Corruptor, mini-boss, spawn director tuning.
+4. Horde (done): Walker, Runner, Spitter, Brute, Splitter (into Mites), Corruptor,
+   and The Eraser mini-boss; a new type about every 60 seconds; enemy health grows
+   with a squared term. Power curve pass: faster early levels, steeper later ones,
+   and selected upgrades count double at level 1.
 5. Burning Page mode: shrink, dead ground, flow field, strip payouts.
 6. Mobile: touch polish, iOS export, performance pass (60fps with 300+ enemies).
 7. Meta: currency, unlocks, JSON save, menus, audio, haptics.
@@ -109,6 +112,19 @@ Commit after each milestone and tell the user exactly what to test and report.
   `?v=` part changes each time so Safari cannot show a cached old version. If the
   run fails, say so and do not give a link.
 
+## Enemies
+
+- Types and all their numbers live in `data/enemies.json`; the mix per wave and
+  the mini-boss schedule live in `data/waves.json`.
+- `behavior` picks the movement code in `EnemyManager`: `chase` (default),
+  `charge` (Brute: wind up, then lunge), `ranged` (Spitter: holds distance and
+  fires through `EnemyShots`), `boss` (The Eraser: erases ink around it, slams).
+- Other keys: `heavy` (ignores knockback, pulls, ink slow), `boss`, `face_move`,
+  `split_into` + `split_count`, `trail_*` and `ink_cut_chance` (Runners and
+  Corruptors are the loop cutters).
+- Visual keys for telling types apart: `sides`, `color`, `eyes` ("two"/"one"),
+  `brow`, `aura`.
+
 ## Upgrades and stats
 
 - Every stat is `(base + add) * (1 + mult)`. Systems read stats on demand:
@@ -116,7 +132,7 @@ Commit after each milestone and tell the user exactly what to test and report.
 - `data/upgrades.json` has `upgrades` (name, desc, max_level, effects) and
   `synergies` (requires two upgrade ids, effects). Effects are
   `{stat, add}` or `{stat, mult}`. A synergy unlocks automatically once every
-  required upgrade is owned.
+  required upgrade is owned. `first_level_double` makes level 1 count twice.
 - An upgrade that reuses an existing stat needs no code. Stats in use:
   `fire_rate, damage, move_speed, max_hp, pickup_radius, pierce, multishot,
   scatter, laser, orbit, ricochet, explosive, explosive_size, ink_regen,

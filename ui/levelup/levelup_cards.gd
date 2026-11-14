@@ -149,6 +149,8 @@ func _make_card(id: String) -> Button:
 		pips += "● " if i < level else ("◉ " if i == level else "○ ")
 	box.add_child(_card_label(pips.strip_edges(), 20, accent.darkened(0.2)))
 	box.add_child(_card_label(String(def.get("desc", "")), 17, Color("#44403c")))
+	if level == 0 and bool(def.get("first_level_double", false)):
+		box.add_child(_card_label("First level counts double", 16, Color("#15803d")))
 	var hint := Upgrades.synergy_hint(id)
 	if hint != "":
 		box.add_child(_card_label("Synergy: " + hint, 17, Color("#b45309")))

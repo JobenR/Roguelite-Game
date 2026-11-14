@@ -146,7 +146,7 @@ func _update_maelstrom(zone: Dictionary, delta: float) -> void:
 	for enemy in _enemies.active:
 		var offset := center - enemy.position
 		var d := offset.length()
-		if d < pull_radius and d > 4.0:
+		if d < pull_radius and d > 4.0 and not enemy.heavy:
 			enemy.position += offset / d * minf(pull, d)
 	zone["tick"] -= delta
 	if zone["tick"] <= 0.0:

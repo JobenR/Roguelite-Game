@@ -8,7 +8,8 @@ extends Node2D
 ##   flash() -> void
 ## Gameplay code only ever calls those two methods.
 ##
-## Data keys: color, outline, sides (0 = circle), rotation_deg, eyes (bool),
+## Data keys: color, outline, sides (0 = circle), rotation_deg, eyes ("two" or
+## "one"), brow (angry eyebrows), aura (colour of a haze behind the shape),
 ## streak (length of a motion trail behind the shape), shadow (bool).
 
 const FLASH_TIME := 0.08
@@ -20,7 +21,9 @@ var _highlight: PackedVector2Array = PackedVector2Array()
 var _color: Color = Color.WHITE
 var _outline: Color = Color.BLACK
 var _radius: float = 10.0
-var _eyes: bool = false
+var _eyes: String = ""  # "", "two" or "one"
+var _brow: bool = false
+var _aura: Color = Color(0, 0, 0, 0)
 var _streak: float = 0.0
 var _shadow: bool = true
 var _glow: Color = Color.WHITE
@@ -35,7 +38,10 @@ func setup(data: Dictionary, radius: float) -> void:
 	_radius = radius
 	_color = Color(String(data.get("color", "#ffffff")))
 	_outline = Color(String(data.get("outline", _color.darkened(0.6).to_html())))
-	_eyes = bool(data.get("eyes", false))
+	var eyes: Variant = data.get("eyes", "")
+	_eyes = ("two" if eyes else "") if eyes is bool else String(eyes)
+	_brow = bool(data.get("brow", false))
+	_aura = Color(String(data["aura"])) if data.has("aura") else Color(0, 0, 0, 0)
 	_streak = float(data.get("streak", 0.0))
 	_shadow = bool(data.get("shadow", true))
 	_glow = Color(String(data.get("glow", _color.lightened(0.4).to_html())))
@@ -78,6 +84,9 @@ func _draw() -> void:
 		var core := PackedVector2Array([Vector2(0.0, -_radius * 0.8), Vector2(-_streak * 1.5, 0.0), Vector2(0.0, _radius * 0.8)])
 		draw_polygon(core, PackedColorArray([Color(_color, 0.9), Color(_color, 0.0), Color(_color, 0.9)]))
 		draw_circle(Vector2.ZERO, _radius * 2.1, Color(_glow, 0.22))
+	if _aura.a > 0.0:
+		draw_circle(Vector2.ZERO, _radius * 2.0, Color(_aura, 0.28))
+		draw_circle(Vector2.ZERO, _radius * 1.5, Color(_aura, 0.3))
 	if _shadow:
 		draw_set_transform(Vector2(_radius * 0.18, _radius * 0.32))
 		draw_colored_polygon(_points, Color(0.0, 0.0, 0.0, 0.28))
@@ -87,9 +96,17 @@ func _draw() -> void:
 	draw_polyline(_outline_points, _outline, maxf(2.0, _radius * 0.2), true)
 	if _streak > 0.0:
 		draw_circle(Vector2(_radius * 0.25, 0.0), _radius * 0.35, Color(1, 1, 1, 0.9))
-	if _eyes:
+	if _eyes == "one":
+		var big := _radius * 0.36
+		draw_circle(Vector2(0.0, -_radius * 0.05), big, Color.WHITE)
+		draw_circle(Vector2(0.0, -_radius * 0.05 + big * 0.2), big * 0.55, Color(0.6, 0.05, 0.1))
+		draw_circle(Vector2(0.0, -_radius * 0.05 + big * 0.2), big * 0.25, Color(0.05, 0.05, 0.05))
+	elif _eyes != "":
 		var eye := _radius * 0.22
 		for side: float in [-1.0, 1.0]:
 			var c := Vector2(side * _radius * 0.3, -_radius * 0.08)
 			draw_circle(c, eye, Color.WHITE)
 			draw_circle(c + Vector2(0.0, eye * 0.25), eye * 0.55, Color(0.05, 0.05, 0.05))
+			if _brow:
+				# Angry brows slanting down toward the middle.
+				draw_line(c + Vector2(side * eye * 1.3, -eye * 1.7), c + Vector2(-side * eye * 0.9, -eye * 0.7), _outline, maxf(2.0, _radius * 0.12))

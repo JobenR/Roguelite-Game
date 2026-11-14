@@ -13,6 +13,7 @@ const MODE_ID := "survival"
 @onready var player: Player = $Player
 @onready var camera: Camera2D = $Player/Camera2D
 @onready var director: SpawnDirector = $SpawnDirector
+@onready var enemy_shots: EnemyShots = $EnemyShots
 @onready var glyphs: GlyphSystem = $GlyphSystem
 @onready var milestones: MilestoneSystem = $MilestoneSystem
 @onready var aux: AuxWeapons = $AuxWeapons
@@ -31,7 +32,8 @@ func _ready() -> void:
 	arena.setup(rect)
 	player.position = rect.get_center()
 	ink.setup(rect, enemies, float(mode.get("ink_cell_size", 8.0)))
-	enemies.setup(player, rect, ink, effects)
+	enemies.setup(player, rect, ink, effects, enemy_shots)
+	enemy_shots.setup(player, ink, rect)
 	bullets.setup(enemies, rect, effects, ink)
 	player.setup(enemies, bullets, rect, ink, effects)
 	secondary.setup(player, enemies, ink, effects)
