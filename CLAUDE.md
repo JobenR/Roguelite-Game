@@ -97,6 +97,10 @@ reward.** The user picked mock-up A plus E and rejected a first attempt that
 
 Commit after each milestone and tell the user exactly what to test and report.
 
+**Asking the user anything: always use multiple-choice selections** (the
+AskUserQuestion tool), never open questions in prose. The user asked for this
+explicitly. This includes end-of-update feedback questions: offer choices.
+
 ## Layout
 
 - `data/` JSON content: enemies, weapons, player, modes, waves, pulses, upgrades,
