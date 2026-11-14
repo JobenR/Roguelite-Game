@@ -79,6 +79,20 @@ func nearest(pos: Vector2, max_range: float) -> Enemy:
 	return best
 
 
+## Nearest active enemy inside a cone around dir (cos_half = cosine of the
+## cone's half angle). Used for aim assist.
+func nearest_in_cone(pos: Vector2, dir: Vector2, max_range: float, cos_half: float) -> Enemy:
+	var best: Enemy = null
+	var best_sq := max_range * max_range
+	for enemy in active:
+		var offset := enemy.position - pos
+		var d_sq := offset.length_squared()
+		if d_sq < best_sq and d_sq > 0.01 and offset.dot(dir) >= cos_half * sqrt(d_sq):
+			best_sq = d_sq
+			best = enemy
+	return best
+
+
 ## Nearest active enemy to pos within max_range, skipping `exclude`.
 func nearest_excluding(pos: Vector2, max_range: float, exclude: Array) -> Enemy:
 	var best: Enemy = null

@@ -25,8 +25,10 @@ func _on_enemy_killed(_type_id: String, pos: Vector2, _splat_radius: float, _xp:
 		return
 	for id: String in DataDB.pickups:
 		var def: Dictionary = DataDB.pickups[id]
-		var waited := GameState.run_time - float(_since_drop.get(id, 0.0))
-		var overdue := waited >= float(def.get("max_seconds_between", 9999.0))
+		var gap := float(def.get("max_seconds_between", 9999.0))
+		# The first drop comes early so the power is discovered quickly.
+		var last := float(_since_drop.get(id, float(def.get("first_drop_seconds", gap)) - gap))
+		var overdue := GameState.run_time - last >= gap
 		if overdue or randf() < float(def.get("drop_chance", 0.0)):
 			_since_drop[id] = GameState.run_time
 			active.append({"id": id, "pos": pos, "life": float(def.get("lifetime", 20.0)), "color": Color(String(def.get("color", "#ffffff")))})
@@ -70,3 +72,8 @@ func _draw() -> void:
 		draw_arc(pos, r * 0.5, 0.0, TAU, 20, color, 3.0)
 		for dir: Vector2 in [Vector2.RIGHT, Vector2.LEFT, Vector2.UP, Vector2.DOWN]:
 			draw_line(pos + dir * r * 0.75, pos + dir * (r + 7.0), color, 4.0)
+		var font := ThemeDB.fallback_font
+		var text := String(DataDB.pickups.get(String(pickup["id"]), {}).get("name", "")).to_upper()
+		var width := font.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, 16).x
+		draw_string_outline(font, pos + Vector2(-width * 0.5, r + 28.0), text, HORIZONTAL_ALIGNMENT_LEFT, -1, 16, 5, Color.WHITE)
+		draw_string(font, pos + Vector2(-width * 0.5, r + 28.0), text, HORIZONTAL_ALIGNMENT_LEFT, -1, 16, color)

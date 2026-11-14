@@ -1,5 +1,5 @@
 .godot/
 *.translation
-export_presets.cfg
+build/
 .DS_Store
 *.tmp

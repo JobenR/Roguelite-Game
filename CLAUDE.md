@@ -15,6 +15,8 @@ You are a drop of living ink on a blank page; the horde is a grey smudge.
 - Own-ink gives a small base speed bonus; upgrade cards add the real ground effects.
 - Controls: left stick moves. Right thumb: hold FIRE for the main weapon and drag
   it to aim (it is a fire-stick). With no aim input, shots go the way you move.
+  Aim assist snaps to the nearest enemy inside a cone (`aim_assist_deg` in
+  player.json); the last stick aim is held for `aim_hold_seconds`.
   Auto-aim is NOT default: it is a temporary power from a pickup. Also a
   secondary weapon (ink bomb) that recharges over time and from kills, and the
   pulse, charged by XP and kills.
@@ -79,8 +81,10 @@ Commit after each milestone and tell the user exactly what to test and report.
 - **Typing:** static types everywhere; no `:=` on untyped Variant values.
 - **Display:** 1280x720 base, `canvas_items` stretch, `expand` aspect. All UI sits
   under `UI/SafeArea`, which applies iOS safe-area margins.
-- **Export note:** JSON files are not Godot resources. Export presets must list
-  `data/*.json` under non-resource include filters.
+- **Export:** `export_presets.cfg` has iOS and Web presets. JSON files are not
+  Godot resources, so each preset lists `data/*.json` as an include filter; keep
+  that on any new preset. The iOS preset needs the user's Apple team ID and a
+  unique bundle identifier. `build/` is git-ignored.
 
 ## Upgrades and stats
 

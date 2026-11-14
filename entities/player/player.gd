@@ -25,6 +25,10 @@ var _base_max_hp: float = 100.0
 var _base_pickup: float = 90.0
 var _invuln_left: float = 0.0
 var _cooldown: float = 0.0
+var _assist_cos: float = 1.0
+var _aim_hold: float = 1.0
+var _aim_hold_left: float = 0.0
+var _raw_aim: Vector2 = Vector2.RIGHT
 
 @onready var visual: Node2D = $Visual
 @onready var aim_pivot: Node2D = $AimPivot
@@ -47,6 +51,8 @@ func setup(enemies: EnemyManager, bullets: BulletManager, arena: Rect2, ink: Ink
 	_ink_speed_bonus = float(stats.get("ink_speed_bonus", 0.0))
 	_base_max_hp = max_hp
 	_base_pickup = float(stats.get("pickup_radius", _base_pickup))
+	_assist_cos = cos(deg_to_rad(float(stats.get("aim_assist_deg", 0.0))))
+	_aim_hold = float(stats.get("aim_hold_seconds", 1.0))
 	hp = max_hp
 	Events.upgrade_applied.connect(_on_upgrade_applied)
 	visual.setup(stats.get("visual", {}), radius)
@@ -77,25 +83,36 @@ func _process(delta: float) -> void:
 
 	_invuln_left -= delta
 	_cooldown -= delta
-	_update_aim(move)
+	_update_aim(move, delta)
 
 	if Input.is_action_pressed("fire") and _cooldown <= 0.0 and not weapon.is_empty():
 		_cooldown = float(weapon.get("fire_interval", 0.3)) / Upgrades.mult_of("fire_rate")
 		_fire_volley()
 
 
-func _update_aim(move: Vector2) -> void:
+func _update_aim(move: Vector2, delta: float) -> void:
 	var auto := GameState.has_power("auto_aim")
+	var weapon_range := float(weapon.get("range", 500.0))
 	var target: Enemy = null
 	if auto:
-		target = _enemies.nearest(position, float(weapon.get("range", 500.0)))
-	var stick := Input.get_vector("aim_left", "aim_right", "aim_up", "aim_down")
+		target = _enemies.nearest(position, weapon_range)
+	if target == null:
+		# Manual aim: the stick wins and is remembered briefly after release,
+		# so letting go mid-fight does not swing the gun to the move direction.
+		var stick := Input.get_vector("aim_left", "aim_right", "aim_up", "aim_down")
+		_aim_hold_left -= delta
+		if stick.length() > AIM_DEADZONE:
+			_raw_aim = stick.normalized()
+			_aim_hold_left = _aim_hold
+		elif _aim_hold_left <= 0.0 and move != Vector2.ZERO:
+			_raw_aim = move.normalized()
+		# Aim assist: snap to the nearest enemy inside a cone around the aim.
+		if _assist_cos < 1.0:
+			target = _enemies.nearest_in_cone(position, _raw_aim, weapon_range, _assist_cos)
+		if target == null:
+			aim_dir = _raw_aim
 	if target != null:
 		aim_dir = (target.position - position).normalized()
-	elif stick.length() > AIM_DEADZONE:
-		aim_dir = stick.normalized()
-	elif move != Vector2.ZERO:
-		aim_dir = move.normalized()
 	aim_pivot.rotation = aim_dir.angle()
 	aim_guide.set_locked(auto)
 
