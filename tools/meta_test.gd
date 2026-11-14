@@ -9,8 +9,6 @@ var _seals_before: int = 0
 
 
 func _initialize() -> void:
-	var save := root.get_node("SaveData")
-	save.data = save._defaults()
 	change_scene_to_file("res://modes/survival.tscn")
 
 
@@ -27,6 +25,10 @@ func _process(_delta: float) -> bool:
 		return false
 	var gs := root.get_node("GameState")
 	var save := root.get_node("SaveData")
+	if _frames == 2:
+		# Start from a clean save. This must wait for the first frame: the save
+		# file is loaded after _initialize and would overwrite an earlier reset.
+		save.data = save._defaults()
 	if _frames == 30:
 		_seals_before = save.seals()
 		gs.run_time = 899.0  # just before the final boss
