@@ -26,6 +26,7 @@ var _trail_tick: float = 0.0
 var _watermark_left: float = 1.0
 var _secondary: SecondarySystem
 var _wall_points: Array[Dictionary] = []
+var _mine_progress: float = 0.0
 
 
 func setup(player: Player, enemies: EnemyManager, bullets: BulletManager, ink: InkSystem, effects: Effects, hazards: Hazards, secondary: SecondarySystem) -> void:
@@ -111,10 +112,20 @@ func _process(delta: float) -> void:
 	if _due("chain_blot", level, delta):
 		_chain(level)
 
+	# Ink Mines: planted by standing still, so they cannot be scattered on the run.
 	level = _level("mines")
-	if _due("mines", level, delta):
-		_hazards.add_mine(pos, _damage("mines", level), _num("mines", "radius", 90.0), _num("mines", "trigger", 55.0), int(_num("mines", "max", 5.0)) + level,
-				_num("mines", "slow", 0.0), _num("mines", "slow_seconds", 0.0))
+	if level > 0:
+		var need := maxf(1.0, _num("mines", "plant_seconds", 3.0) - _num("mines", "plant_seconds_per_level", 0.4) * (level - 1))
+		if _player.moving:
+			_mine_progress = 0.0
+		else:
+			_mine_progress += delta / need
+			if _mine_progress >= 1.0:
+				_mine_progress = 0.0
+				_hazards.add_mine(pos, _damage("mines", level), _num("mines", "radius", 90.0), _num("mines", "trigger", 55.0), int(_num("mines", "max", 5.0)) + level,
+						_num("mines", "slow", 0.0), _num("mines", "slow_seconds", 0.0))
+				_effects.ring(pos, 46.0, Color(0.16, 0.40, 1.0, 0.9), 0.3)
+		queue_redraw()
 
 	level = _level("whip")
 	if _due("whip", level, delta):
@@ -461,6 +472,10 @@ func _on_power_granted(id: String, _seconds: float) -> void:
 
 func _draw() -> void:
 	var spin := Time.get_ticks_msec() * 0.012
+	# Mine being planted: a ring around the player fills as you hold still.
+	if _mine_progress > 0.02 and _player != null:
+		draw_arc(_player.position, _player.radius + 22.0, 0.0, TAU, 40, Color(0.16, 0.40, 1.0, 0.25), 5.0)
+		draw_arc(_player.position, _player.radius + 22.0, -PI * 0.5, -PI * 0.5 + TAU * _mine_progress, 40, Color(0.16, 0.40, 1.0, 0.95), 5.0)
 	# The wet wall: bright while fresh, fading as it dries.
 	for i in range(1, _wall_points.size()):
 		var a: Dictionary = _wall_points[i - 1]

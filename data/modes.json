@@ -2,6 +2,8 @@
   "survival": {
     "arena_width": 3840,
     "arena_height": 2160,
-    "ink_cell_size": 8
+    "ink_cell_size": 8,
+    "camera_zoom": 1.0,
+    "camera_zoom_touch": 1.3
   }
 }

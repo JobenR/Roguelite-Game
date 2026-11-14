@@ -543,7 +543,7 @@
   },
   "mines": {
    "name": "Ink Mines",
-   "desc": "You drop a mine every few seconds. It bursts when enemies step near and slows the survivors",
+   "desc": "Stand still for 3 seconds to plant a mine. It bursts when enemies step near and slows the survivors. Levels plant faster",
    "max_level": 5,
    "category": "weapon",
    "set": "arsenal",

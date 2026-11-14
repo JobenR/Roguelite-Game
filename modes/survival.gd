@@ -23,6 +23,7 @@ const MODE_ID := "survival"
 @onready var gems: GemManager = $GemManager
 @onready var levelup: Control = $UI/LevelUpCards
 @onready var pause_menu: Control = $UI/PauseMenu
+@onready var run_summary: Control = $UI/RunSummary
 @onready var hud: Control = $UI/SafeArea/HUD
 @onready var debug_overlay: DebugOverlay = $UI/SafeArea/DebugOverlay
 
@@ -56,6 +57,12 @@ func _ready() -> void:
 	camera.limit_top = int(rect.position.y)
 	camera.limit_right = int(rect.end.x)
 	camera.limit_bottom = int(rect.end.y)
+	# Phones show the same view on a far smaller screen, so zoom in there to
+	# keep the brushwork and the enemies a readable size.
+	var touch := DisplayServer.is_touchscreen_available()
+	var zoom := float(mode.get("camera_zoom_touch" if touch else "camera_zoom", 1.0))
+	camera.zoom = Vector2(zoom, zoom)
 	camera.reset_smoothing()
+	run_summary.setup(ink)
 
 	GameState.start_run()

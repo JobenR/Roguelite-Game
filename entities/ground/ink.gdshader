@@ -68,6 +68,12 @@ void fragment() {
 	float halo = smoothstep(0.03, 0.75, soak + (wash - 0.5) * 0.12) * (1.0 - ink) * bleed_strength;
 	over(col, a, ink_color.rgb, halo);
 
+	// Where the two inks meet they marble together instead of meeting at an edge.
+	float meeting = smoothstep(0.05, 0.4, wide_smudge) * smoothstep(0.04, 0.5, soak) * (1.0 - ink);
+	float swirl = noise(cell * 0.7 + vec2(wash * 4.0, bristle * 3.0));
+	vec3 marble = mix(ink_color.rgb, vec3(0.16, 0.17, 0.24), smoothstep(0.3, 0.7, swirl));
+	over(col, a, marble, meeting * 0.6);
+
 	float shine = smoothstep(0.03, 0.42, wide_glow) * (1.0 - ink) * 0.5;
 	over(col, a, glow_color.rgb, shine);
 

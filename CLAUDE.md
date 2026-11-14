@@ -84,6 +84,13 @@ reward.** The user picked mock-up A plus E and rejected a first attempt that
    from 30, Spotter (aimed bomb in slow motion), Piercing Core, Bomb Rain,
    slowing mines, Wet Ink Wall, enemies that flank and weave, and the Sumi-e
    with glow restyle.
+   Also done: mines are planted by standing still (not on a timer); the inks
+   marble where they meet; the end screen frames the whole page as a titled
+   painting with ink, smudge and bare-paper shares; the camera zooms in on touch
+   devices (`camera_zoom_touch` in modes.json) because the phone view looked
+   far less detailed than the laptop one.
+   Open question put to the user: selectable ink colours (cosmetic, functional,
+   or matched against enemy types).
 5. Burning Page mode: shrink, dead ground, flow field, strip payouts.
 6. Mobile: touch polish, iOS export, performance pass (60fps with 300+ enemies).
 7. Meta: currency, unlocks, JSON save, menus, audio, haptics.

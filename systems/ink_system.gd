@@ -47,6 +47,27 @@ func ownership() -> float:
 	return float(grid.ink_count) / float(grid.total_cells())
 
 
+## The whole page as a small framed picture, drawn with the same ink shader.
+## Shown on the end screen as the painting the run produced.
+func make_painting(width: float) -> Control:
+	var frame := PanelContainer.new()
+	var mount := StyleBoxFlat.new()
+	mount.bg_color = Color("#efe6d2")
+	mount.border_color = Color("#141210")
+	mount.set_border_width_all(5)
+	mount.set_content_margin_all(10)
+	frame.add_theme_stylebox_override("panel", mount)
+	var picture := TextureRect.new()
+	picture.texture = _texture
+	picture.material = _sprite.material
+	picture.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	picture.stretch_mode = TextureRect.STRETCH_SCALE
+	picture.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
+	picture.custom_minimum_size = Vector2(width, width * grid.rows / grid.cols)
+	frame.add_child(picture)
+	return frame
+
+
 func smudge_share() -> float:
 	return float(grid.smudge_count) / float(grid.total_cells())
 
