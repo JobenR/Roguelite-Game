@@ -86,7 +86,7 @@ func _land_shell(shell: Dictionary) -> void:
 	shell_damage *= 1.0 + float(_mortar.get("damage_per_level", 0.2)) * (level - 1)
 	_ink.splat(pos, float(_mortar.get("splat_radius", 80.0)), Vector2.ZERO)
 	_enemies.damage_area(pos, radius, shell_damage)
-	_effects.ring(pos, radius, Color(0.12, 0.23, 0.54, 0.9), 0.35)
+	_effects.big_moment(pos, radius, Color(0.24, 0.52, 1.0), 0.45)
 	_effects.burst(pos, Vector2.ZERO, Color(0.15, 0.3, 0.8), 12)
 	Events.screen_shake.emit(5.0)
 

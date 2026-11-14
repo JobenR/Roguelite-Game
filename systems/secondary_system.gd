@@ -192,4 +192,5 @@ func _explode(pos: Vector2, size: float, main: bool) -> void:
 	_effects.ring(pos, radius, Color(0.12, 0.23, 0.54, 0.9), 0.35)
 	_effects.burst(pos, Vector2.ZERO, Color(0.15, 0.3, 0.8), 16 if main else 6)
 	if main:
+		_effects.big_moment(pos, radius, Color(0.24, 0.52, 1.0))
 		Events.screen_shake.emit(7.0)

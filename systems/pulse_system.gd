@@ -113,6 +113,8 @@ func fire() -> int:
 	Events.pulse_fired.emit(enclosed.size())
 	_effects.ring(center, radius, Color(0.22, 0.45, 0.95, 0.9), 0.45)
 	_effects.ring(center, radius * 0.6, Color(0.6, 0.78, 1.0, 0.8), 0.35)
+	if not enclosed.is_empty():
+		_effects.big_moment(center, radius * 0.55, Color(0.24, 0.52, 1.0), 0.7)
 	Events.screen_shake.emit(5.0)
 	return enclosed.size()
 

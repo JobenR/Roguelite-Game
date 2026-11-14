@@ -8,6 +8,14 @@ Primary target: iPhone landscape. Secondary: PC (Windows/Mac).
 
 You are a drop of living ink on a blank page; the horde is a grey smudge.
 
+**Look (chosen by the user from drawn mock-ups): Sumi-e with glow.** Rice paper,
+black brush-ink enemies, and a red seal accent are the base. The player's ink
+(trail, splats, shots, blasts) is luminous blue with a soft glow. Each enemy
+type is told apart by a glowing core colour. Extra glow (`Effects.big_moment`:
+bloom plus flung brush strokes) is reserved for big moments: bombs, successful
+pulses, glyphs, boss deaths. Keep new visuals inside this language; do not add
+outlined cartoon shapes or notebook-paper elements.
+
 - Kills splat your ink on the ground, sized by enemy. You also leave a thin trail.
 - Every enemy leaves a smudge trail that overwrites ink. Corruptor enemies smudge large areas.
 - A charged pulse fills any shape fully enclosed by your ink inside its radius.
@@ -59,6 +67,10 @@ You are a drop of living ink on a blank page; the horde is a grey smudge.
    Decided by the user, not yet built: (a) next milestone is menus, sound and
    saved progress; (b) a run is won by beating a final boss at 15 minutes, after
    which the player may continue endlessly; (c) art stays code-drawn.
+   Combat and look pass (done): stackable rear shots, an enemy cap that ramps
+   from 30, Spotter (aimed bomb in slow motion), Piercing Core, Bomb Rain,
+   slowing mines, Wet Ink Wall, enemies that flank and weave, and the Sumi-e
+   with glow restyle.
 5. Burning Page mode: shrink, dead ground, flow field, strip payouts.
 6. Mobile: touch polish, iOS export, performance pass (60fps with 300+ enemies).
 7. Meta: currency, unlocks, JSON save, menus, audio, haptics.
@@ -132,8 +144,11 @@ Commit after each milestone and tell the user exactly what to test and report.
 - Other keys: `heavy` (ignores knockback, pulls, ink slow), `boss`, `face_move`,
   `split_into` + `split_count`, `trail_*` and `ink_cut_chance` (Runners and
   Corruptors are the loop cutters).
-- Visual keys for telling types apart: `sides`, `color`, `eyes` ("two"/"one"),
-  `brow`, `aura`.
+- Visual keys: `sides` (shape), `core` (the glowing colour that identifies the
+  type; its presence selects the brush-ink style), `ring` (bosses), `aura`,
+  `streak`. Body `color` is ink black for every enemy.
+- `flank` sets how widely a type curves in from the side; `max_enemies_start`
+  and `max_enemies_per_minute` in waves.json cap the early horde.
 
 ## Upgrades and stats
 

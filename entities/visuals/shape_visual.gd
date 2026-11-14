@@ -1,16 +1,24 @@
 class_name ShapeVisual
 extends Node2D
-## Placeholder visual: a polygon drawn in code with a drop shadow, dark
-## outline, highlight, and optional eyes or motion streak.
+## Placeholder visual drawn in code. Two styles:
+##
+##   Brush ink (when the data has "core"): a black shape with a ragged brushed
+##   edge and a soft wet halo, plus a glowing coloured core. Used for the horde;
+##   the core colour is how enemy types are told apart.
+##
+##   Plain (otherwise): a filled polygon with outline, highlight, and optional
+##   glow halo, motion streak, or seal. Used for the player, shots and gems.
 ##
 ## Visual contract (any replacement, e.g. a sprite scene, must provide these):
 ##   setup(data: Dictionary, radius: float) -> void
 ##   flash() -> void
 ## Gameplay code only ever calls those two methods.
 ##
-## Data keys: color, outline, sides (0 = circle), rotation_deg, eyes ("two" or
-## "one"), brow (angry eyebrows), aura (colour of a haze behind the shape),
-## streak (length of a motion trail behind the shape), shadow (bool).
+## Data keys: color, outline, outline_width, sides (0 = circle), rotation_deg,
+## core (glowing core colour), ring (bool: a ring round the core, for bosses),
+## aura (colour of a haze behind the shape), halo (glow colour behind a plain
+## shape), seal (colour of a square mark), streak (motion trail length),
+## glow (streak colour), shadow (bool).
 
 const FLASH_TIME := 0.08
 const FLASH_COLOR := Color(3.0, 3.0, 3.0)
@@ -18,13 +26,17 @@ const FLASH_COLOR := Color(3.0, 3.0, 3.0)
 var _points: PackedVector2Array = PackedVector2Array()
 var _outline_points: PackedVector2Array = PackedVector2Array()
 var _highlight: PackedVector2Array = PackedVector2Array()
+var _wet: PackedVector2Array = PackedVector2Array()
 var _color: Color = Color.WHITE
 var _outline: Color = Color.BLACK
 var _outline_width: float = 0.2
 var _radius: float = 10.0
-var _eyes: String = ""  # "", "two" or "one"
-var _brow: bool = false
+var _brush: bool = false
+var _core: Color = Color.WHITE
+var _ring: bool = false
 var _aura: Color = Color(0, 0, 0, 0)
+var _halo: Color = Color(0, 0, 0, 0)
+var _seal: Color = Color(0, 0, 0, 0)
 var _streak: float = 0.0
 var _shadow: bool = true
 var _glow: Color = Color.WHITE
@@ -40,10 +52,12 @@ func setup(data: Dictionary, radius: float) -> void:
 	_color = Color(String(data.get("color", "#ffffff")))
 	_outline = Color(String(data.get("outline", _color.darkened(0.6).to_html())))
 	_outline_width = float(data.get("outline_width", 0.2))
-	var eyes: Variant = data.get("eyes", "")
-	_eyes = ("two" if eyes else "") if eyes is bool else String(eyes)
-	_brow = bool(data.get("brow", false))
+	_brush = data.has("core")
+	_core = Color(String(data.get("core", "#ffffff")))
+	_ring = bool(data.get("ring", false))
 	_aura = Color(String(data["aura"])) if data.has("aura") else Color(0, 0, 0, 0)
+	_halo = Color(String(data["halo"])) if data.has("halo") else Color(0, 0, 0, 0)
+	_seal = Color(String(data["seal"])) if data.has("seal") else Color(0, 0, 0, 0)
 	_streak = float(data.get("streak", 0.0))
 	_shadow = bool(data.get("shadow", true))
 	_glow = Color(String(data.get("glow", _color.lightened(0.4).to_html())))
@@ -51,21 +65,48 @@ func setup(data: Dictionary, radius: float) -> void:
 	if sides < 3:
 		sides = 20  # circle
 	var offset := deg_to_rad(float(data.get("rotation_deg", 0.0)))
-	_points.resize(sides)
-	_highlight.resize(sides)
-	for i in sides:
-		var p := Vector2.from_angle(offset + TAU * i / sides) * radius
-		_points[i] = p
-		_highlight[i] = p * 0.5 + Vector2(-radius, -radius) * 0.22
-	_outline_points = _points.duplicate()
-	_outline_points.append(_points[0])
+	if _brush:
+		_build_brush_shape(sides, offset)
+	else:
+		_points.resize(sides)
+		_highlight.resize(sides)
+		for i in sides:
+			var p := Vector2.from_angle(offset + TAU * i / sides) * radius
+			_points[i] = p
+			_highlight[i] = p * 0.5 + Vector2(-radius, -radius) * 0.22
+		_outline_points = _points.duplicate()
+		_outline_points.append(_points[0])
+	_flash_left = 0.0
 	modulate = Color.WHITE
 	queue_redraw()
 
 
+## A polygon whose edge is nudged in and out along its own radius, so it looks
+## brushed. Moving points only along the radius keeps the outline from
+## crossing itself.
+func _build_brush_shape(sides: int, offset: float) -> void:
+	var per_edge := 5 if sides < 12 else 1
+	var count := sides * per_edge
+	_points.resize(count)
+	_wet.resize(count)
+	for s in sides:
+		var a := Vector2.from_angle(offset + TAU * s / sides) * _radius * 1.12
+		var b := Vector2.from_angle(offset + TAU * (s + 1) / sides) * _radius * 1.12
+		for k in per_edge:
+			var p := a.lerp(b, float(k) / per_edge)
+			# Corners stay sharp; the middles of edges fray more.
+			var fray := 0.05 if k == 0 else 0.11
+			_points[s * per_edge + k] = p * randf_range(1.0 - fray, 1.0 + fray)
+			_wet[s * per_edge + k] = p * randf_range(1.18, 1.4)
+
+
 func flash() -> void:
 	_flash_left = FLASH_TIME
-	modulate = FLASH_COLOR
+	if _brush:
+		# Black ink cannot be brightened by tinting, so redraw it lit up.
+		queue_redraw()
+	else:
+		modulate = FLASH_COLOR
 	set_process(true)
 
 
@@ -74,11 +115,44 @@ func _process(delta: float) -> void:
 	if _flash_left <= 0.0:
 		modulate = Color.WHITE
 		set_process(false)
+		if _brush:
+			queue_redraw()
 
 
 func _draw() -> void:
 	if _points.size() < 3:
 		return
+	if _brush:
+		_draw_brush()
+	else:
+		_draw_plain()
+
+
+func _draw_brush() -> void:
+	var body := _core.lerp(Color.WHITE, 0.6) if _flash_left > 0.0 else _color
+	if _streak > 0.0:
+		# A dry brush drag behind fast enemies.
+		var tail := PackedVector2Array([Vector2(0.0, -_radius * 0.8), Vector2(-_streak * 3.2, 0.0), Vector2(0.0, _radius * 0.8)])
+		draw_polygon(tail, PackedColorArray([Color(_color, 0.5), Color(_color, 0.0), Color(_color, 0.5)]))
+	if _aura.a > 0.0:
+		draw_circle(Vector2.ZERO, _radius * 2.2, Color(_aura, 0.2))
+		draw_circle(Vector2.ZERO, _radius * 1.6, Color(_aura, 0.24))
+	# Wet halo where the ink bled into the paper, then the body.
+	draw_colored_polygon(_wet, Color(_color, 0.16))
+	draw_colored_polygon(_points, body)
+	# The glowing core: stacked translucent discs stand in for a glow.
+	var c := Vector2(0.0, -_radius * 0.06)
+	var core_radius := _radius * 0.24
+	for i in 4:
+		draw_circle(c, core_radius * (3.0 - i * 0.55), Color(_core, 0.10 + 0.07 * i))
+	draw_circle(c, core_radius, _core)
+	draw_circle(c, core_radius * 0.42, Color.WHITE)
+	if _ring:
+		draw_arc(c, _radius * 0.62, 0.0, TAU, 40, Color(_core, 0.9), maxf(3.0, _radius * 0.07))
+		draw_arc(c, _radius * 0.62, 0.0, TAU, 40, Color(_core, 0.25), maxf(8.0, _radius * 0.2))
+
+
+func _draw_plain() -> void:
 	if _streak > 0.0:
 		# A tapered comet tail fading to nothing, with a soft glow at the head.
 		var wide := PackedVector2Array([Vector2(0.0, -_radius * 1.5), Vector2(-_streak * 2.6, 0.0), Vector2(0.0, _radius * 1.5)])
@@ -86,9 +160,9 @@ func _draw() -> void:
 		var core := PackedVector2Array([Vector2(0.0, -_radius * 0.8), Vector2(-_streak * 1.5, 0.0), Vector2(0.0, _radius * 0.8)])
 		draw_polygon(core, PackedColorArray([Color(_color, 0.9), Color(_color, 0.0), Color(_color, 0.9)]))
 		draw_circle(Vector2.ZERO, _radius * 2.1, Color(_glow, 0.22))
-	if _aura.a > 0.0:
-		draw_circle(Vector2.ZERO, _radius * 2.0, Color(_aura, 0.28))
-		draw_circle(Vector2.ZERO, _radius * 1.5, Color(_aura, 0.3))
+	if _halo.a > 0.0:
+		for i in 4:
+			draw_circle(Vector2.ZERO, _radius * (2.4 - i * 0.35), Color(_halo, 0.08 + 0.05 * i))
 	if _shadow:
 		draw_set_transform(Vector2(_radius * 0.18, _radius * 0.32))
 		draw_colored_polygon(_points, Color(0.0, 0.0, 0.0, 0.28))
@@ -96,19 +170,8 @@ func _draw() -> void:
 	draw_colored_polygon(_points, _color)
 	draw_colored_polygon(_highlight, _color.lightened(0.35))
 	draw_polyline(_outline_points, _outline, maxf(2.0, _radius * _outline_width), true)
-	if _streak > 0.0 and _eyes == "":
+	if _streak > 0.0:
 		draw_circle(Vector2(_radius * 0.25, 0.0), _radius * 0.35, Color(1, 1, 1, 0.9))
-	if _eyes == "one":
-		var big := _radius * 0.36
-		draw_circle(Vector2(0.0, -_radius * 0.05), big, Color.WHITE)
-		draw_circle(Vector2(0.0, -_radius * 0.05 + big * 0.2), big * 0.55, Color(0.6, 0.05, 0.1))
-		draw_circle(Vector2(0.0, -_radius * 0.05 + big * 0.2), big * 0.25, Color(0.05, 0.05, 0.05))
-	elif _eyes != "":
-		var eye := _radius * 0.22
-		for side: float in [-1.0, 1.0]:
-			var c := Vector2(side * _radius * 0.3, -_radius * 0.08)
-			draw_circle(c, eye, Color.WHITE)
-			draw_circle(c + Vector2(0.0, eye * 0.25), eye * 0.55, Color(0.05, 0.05, 0.05))
-			if _brow:
-				# Angry brows slanting down toward the middle.
-				draw_line(c + Vector2(side * eye * 1.3, -eye * 1.7), c + Vector2(-side * eye * 0.9, -eye * 0.7), _outline, maxf(2.0, _radius * 0.12))
+	if _seal.a > 0.0:
+		var half := _radius * 0.36
+		draw_rect(Rect2(-half, -half, half * 2.0, half * 2.0), _seal)

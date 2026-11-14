@@ -202,7 +202,7 @@ func _kill(enemy: Enemy) -> void:
 	_effects.burst(enemy.position, enemy.last_hit_dir, enemy.color, 14 if enemy.heavy else 7)
 	if enemy.is_boss:
 		boss = null
-		_effects.ring(enemy.position, enemy.splat_radius * 1.5, Color(1.0, 0.8, 0.2, 0.95), 0.7)
+		_effects.big_moment(enemy.position, enemy.splat_radius * 1.5, Color(String(enemy.data.get("visual", {}).get("core", "#ffffff"))), 0.9)
 		Events.screen_shake.emit(14.0)
 		Events.boss_defeated.emit(enemy.display_name)
 		queue_redraw()

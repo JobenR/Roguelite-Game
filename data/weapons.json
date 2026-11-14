@@ -9,9 +9,9 @@
     "range": 520,
     "visual": {
       "sides": 0,
-      "color": "#0b1b4d",
-      "outline": "#050a1f",
-      "glow": "#38bdf8",
+      "color": "#1f4fe0",
+      "outline": "#0a1d6b",
+      "glow": "#5b9bff",
       "streak": 24,
       "shadow": false
     },
@@ -39,8 +39,9 @@
     "bullet_radius": 10,
     "visual": {
       "sides": 0,
-      "color": "#0f1f4d",
-      "outline": "#050a1f"
+      "color": "#1f4fe0",
+      "outline": "#0a1d6b",
+      "halo": "#3d8bff"
     },
     "ring_radius": 120,
     "ring_radius_per_level": 25,

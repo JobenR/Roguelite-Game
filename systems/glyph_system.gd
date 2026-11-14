@@ -98,7 +98,7 @@ func _resolve_region(region: PackedInt32Array, area: float) -> void:
 				"reduction": float(cfg.get("damage_reduction", 0.75)),
 			})
 	_labels.append({"text": String(cfg.get("name", kind)).to_upper(), "pos": centroid, "age": 0.0, "outline": corners})
-	_effects.ring(centroid, float(shape["radius"]) * 1.3, Color(1.0, 0.8, 0.2, 0.95), 0.6)
+	_effects.big_moment(centroid, float(shape["radius"]) * 1.3, Color(1.0, 0.78, 0.2), 0.8)
 	Events.screen_shake.emit(9.0)
 	Events.glyph_triggered.emit(kind, scale_factor)
 

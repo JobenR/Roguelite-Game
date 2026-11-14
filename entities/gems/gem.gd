@@ -12,4 +12,4 @@ func drop(pos: Vector2, p_xp: int) -> void:
 	position = pos
 	xp = p_xp
 	magnet = false
-	visual.setup({"sides": 4, "color": "#fbbf24", "outline": "#7a4a00"}, 8.0)
+	visual.setup({"sides": 4, "color": "#e0a826", "outline": "#5c3a00", "halo": "#f5c542", "shadow": false}, 8.0)

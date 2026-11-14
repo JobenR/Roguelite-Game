@@ -57,7 +57,9 @@ func _draw() -> void:
 		var pos: Vector2 = shot["pos"]
 		var radius: float = shot["radius"]
 		var back: Vector2 = -(shot["vel"] as Vector2).normalized()
-		draw_circle(pos + back * radius * 1.4, radius * 0.7, Color(0.3, 0.28, 0.3, 0.5))
-		draw_circle(pos, radius, Color("#57534e"))
-		draw_arc(pos, radius, 0.0, TAU, 16, Color("#1c1917"), 2.5)
-		draw_circle(pos - Vector2(radius, radius) * 0.25, radius * 0.3, Color("#a8a29e"))
+		# A glob of black ink with a violet core, trailing a dry smear.
+		draw_circle(pos + back * radius * 1.6, radius * 0.75, Color(0.08, 0.07, 0.06, 0.4))
+		draw_circle(pos, radius * 1.5, Color(0.08, 0.07, 0.06, 0.18))
+		draw_circle(pos, radius, Color("#141210"))
+		draw_circle(pos, radius * 0.8, Color(0.65, 0.55, 0.98, 0.25))
+		draw_circle(pos, radius * 0.4, Color("#a78bfa"))

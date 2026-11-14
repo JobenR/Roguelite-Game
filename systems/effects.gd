@@ -8,6 +8,8 @@ const MAX_DROPS := 220
 var _rings: Array[Dictionary] = []
 var _drops: Array[Dictionary] = []
 var _beams: Array[Dictionary] = []
+var _blooms: Array[Dictionary] = []
+var _strokes: Array[Dictionary] = []
 
 
 func ring(pos: Vector2, radius: float, color: Color, duration: float = 0.35) -> void:
@@ -48,14 +50,31 @@ func muzzle(pos: Vector2, dir: Vector2, color: Color) -> void:
 		})
 
 
+## A big moment: a glowing bloom with brush strokes flung outward. Glow is
+## kept for these (bombs, pulses, glyphs, bosses), so it stays special.
+func big_moment(pos: Vector2, radius: float, color: Color, duration: float = 0.55) -> void:
+	_blooms.append({"pos": pos, "radius": radius, "color": color, "duration": duration, "age": 0.0})
+	var count := clampi(int(radius / 7.0), 12, 30)
+	for i in count:
+		var angle := TAU * i / count + randf_range(-0.12, 0.12)
+		_strokes.append({
+			"pos": pos, "dir": Vector2.from_angle(angle), "from": radius * randf_range(0.12, 0.3),
+			"to": radius * randf_range(0.75, 1.25), "width": randf_range(4.0, 14.0), "color": color,
+			"duration": duration * randf_range(0.8, 1.2), "age": 0.0,
+		})
+	ring(pos, radius, color, duration * 0.8)
+
+
 func beam(from: Vector2, to: Vector2, color: Color, width: float, duration: float = 0.25) -> void:
 	_beams.append({"from": from, "to": to, "color": color, "width": width, "duration": duration, "age": 0.0})
 
 
 func _process(delta: float) -> void:
-	if _rings.is_empty() and _drops.is_empty() and _beams.is_empty():
+	if _rings.is_empty() and _drops.is_empty() and _beams.is_empty() and _blooms.is_empty() and _strokes.is_empty():
 		return
 	_age(_rings, delta)
+	_age(_blooms, delta)
+	_age(_strokes, delta)
 	_age(_beams, delta)
 	var i := _drops.size() - 1
 	while i >= 0:
@@ -81,6 +100,23 @@ func _age(list: Array[Dictionary], delta: float) -> void:
 
 
 func _draw() -> void:
+	for bloom in _blooms:
+		var t: float = bloom["age"] / bloom["duration"]
+		var color: Color = bloom["color"]
+		var radius: float = float(bloom["radius"]) * (0.5 + 0.7 * (1.0 - (1.0 - t) * (1.0 - t)))
+		var pos: Vector2 = bloom["pos"]
+		for i in 6:
+			draw_circle(pos, radius * (1.25 - i * 0.2), Color(color.lightened(i * 0.14), (0.07 + 0.05 * i) * (1.0 - t)))
+		draw_circle(pos, radius * 0.16 * (1.0 - t), Color(1, 1, 1, 0.9 * (1.0 - t)))
+	for stroke in _strokes:
+		var t: float = stroke["age"] / stroke["duration"]
+		var eased := 1.0 - (1.0 - t) * (1.0 - t) * (1.0 - t)
+		var pos: Vector2 = stroke["pos"]
+		var dir: Vector2 = stroke["dir"]
+		var color: Color = stroke["color"]
+		var far := lerpf(float(stroke["from"]), float(stroke["to"]), eased)
+		var near := lerpf(float(stroke["from"]), float(stroke["to"]) * 0.7, t * t)
+		draw_line(pos + dir * near, pos + dir * far, Color(color, 0.9 * (1.0 - t)), float(stroke["width"]) * (1.0 - t * 0.6))
 	for b in _beams:
 		var t: float = b["age"] / b["duration"]
 		var color: Color = b["color"]

@@ -87,7 +87,7 @@ func setup(enemies: EnemyManager, bullets: BulletManager, arena: Rect2, ink: Ink
 	Events.enemy_killed.connect(_on_enemy_killed)
 	visual.setup(stats.get("visual", {}), radius)
 	barrel.position = Vector2(radius + 7.0, 0.0)
-	barrel.setup({"sides": 3, "color": "#12235e", "outline": "#060d2b", "shadow": false}, 8.0)
+	barrel.setup({"sides": 3, "color": "#1f4fe0", "outline": "#0a1d6b", "shadow": false}, 8.0)
 	Events.player_health_changed.emit(hp, max_hp)
 
 

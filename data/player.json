@@ -7,8 +7,12 @@
     "weapon": "ink_pistol",
     "visual": {
       "sides": 0,
-      "color": "#3b82f6",
-      "outline": "#0b1b4d"
+      "color": "#1f4fe0",
+      "outline": "#0a1d6b",
+      "outline_width": 0.16,
+      "halo": "#3d8bff",
+      "seal": "#ffffff",
+      "shadow": false
     },
     "secondary": "ink_bomb",
     "pulse": "ripple",
