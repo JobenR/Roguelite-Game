@@ -77,9 +77,14 @@ func _process(delta: float) -> void:
 	position.y = clampf(position.y, _arena.position.y + radius, _arena.end.y - radius)
 
 	# Footsteps: a thin line of ink. Closing it into a loop sets up a pulse.
+	# Painted as a line from the last point, so a slow frame cannot leave gaps.
 	if position.distance_squared_to(_last_trail_pos) > 9.0:
+		var trail := Upgrades.value("trail_radius", _trail_radius)
+		if _last_trail_pos == Vector2.INF:
+			_ink.grid.paint_circle(position, trail, InkGrid.INK)
+		else:
+			_ink.grid.paint_line(_last_trail_pos, position, trail, InkGrid.INK)
 		_last_trail_pos = position
-		_ink.grid.paint_circle(position, Upgrades.value("trail_radius", _trail_radius), InkGrid.INK)
 
 	_invuln_left -= delta
 	_cooldown -= delta

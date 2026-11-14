@@ -85,6 +85,9 @@ Commit after each milestone and tell the user exactly what to test and report.
   Godot resources, so each preset lists `data/*.json` as an include filter; keep
   that on any new preset. The iOS preset needs the user's Apple team ID and a
   unique bundle identifier. `build/` is git-ignored.
+- **Web build:** `.github/workflows/pages.yml` exports the Web preset and deploys
+  it to GitHub Pages on every push to main (single-threaded build, so no special
+  headers). The user tests on iPhone Safari through that link.
 
 ## Upgrades and stats
 
