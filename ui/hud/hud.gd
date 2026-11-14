@@ -24,6 +24,7 @@ var _alert_text: String = ""
 var _alert_left: float = 0.0
 var _boss_bar: ProgressBar
 var _boss_label: Label
+var _shield_bar: ProgressBar
 
 
 func _ready() -> void:
@@ -99,6 +100,15 @@ func _ready() -> void:
 	Events.player_health_changed.connect(_on_health_changed)
 	Events.xp_changed.connect(_on_xp_changed)
 	Events.synergy_unlocked.connect(_on_synergy)
+	Events.set_bonus.connect(func(set_name: String, count: int, desc: String) -> void:
+		_show_banner("%s SET x%d\n%s" % [set_name.to_upper(), count, desc]))
+	# Ink Reserve shield: a thin cyan bar over the health bar.
+	_shield_bar = _make_bar(Vector2(0.0, -7.0), Vector2(260.0, 6.0), Color("#22d3ee"))
+	_shield_bar.visible = false
+	Events.shield_changed.connect(func(value: float, max_value: float) -> void:
+		_shield_bar.visible = max_value > 0.0
+		_shield_bar.max_value = maxf(max_value, 1.0)
+		_shield_bar.value = value)
 	Events.milestone_reached.connect(func(percent: int, text: String) -> void: _show_banner("INK %d%% REACHED\n%s" % [percent, text]))
 	Events.secondary_charge_changed.connect(func(ratio: float) -> void: _bomb_bar.value = ratio)
 	Events.pulse_charge_changed.connect(func(ratio: float) -> void: _pulse_bar.value = ratio)
@@ -149,7 +159,7 @@ func _process(delta: float) -> void:
 	var power_text := ""
 	for id: String in GameState.powers:
 		var def: Dictionary = DataDB.pickups.get("types", {}).get(id, {})
-		power_text += "%s %ds  " % [String(def.get("name", id)).to_upper(), int(ceil(GameState.power_left(id)))]
+		power_text += "%s %ds  " % [String(def.get("name", id.replace("_", " "))).to_upper(), int(ceil(GameState.power_left(id)))]
 	_power_label.text = power_text.strip_edges()
 	var ink_text := ""
 	if _ink != null and _ink.grid != null:

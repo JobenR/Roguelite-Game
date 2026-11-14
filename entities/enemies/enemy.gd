@@ -32,6 +32,14 @@ var ability_state: int = 0
 var ability_left: float = 0.0
 var ability_dir: Vector2 = Vector2.ZERO
 var aux_left: float = 0.0
+# Status effects applied by the player's upgrades.
+var slow_left: float = 0.0
+var slow_amount: float = 0.0
+var stain_left: float = 0.0
+var stain_amount: float = 0.0
+var bleed_left: float = 0.0
+var bleed_dps: float = 0.0
+var was_on_ink: bool = false
 
 @onready var visual: Node2D = $Visual
 
@@ -69,6 +77,10 @@ func spawn(p_type_id: String, p_data: Dictionary, pos: Vector2, hp_mult: float) 
 	ability_state = 0
 	ability_dir = Vector2.ZERO
 	aux_left = 0.0
+	slow_left = 0.0
+	stain_left = 0.0
+	bleed_left = 0.0
+	was_on_ink = false
 	last_hit_dir = Vector2.ZERO
 	var look: Dictionary = data.get("visual", {})
 	color = Color(String(look.get("color", "#ffffff")))

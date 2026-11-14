@@ -25,6 +25,9 @@ var _effects: Effects
 var _shots: EnemyShots
 var _burn_left: float = 0.0
 var _burning: Array[Enemy] = []
+var _bleeding: Array[Enemy] = []
+var _thorned: Array[Enemy] = []
+var _stepped: Array[Enemy] = []
 var _arena: Rect2
 var _scratch: Array = []
 
@@ -60,7 +63,12 @@ func damage(enemy: Enemy, amount: float, dir: Vector2 = Vector2.ZERO) -> void:
 	if not enemy.active:
 		return
 	enemy.last_hit_dir = dir
+	if enemy.stain_left > 0.0:
+		amount *= 1.0 + enemy.stain_amount
 	enemy.hp -= amount
+	# Executioner: finish off anything nearly dead (bosses excepted).
+	if not enemy.is_boss and enemy.hp > 0.0 and enemy.hp < enemy.max_hp * Upgrades.bonus("execute"):
+		enemy.hp = 0.0
 	if enemy.is_boss:
 		Events.boss_health_changed.emit(clampf(enemy.hp / enemy.max_hp, 0.0, 1.0))
 	if enemy.hp <= 0.0:
@@ -103,6 +111,32 @@ func nearest(pos: Vector2, max_range: float) -> Enemy:
 			best_sq = d_sq
 			best = enemy
 	return best
+
+
+func apply_slow(enemy: Enemy, amount: float, seconds: float) -> void:
+	if enemy.heavy:
+		amount *= 0.4
+	enemy.slow_amount = maxf(enemy.slow_amount if enemy.slow_left > 0.0 else 0.0, minf(amount, 0.85))
+	enemy.slow_left = maxf(enemy.slow_left, seconds)
+
+
+func slow_area(pos: Vector2, radius: float, amount: float, seconds: float) -> void:
+	var found: Array = []
+	grid.query(pos, radius + max_radius, found)
+	for enemy: Enemy in found:
+		if enemy.active and pos.distance_to(enemy.position) <= radius + enemy.radius:
+			apply_slow(enemy, amount, seconds)
+
+
+## Drags enemies inside the circle toward its centre. Heavy enemies resist.
+func pull(center: Vector2, radius: float, distance: float) -> void:
+	for enemy in active:
+		if enemy.heavy:
+			continue
+		var offset := center - enemy.position
+		var d := offset.length()
+		if d < radius and d > 6.0:
+			enemy.position += offset / d * minf(distance, d - 4.0)
 
 
 ## Pushes enemies inside the circle away from its centre. Heavy enemies resist.
@@ -202,11 +236,14 @@ func _process(delta: float) -> void:
 	var slow := minf(Upgrades.bonus("ink_slow"), 0.8)
 	var burn := Upgrades.bonus("ink_burn")
 	var burn_tick := false
-	if burn > 0.0:
-		_burn_left -= delta
-		if _burn_left <= 0.0:
-			_burn_left = 0.25
-			burn_tick = true
+	_burn_left -= delta
+	if _burn_left <= 0.0:
+		_burn_left = 0.25
+		burn_tick = true
+	var frozen := GameState.has_power("freeze")
+	var thorn_ink := Upgrades.bonus("thorn_ink")
+	var thorns := Upgrades.bonus("thorns")
+	var cut_scale := 1.0 - minf(Upgrades.bonus("ink_tough"), 0.75)
 
 	for enemy in active:
 		var pos := enemy.position
@@ -216,9 +253,14 @@ func _process(delta: float) -> void:
 		var pace := enemy.speed
 		if slow > 0.0 and not enemy.heavy and ink_grid.is_ink(pos):
 			pace *= 1.0 - slow
+		if enemy.slow_left > 0.0:
+			enemy.slow_left -= delta
+			pace *= 1.0 - enemy.slow_amount
+		if enemy.stain_left > 0.0:
+			enemy.stain_left -= delta
 
 		var step := Vector2.ZERO
-		match enemy.behavior:
+		match (-1 if frozen else int(enemy.behavior)):
 			Enemy.Behavior.CHASE:
 				step = toward * pace * delta
 			Enemy.Behavior.CHARGE:
@@ -255,18 +297,38 @@ func _process(delta: float) -> void:
 		if enemy.trail_left <= 0.0:
 			enemy.trail_left = enemy.trail_interval
 			# Most smudges slide over ink; only some bite through it.
-			var protect := -1 if randf() < enemy.ink_cut_chance else InkGrid.INK
+			var protect := -1 if randf() < enemy.ink_cut_chance * cut_scale else InkGrid.INK
 			ink_grid.paint_circle(pos, enemy.trail_radius, InkGrid.SMUDGE, protect)
 
-		if dist < enemy.radius + player_radius:
-			_player.take_damage(enemy.damage)
-		if burn_tick and ink_grid.is_ink(pos):
-			_burning.append(enemy)
+		if dist < enemy.radius + player_radius and not frozen:
+			if _player.take_damage(enemy.damage) and thorns > 0.0:
+				_thorned.append(enemy)
+		if burn_tick:
+			if burn > 0.0 and ink_grid.is_ink(pos):
+				_burning.append(enemy)
+			if enemy.bleed_left > 0.0:
+				enemy.bleed_left -= 0.25
+				_bleeding.append(enemy)
+		if thorn_ink > 0.0:
+			var on_ink := ink_grid.is_ink(pos)
+			if on_ink and not enemy.was_on_ink:
+				_stepped.append(enemy)
+			enemy.was_on_ink = on_ink
 
-	if burn_tick:
-		for enemy in _burning:
-			damage(enemy, burn * 0.25)
-		_burning.clear()
+	# Damage collected during the loop is applied here, because a kill edits
+	# `active`.
+	for enemy in _burning:
+		damage(enemy, burn * 0.25)
+	_burning.clear()
+	for enemy in _bleeding:
+		damage(enemy, enemy.bleed_dps * 0.25)
+	_bleeding.clear()
+	for enemy in _thorned:
+		damage(enemy, thorns)
+	_thorned.clear()
+	for enemy in _stepped:
+		damage(enemy, thorn_ink)
+	_stepped.clear()
 	if boss != null:
 		queue_redraw()
 

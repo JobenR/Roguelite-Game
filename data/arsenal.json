@@ -1,0 +1,233 @@
+{
+ "fountain": {
+  "cooldown": 4.0,
+  "shots": 8,
+  "shots_per_level": 2,
+  "damage_scale": 0.6
+ },
+ "quill_volley": {
+  "cooldown": 3.2,
+  "quills": 2,
+  "damage_scale": 0.9,
+  "range": 520
+ },
+ "boomerang": {
+  "cooldown": 3.5,
+  "damage": 9,
+  "speed": 520,
+  "out_time": 0.5,
+  "radius": 26
+ },
+ "sprinkler": {
+  "cooldown": 0.16,
+  "cooldown_per_level": 0.25,
+  "damage_scale": 0.45,
+  "turn_speed": 5.5
+ },
+ "chain_blot": {
+  "cooldown": 2.8,
+  "damage": 14,
+  "jumps": 3,
+  "range": 420,
+  "jump_range": 220
+ },
+ "mines": {
+  "cooldown": 3.5,
+  "damage": 30,
+  "radius": 90,
+  "trigger": 55,
+  "max": 5
+ },
+ "whip": {
+  "cooldown": 1.6,
+  "damage": 14,
+  "reach": 70,
+  "radius": 85
+ },
+ "stamp": {
+  "cooldown": 3.0,
+  "damage": 34,
+  "radius": 62,
+  "range": 380
+ },
+ "turret": {
+  "cooldown": 9.0,
+  "life": 18.0,
+  "fire_interval": 0.7,
+  "range": 380,
+  "damage_scale": 0.6
+ },
+ "sprouts": {
+  "cooldown": 11.0,
+  "life": 14.0,
+  "range": 300
+ },
+ "planes": {
+  "cooldown": 4.0,
+  "damage_scale": 1.2
+ },
+ "tidal_wave": {
+  "cooldown": 8.0,
+  "damage": 10,
+  "speed": 300,
+  "range": 520,
+  "width": 110,
+  "width_per_level": 25
+ },
+ "ink_rain": {
+  "cooldown": 0.9,
+  "cooldown_per_level": 0.35,
+  "damage": 10,
+  "radius": 34,
+  "range": 320
+ },
+ "flamethrower": {
+  "cooldown": 0.15,
+  "cooldown_per_level": 0.0,
+  "damage": 3.0,
+  "range": 170,
+  "half_angle_deg": 28
+ },
+ "saw": {
+  "damage": 7,
+  "speed": 360,
+  "radius": 30,
+  "tick": 0.15
+ },
+ "black_hole": {
+  "cooldown": 9.0,
+  "damage": 45,
+  "radius": 150,
+  "radius_per_level": 20,
+  "duration": 1.4,
+  "pull_speed": 220
+ },
+ "guardian": {
+  "cooldown": 7.0,
+  "cooldown_per_level": 0.3,
+  "damage": 55,
+  "range": 170
+ },
+ "electric": {
+  "cooldown": 1.0,
+  "cooldown_per_level": 0.0,
+  "damage": 14
+ },
+ "living": {
+  "cooldown": 0.5,
+  "cooldown_per_level": 0.0,
+  "samples": 14
+ },
+ "bridges": {
+  "cooldown": 1.0,
+  "cooldown_per_level": 0.0,
+  "radius": 260,
+  "span": 2
+ },
+ "tide": {
+  "cooldown": 30.0,
+  "cooldown_per_level": 0.0,
+  "radius": 520
+ },
+ "trailblazer": {
+  "tick": 0.25,
+  "radius": 18,
+  "points": 14,
+  "spacing": 40,
+  "life": 2.0
+ },
+ "ink_storm": {
+  "interval": 0.22,
+  "damage": 12,
+  "radius": 40,
+  "range": 520
+ },
+ "eraser_wave": {
+  "radius": 700
+ },
+ "sniper": {
+  "every": 10,
+  "damage_scale": 3.0,
+  "damage_scale_per_level": 1.0,
+  "speed_mult": 2.0,
+  "radius": 10
+ },
+ "echo": {
+  "delay": 0.5,
+  "damage_scale": 0.3,
+  "damage_scale_per_level": 0.1
+ },
+ "side_guns": {
+  "damage_scale": 0.5,
+  "damage_scale_per_level": 0.15
+ },
+ "rear_guard": {
+  "damage_scale": 0.8,
+  "spread_deg": 14
+ },
+ "split": {
+  "damage_scale": 0.4,
+  "damage_scale_per_level": 0.1,
+  "angle_deg": 28
+ },
+ "heavy": {
+  "radius_per_level": 0.3,
+  "speed_per_level": -0.1,
+  "damage_per_level": 0.15,
+  "knockback_per_level": 18
+ },
+ "frost": {
+  "slow": 0.15,
+  "slow_per_level": 0.1,
+  "seconds": 2.0
+ },
+ "paper_shield": {
+  "recharge": 18.0,
+  "recharge_per_level": 3.0
+ },
+ "reserve": {
+  "regen_per_second": 2.0,
+  "regen_delay": 4.0
+ },
+ "overcharge": {
+  "ramp_seconds": 3.0,
+  "levels_mult": 3.0
+ },
+ "slipstream": {
+  "ramp_seconds": 2.0
+ },
+ "harvest": {
+  "cells_per_xp": 220
+ },
+ "loop_fury": {
+  "min_cells": 500,
+  "seconds": 10.0
+ },
+ "aftershock": {
+  "seconds": 3.0
+ },
+ "napalm": {
+  "seconds": 5.0
+ },
+ "cluster": {
+  "count": 2,
+  "radius_scale": 0.6,
+  "damage_scale": 0.5
+ },
+ "sticky_bomb": {
+  "seconds": 4.0
+ },
+ "vacuum": {
+  "distance": 90,
+  "distance_per_level": 50
+ },
+ "sticky_splats": {
+  "seconds": 2.0
+ },
+ "watermark": {
+  "chance_per_second": 0.1
+ },
+ "ghost_step": {
+  "seconds": 1.5
+ }
+}

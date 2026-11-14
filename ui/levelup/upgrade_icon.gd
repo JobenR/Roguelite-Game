@@ -13,6 +13,8 @@ const GOLD := Color("#fbbf24")
 
 var icon_id: String = ""
 var tint: Color = INK
+## One or two letters shown in a corner disc, to tell apart cards that share a picture.
+var badge: String = ""
 
 
 func _draw() -> void:
@@ -178,8 +180,119 @@ func _draw() -> void:
 			draw_colored_polygon(PackedVector2Array([Vector2(30, -22), Vector2(34, 0), Vector2(14, -8)]), Color("#16a34a"))
 			draw_rect(Rect2(-9, -12, 18, 24), WHITE)
 			draw_rect(Rect2(-9, -12, 18, 24), DARK, false, 3.0)
+		"shield":
+			var shield := PackedVector2Array([Vector2(-26, -28), Vector2(26, -28), Vector2(26, 2), Vector2(0, 32), Vector2(-26, 2)])
+			draw_colored_polygon(shield, INK)
+			draw_polyline(PackedVector2Array([shield[0], shield[1], shield[2], shield[3], shield[4], shield[0]]), DARK, 4.0, true)
+			draw_line(Vector2(0, -20), Vector2(0, 22), LIGHT, 4.0)
+		"snow":
+			for i in 3:
+				var arm := Vector2.from_angle(PI * i / 3.0) * 32.0
+				draw_line(-arm, arm, Color("#0ea5e9"), 6.0)
+				for tip: Vector2 in [arm, -arm]:
+					draw_circle(tip, 5.0, Color("#7dd3fc"))
+			draw_circle(Vector2.ZERO, 8.0, WHITE)
+		"skull":
+			draw_circle(Vector2(0, -6), 26.0, WHITE)
+			draw_rect(Rect2(-14, 12, 28, 16), WHITE)
+			draw_arc(Vector2(0, -6), 26.0, 0.0, TAU, 28, DARK, 3.5)
+			draw_circle(Vector2(-10, -8), 7.0, DARK)
+			draw_circle(Vector2(10, -8), 7.0, DARK)
+			for i in 3:
+				draw_line(Vector2(-8.0 + i * 8.0, 14), Vector2(-8.0 + i * 8.0, 28), DARK, 3.0)
+		"bolt":
+			draw_colored_polygon(PackedVector2Array([Vector2(8, -38), Vector2(-20, 4), Vector2(-2, 4), Vector2(-10, 38), Vector2(22, -8), Vector2(4, -8)]), GOLD)
+			draw_polyline(PackedVector2Array([Vector2(8, -38), Vector2(-20, 4), Vector2(-2, 4), Vector2(-10, 38), Vector2(22, -8), Vector2(4, -8), Vector2(8, -38)]), Color("#92400e"), 3.0, true)
+		"flame":
+			draw_colored_polygon(PackedVector2Array([Vector2(0, -38), Vector2(22, -4), Vector2(18, 22), Vector2(0, 34), Vector2(-18, 22), Vector2(-22, -4), Vector2(-8, -14)]), Color("#f97316"))
+			draw_colored_polygon(PackedVector2Array([Vector2(0, -12), Vector2(11, 8), Vector2(8, 24), Vector2(0, 30), Vector2(-8, 24), Vector2(-11, 8)]), GOLD)
+		"mine":
+			draw_circle(Vector2.ZERO, 22.0, DARK)
+			for i in 8:
+				var spike := Vector2.from_angle(TAU * i / 8.0)
+				draw_line(spike * 20.0, spike * 33.0, DARK, 6.0)
+			draw_circle(Vector2.ZERO, 8.0, Color("#ef4444"))
+		"turret":
+			draw_rect(Rect2(-22, 8, 44, 18), DARK)
+			draw_circle(Vector2(0, 0), 20.0, INK)
+			draw_arc(Vector2(0, 0), 20.0, 0.0, TAU, 24, DARK, 3.5)
+			draw_line(Vector2(6, -8), Vector2(34, -30), DARK, 9.0)
+			draw_circle(Vector2(0, 0), 7.0, LIGHT)
+		"boomerang":
+			draw_polyline(PackedVector2Array([Vector2(-30, 24), Vector2(-4, -22), Vector2(32, -14)]), INK, 14.0, true)
+			draw_polyline(PackedVector2Array([Vector2(-30, 24), Vector2(-4, -22), Vector2(32, -14)]), LIGHT, 3.0, true)
+			draw_arc(Vector2(4, 8), 30.0, 0.4, 2.4, 16, Color(INK, 0.4), 3.0)
+		"wave":
+			for k in 3:
+				var crest := PackedVector2Array()
+				for i in 13:
+					crest.append(Vector2(-38.0 + i * 6.3, -16.0 + k * 16.0 + sin(i * 1.05) * 8.0))
+				draw_polyline(crest, Color(INK, 1.0 - k * 0.28), 8.0 - k, true)
+		"rain":
+			for d: Vector2 in [Vector2(-22, -18), Vector2(4, -26), Vector2(26, -8), Vector2(-10, 10), Vector2(16, 20)]:
+				_drop(d, 8.0, INK)
+		"plane":
+			draw_colored_polygon(PackedVector2Array([Vector2(36, -6), Vector2(-34, -30), Vector2(-14, -2), Vector2(-34, 26)]), WHITE)
+			draw_polyline(PackedVector2Array([Vector2(36, -6), Vector2(-34, -30), Vector2(-14, -2), Vector2(-34, 26), Vector2(36, -6)]), DARK, 3.5, true)
+			draw_line(Vector2(36, -6), Vector2(-14, -2), DARK, 3.0)
+		"saw":
+			var teeth := PackedVector2Array()
+			for i in 20:
+				teeth.append(Vector2.from_angle(TAU * i / 20.0) * (36.0 if i % 2 == 0 else 25.0))
+			draw_colored_polygon(teeth, DARK)
+			draw_circle(Vector2.ZERO, 15.0, LIGHT)
+			draw_circle(Vector2.ZERO, 5.0, DARK)
+		"hole":
+			draw_circle(Vector2.ZERO, 18.0, Color("#0b0420"))
+			for k in 3:
+				draw_arc(Vector2.ZERO, 24.0 + k * 7.0, k * 1.4, k * 1.4 + 3.6, 20, Color("#7c3aed"), 4.0)
+			draw_circle(Vector2(30, -22), 4.0, ENEMY)
+			draw_circle(Vector2(-28, 20), 4.0, ENEMY)
+		"book":
+			draw_colored_polygon(PackedVector2Array([Vector2(-34, -22), Vector2(0, -14), Vector2(0, 26), Vector2(-34, 18)]), WHITE)
+			draw_colored_polygon(PackedVector2Array([Vector2(34, -22), Vector2(0, -14), Vector2(0, 26), Vector2(34, 18)]), Color("#e7e5e4"))
+			draw_polyline(PackedVector2Array([Vector2(-34, -22), Vector2(0, -14), Vector2(34, -22), Vector2(34, 18), Vector2(0, 26), Vector2(-34, 18), Vector2(-34, -22)]), DARK, 3.5, true)
+			draw_line(Vector2(0, -14), Vector2(0, 26), DARK, 3.0)
+			_gem(Vector2(0, -30), 8.0)
+		"cards":
+			for k in 3:
+				var off := Vector2(-16.0 + k * 16.0, 6.0 - k * 6.0)
+				draw_rect(Rect2(off.x - 14, off.y - 22, 28, 40), WHITE)
+				draw_rect(Rect2(off.x - 14, off.y - 22, 28, 40), DARK, false, 3.0)
+			draw_circle(Vector2(16, -8), 6.0, GOLD)
+		"flower":
+			for k in 6:
+				draw_circle(Vector2.from_angle(TAU * k / 6.0) * 18.0, 12.0, INK)
+			draw_circle(Vector2.ZERO, 10.0, GOLD)
+			draw_line(Vector2(0, 22), Vector2(0, 40), Color("#15803d"), 5.0)
+		"bomb":
+			draw_circle(Vector2(-2, 6), 26.0, DARK)
+			draw_circle(Vector2(-12, -4), 7.0, Color("#5b7fd6"))
+			draw_line(Vector2(12, -16), Vector2(24, -30), Color("#78716c"), 5.0)
+			draw_circle(Vector2(26, -33), 6.0, GOLD)
+		"star":
+			var star := PackedVector2Array()
+			for i in 10:
+				star.append(Vector2.from_angle(-PI / 2.0 + TAU * i / 10.0) * (36.0 if i % 2 == 0 else 15.0))
+			draw_colored_polygon(star, GOLD)
+			draw_circle(Vector2.ZERO, 7.0, WHITE)
+		"whip":
+			draw_arc(Vector2(-18, 14), 44.0, -1.5, 0.3, 20, INK, 12.0)
+			draw_arc(Vector2(-18, 14), 44.0, -1.5, 0.3, 20, LIGHT, 3.0)
+			draw_circle(Vector2(-18, 14), 9.0, DARK)
+		"stamp":
+			draw_rect(Rect2(-9, -34, 18, 26), DARK)
+			draw_rect(Rect2(-24, -10, 48, 14), INK)
+			draw_rect(Rect2(-24, -10, 48, 14), DARK, false, 3.0)
+			draw_rect(Rect2(-22, 14, 44, 16), Color(INK, 0.45))
 		_:
 			_drop(Vector2.ZERO, 24.0, INK)
+	if badge != "":
+		var font := ThemeDB.fallback_font
+		draw_circle(Vector2(32, 32), 15.0, WHITE)
+		draw_arc(Vector2(32, 32), 15.0, 0.0, TAU, 20, tint, 3.0)
+		var width := font.get_string_size(badge, HORIZONTAL_ALIGNMENT_LEFT, -1, 15).x
+		draw_string(font, Vector2(32.0 - width * 0.5, 37.5), badge, HORIZONTAL_ALIGNMENT_LEFT, -1, 15, DARK)
 
 
 func _bullet(tip: Vector2, length: float) -> void:

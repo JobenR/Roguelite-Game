@@ -1,4 +1,9 @@
-# 100 power-up ideas for approval
+# 100 power-up ideas
+
+All 100 are now built. A few were adapted to fit the game: 17 is a spray cone
+that fires alongside your shots, 18 bounces around the screen, 49 slows
+instead of trapping, 54 restores the ink, 84 uses a DASH button, and 87 is a
+speed burst after being hit.
 
 Reply with the numbers you want (for example "1-12, 27, 40-45") and I will
 build those. Names are working titles. Already in the game and not listed

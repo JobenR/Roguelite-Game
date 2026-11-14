@@ -104,6 +104,10 @@ func _draw() -> void:
 				draw_arc(pos + Vector2(0, -2), 8.0, PI, TAU, 14, color, 6.0)
 				draw_line(pos + Vector2(-8, -2), pos + Vector2(-8, 9), color, 6.0)
 				draw_line(pos + Vector2(8, -2), pos + Vector2(8, 9), color, 6.0)
+		if String(pickup["icon"]) == "letter":
+			var letter := String(pickup["name"]).left(1)
+			var letter_width := font.get_string_size(letter, HORIZONTAL_ALIGNMENT_LEFT, -1, 24).x
+			draw_string(font, pos + Vector2(-letter_width * 0.5, 9.0), letter, HORIZONTAL_ALIGNMENT_LEFT, -1, 24, color)
 		var text: String = pickup["name"]
 		var width := font.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, 16).x
 		draw_string_outline(font, pos + Vector2(-width * 0.5, r + 28.0), text, HORIZONTAL_ALIGNMENT_LEFT, -1, 16, 5, Color.WHITE)

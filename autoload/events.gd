@@ -30,3 +30,6 @@ signal boss_health_changed(ratio: float)
 signal boss_defeated(boss_name: String)
 ## A short urgent message for the middle of the screen.
 signal alert(text: String, seconds: float)
+signal set_bonus(set_name: String, count: int, desc: String)
+signal player_hurt
+signal shield_changed(value: float, max_value: float)

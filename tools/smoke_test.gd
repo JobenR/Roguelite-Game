@@ -30,18 +30,26 @@ func _process(_delta: float) -> bool:
 		Input.action_press("secondary")
 		Input.action_press("pulse")
 		Input.action_press("dash")
-		gs.grant_power(["frenzy", "magnet", "auto_aim"][(_frames / 120) % 3], 2.0)
+		gs.grant_power(["frenzy", "magnet", "auto_aim", "freeze", "giant_brush", "ink_storm", "invincible", "eraser_wave"][(_frames / 120) % 8], 2.0)
 	elif _frames % 120 == 1:
 		Input.action_release("secondary")
 		Input.action_release("pulse")
 		Input.action_release("dash")
 	if _frames == 600:
-		for id in ["scatter", "laser", "orbit", "multishot", "ring_bomb", "forgiving_pulse", "permanent_marker", "painter", "quicksand", "territory_tax", "shockwave", "homing", "dash", "mortar", "reroll"]:
-			upgrades.apply(id)
+		# Max out every upgrade, so every code path runs at full strength.
+		var all: Dictionary = upgrades.defs()
+		for id: String in all:
+			for i in int(all[id].get("max_level", 1)) - upgrades.level_of(id):
+				upgrades.apply(id)
+		print("  applied %d upgrades, %d synergies, sets %s" % [upgrades.levels.size(), upgrades.synergies.size(), upgrades.set_tiers])
 	# Keep the test player alive so a long run exercises every upgrade.
 	_scene.player.hp = _scene.player.max_hp
 	if _scene.levelup.is_open:
-		_scene.levelup._choose(upgrades.roll_choices(1)[0])
+		var offer: Array[String] = upgrades.roll_choices(1)
+		if offer.is_empty():
+			_scene.levelup._close()
+		else:
+			_scene.levelup._choose(offer[0])
 	if _frames % 1500 == 0:
 		var counts := {}
 		for enemy: Enemy in _scene.enemies.active:
@@ -51,4 +59,4 @@ func _process(_delta: float) -> bool:
 			_frames, _scene.enemies.active.size(), _scene.gems.active.size(), gs.kills,
 			_scene.player.hp, _scene.player.max_hp, gs.level, _scene.director.wave_index + 1,
 			_scene.ink.ownership() * 100.0, upgrades.levels, upgrades.synergies.keys()])
-	return _frames >= 25200
+	return _frames >= 12000

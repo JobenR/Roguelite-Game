@@ -18,6 +18,9 @@ var smudge_count: int = 0
 var dirty: bool = true
 ## Scratch mask written by find_enclosed(): 1 = enclosed, 2 = outside.
 var mask: PackedByteArray = PackedByteArray()
+## Watermark: when on, cells smudged over the player's ink are remembered here.
+var track_smudged_ink: bool = false
+var smudged_ink: PackedInt32Array = PackedInt32Array()
 
 
 func _init(area_size: Vector2, p_cell_size: float) -> void:
@@ -55,6 +58,8 @@ func set_cell(index: int, state: int) -> void:
 		return
 	if old == INK:
 		ink_count -= 1
+		if track_smudged_ink and state == SMUDGE:
+			smudged_ink.append(index)
 	elif old == SMUDGE:
 		smudge_count -= 1
 	if state == INK or state == LOCKED:
@@ -91,6 +96,71 @@ func paint_circle(pos: Vector2, radius: float, state: int, protect: int = -1) ->
 			var dx := (x + 0.5) * cell_size - pos.x
 			if dx * dx + dy * dy <= r_sq and cells[y * cols + x] != protect:
 				set_cell(y * cols + x, state)
+
+
+## Wipes smudge inside the circle back to blank paper. Ink is untouched.
+func clean_circle(pos: Vector2, radius: float) -> void:
+	var x0 := clampi(int((pos.x - radius) / cell_size), 0, cols - 1)
+	var x1 := clampi(int((pos.x + radius) / cell_size), 0, cols - 1)
+	var y0 := clampi(int((pos.y - radius) / cell_size), 0, rows - 1)
+	var y1 := clampi(int((pos.y + radius) / cell_size), 0, rows - 1)
+	var r_sq := radius * radius
+	for y in range(y0, y1 + 1):
+		var dy := (y + 0.5) * cell_size - pos.y
+		for x in range(x0, x1 + 1):
+			var dx := (x + 0.5) * cell_size - pos.x
+			if dx * dx + dy * dy <= r_sq and cells[y * cols + x] == SMUDGE:
+				set_cell(y * cols + x, NEUTRAL)
+
+
+## Fills gaps of up to `span` cells between two pieces of ink on the same row
+## or column, inside the square around `center`.
+func close_gaps(center: Vector2, radius: float, span: int) -> void:
+	var x0 := clampi(int((center.x - radius) / cell_size), 0, cols - 1)
+	var x1 := clampi(int((center.x + radius) / cell_size), 0, cols - 1)
+	var y0 := clampi(int((center.y - radius) / cell_size), 0, rows - 1)
+	var y1 := clampi(int((center.y + radius) / cell_size), 0, rows - 1)
+	var fill := PackedInt32Array()
+	for y in range(y0, y1 + 1):
+		var last := -1
+		for x in range(x0, x1 + 1):
+			if not _open(y * cols + x):
+				var gap := x - last - 1
+				if last >= 0 and gap >= 1 and gap <= span:
+					for gx in range(last + 1, x):
+						fill.append(y * cols + gx)
+				last = x
+	for x in range(x0, x1 + 1):
+		var last := -1
+		for y in range(y0, y1 + 1):
+			if not _open(y * cols + x):
+				var gap := y - last - 1
+				if last >= 0 and gap >= 1 and gap <= span:
+					for gy in range(last + 1, y):
+						fill.append(gy * cols + x)
+				last = y
+	for index in fill:
+		set_cell(index, INK)
+
+
+## Grows every ink edge outward by `steps` cells inside the square around `center`.
+func grow_ink(center: Vector2, radius: float, steps: int) -> void:
+	var x0 := clampi(int((center.x - radius) / cell_size), 0, cols - 1)
+	var x1 := clampi(int((center.x + radius) / cell_size), 0, cols - 1)
+	var y0 := clampi(int((center.y - radius) / cell_size), 0, rows - 1)
+	var y1 := clampi(int((center.y + radius) / cell_size), 0, rows - 1)
+	for step in steps:
+		var grow := PackedInt32Array()
+		for y in range(y0, y1 + 1):
+			for x in range(x0, x1 + 1):
+				var index := y * cols + x
+				if not _open(index):
+					continue
+				if (x > 0 and not _open(index - 1)) or (x < cols - 1 and not _open(index + 1)) \
+						or (y > 0 and not _open(index - cols)) or (y < rows - 1 and not _open(index + cols)):
+					grow.append(index)
+		for index in grow:
+			set_cell(index, INK)
 
 
 func paint_line(from: Vector2, to: Vector2, radius: float, state: int) -> void:

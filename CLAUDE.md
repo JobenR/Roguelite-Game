@@ -1,4 +1,4 @@
-# Inkbound (working title)
+# Blotline
 
 Top-down roguelite horde-survival shooter. Godot 4.7 (the user runs 4.7.2), GDScript,
 2D only. Compatibility renderer (OpenGL), the most widely supported one for 2D.
@@ -52,6 +52,13 @@ You are a drop of living ink on a blank page; the horde is a grey smudge.
    and The Eraser mini-boss; a new type about every 60 seconds; enemy health grows
    with a squared term. Power curve pass: faster early levels, steeper later ones,
    and selected upgrades count double at level 1.
+   Power-up overhaul (done): all 100 ideas from `docs/powerup_ideas.md` are built:
+   112 upgrade cards, 8 pickups, 20 pair synergies, 8 set bonuses, card rarities,
+   reroll and banish. The user found the old card screen boring: card picks must
+   feel exciting, with visible rarity and something each pick builds toward.
+   Decided by the user, not yet built: (a) next milestone is menus, sound and
+   saved progress; (b) a run is won by beating a final boss at 15 minutes, after
+   which the player may continue endlessly; (c) art stays code-drawn.
 5. Burning Page mode: shrink, dead ground, flow field, strip payouts.
 6. Mobile: touch polish, iOS export, performance pass (60fps with 300+ enemies).
 7. Meta: currency, unlocks, JSON save, menus, audio, haptics.
@@ -61,14 +68,17 @@ Commit after each milestone and tell the user exactly what to test and report.
 ## Layout
 
 - `data/` JSON content: enemies, weapons, player, modes, waves, pulses, upgrades,
-  progression, pickups, glyphs, milestones. Loaded by `DataDB`.
+  progression, pickups, glyphs, milestones, arsenal (numbers for upgrade
+  effects, read with `DataDB.arsenal_num(id, key, default)`). Loaded by `DataDB`.
 - `autoload/` `Events` (signal bus), `DataDB`, `GameState` (run clock, XP, level),
   `Upgrades` (run-scoped stat modifiers).
 - `core/` engine-agnostic helpers: `SpatialGrid`, `ObjectPool`, `InkGrid`,
   `ShapeClassifier` (circle/triangle/square from a filled region).
 - `entities/` one folder per entity: state script + scene. `entities/visuals/` holds visual components.
 - `systems/` managers that own and update entities: `EnemyManager`, `BulletManager`, `SpawnDirector`,
-  `InkSystem`, `PulseSystem`, `SecondarySystem`, `AuxWeapons` (laser, orbit),
+  `InkSystem`, `PulseSystem`, `SecondarySystem`, `AuxWeapons` (laser, orbit,
+  mortar), `Arsenal` (every other extra weapon and passive ink effect),
+  `Hazards` (burn zones, black holes, mines), `EnemyShots`,
   `PickupManager` (temporary powers), `GlyphSystem`, `MilestoneSystem`,
   `GemManager`, `Effects`.
 - `ui/` HUD, touch controls, level-up cards, pause menu, run summary, debug overlay, safe area.
@@ -133,15 +143,22 @@ Commit after each milestone and tell the user exactly what to test and report.
   `synergies` (requires two upgrade ids, effects). Effects are
   `{stat, add}` or `{stat, mult}`. A synergy unlocks automatically once every
   required upgrade is owned. `first_level_double` makes level 1 count twice.
-- An upgrade that reuses an existing stat needs no code. Stats in use:
-  `fire_rate, damage, move_speed, max_hp, pickup_radius, pierce, multishot,
-  scatter, laser, orbit, ricochet, explosive, explosive_size, ink_regen,
-  ink_burn, trail_radius, pulse_radius, splat_size, splat_damage, ink_speed,
-  pulse_heal, auto_aim_duration, ring_bomb, pulse_gap, permanent_marker,
-  painter, ink_slow, territory_tax, shockwave, homing, dash, mortar, reroll`.
-- Each upgrade has a `category` (weapon/stat/ink: card border colour) and an
-  `icon` id drawn in code by `ui/levelup/upgrade_icon.gd`. A new upgrade needs a
-  new `match` branch there or it shows the default drop.
+- An upgrade that reuses an existing stat needs no code. An upgrade's stat
+  name is in its `effects`; grep that name to find where it is read. Extra
+  weapons use the stat as their level (`Upgrades.bonus("mines")`).
+- Card offers: `Upgrades.roll_choices` weights by `rarity` (common, rare, epic,
+  legendary) and favours cards already owned. `banished` cards never return.
+- Sets: each upgrade has a `set`. Owning enough different cards of a set
+  unlocks its tiers (`sets` in upgrades.json). Cards show set progress, the
+  synergy they complete, or a partner card to look for.
+- `GameState.damage_bonus` carries situational damage (on ink, moving, low
+  health); every weapon multiplies by `1 + damage_bonus`.
+- Enemy status effects (slow, stain, bleed) are fields on `Enemy`, applied in
+  `BulletManager._resolve_hit` and ticked in `EnemyManager`.
+- Each upgrade has a `category` (weapon/stat/ink: icon tint), a `rarity` (card
+  border and banner), an `icon` id drawn in code by
+  `ui/levelup/upgrade_icon.gd`, and an optional two-letter `badge` for cards
+  that share a picture. An unknown icon id shows the default drop.
 - Temporary powers live in `GameState.powers` (id -> seconds left), granted by
   pickups in `data/pickups.json` (one shared drop chance and pity timer, then a
   weighted pick among `types`). `<id>_duration` is the stat that extends one.

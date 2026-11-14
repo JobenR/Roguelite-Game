@@ -47,7 +47,17 @@ func smudge_share() -> float:
 
 func _on_enemy_killed(_type_id: String, pos: Vector2, splat_radius: float, _xp: int, dir: Vector2) -> void:
 	var radius := Upgrades.value("splat_size", splat_radius)
+	# Chain Splat: bigger when the kill happens on your own ink.
+	if grid.is_ink(pos):
+		radius *= 1.0 + Upgrades.bonus("chain_splat")
+	# Reclaim: a kill on smudge wipes the smudge around it.
+	var reclaim := Upgrades.bonus("reclaim")
+	if reclaim > 0.0 and grid.state_at(pos) == InkGrid.SMUDGE:
+		grid.clean_circle(pos, radius * (1.5 + reclaim))
 	splat(pos, radius, dir)
+	var sticky := Upgrades.bonus("sticky")
+	if sticky > 0.0:
+		_enemies.slow_area(pos, radius, sticky + 0.15, DataDB.arsenal_num("sticky_splats", "seconds", 2.0))
 	# Splat damage (Acid Bath) is applied next frame, so chain reactions
 	# spread over frames instead of recursing.
 	if Upgrades.bonus("splat_damage") > 0.0:

@@ -12,6 +12,7 @@ var progression: Dictionary = {}
 var pickups: Dictionary = {}
 var glyphs: Dictionary = {}
 var milestones: Dictionary = {}
+var arsenal: Dictionary = {}
 
 
 func _ready() -> void:
@@ -26,6 +27,7 @@ func _ready() -> void:
 	pickups = _load("res://data/pickups.json")
 	glyphs = _load("res://data/glyphs.json")
 	milestones = _load("res://data/milestones.json")
+	arsenal = _load("res://data/arsenal.json")
 
 
 func _load(path: String) -> Dictionary:
@@ -38,3 +40,8 @@ func _load(path: String) -> Dictionary:
 		push_error("DataDB: %s is not a valid JSON object" % path)
 		return {}
 	return parsed
+
+
+## A number from data/arsenal.json: arsenal_num("mines", "damage", 30.0).
+func arsenal_num(id: String, key: String, fallback: float) -> float:
+	return float(arsenal.get(id, {}).get(key, fallback))

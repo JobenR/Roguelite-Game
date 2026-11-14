@@ -13,6 +13,8 @@ const MODE_ID := "survival"
 @onready var player: Player = $Player
 @onready var camera: Camera2D = $Player/Camera2D
 @onready var director: SpawnDirector = $SpawnDirector
+@onready var hazards: Hazards = $Hazards
+@onready var arsenal: Arsenal = $Arsenal
 @onready var enemy_shots: EnemyShots = $EnemyShots
 @onready var glyphs: GlyphSystem = $GlyphSystem
 @onready var milestones: MilestoneSystem = $MilestoneSystem
@@ -36,9 +38,11 @@ func _ready() -> void:
 	enemy_shots.setup(player, ink, rect)
 	bullets.setup(enemies, rect, effects, ink)
 	player.setup(enemies, bullets, rect, ink, effects)
-	secondary.setup(player, enemies, ink, effects)
+	hazards.setup(enemies, ink, effects)
+	secondary.setup(player, enemies, ink, effects, hazards)
+	arsenal.setup(player, enemies, bullets, ink, effects, hazards)
 	glyphs.setup(player, enemies, ink, effects)
-	pulse.setup(player, enemies, ink, effects, glyphs)
+	pulse.setup(player, enemies, ink, effects, glyphs, hazards)
 	milestones.setup(ink, player, pulse)
 	gems.setup(player)
 	aux.setup(player, enemies, ink, effects)

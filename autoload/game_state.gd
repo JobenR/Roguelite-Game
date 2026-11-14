@@ -12,6 +12,10 @@ var xp_to_next: int = 5
 var debug_visible: bool = false
 ## Temporary powers: id -> seconds left.
 var powers: Dictionary = {}
+## Extra damage share from the player's current situation (on ink, low health,
+## moving...). Set by the player each frame; applied to every weapon.
+var damage_bonus: float = 0.0
+var _xp_fraction: float = 0.0
 
 
 func _ready() -> void:
@@ -27,6 +31,8 @@ func start_run() -> void:
 	xp = 0
 	xp_to_next = _xp_needed(1)
 	powers.clear()
+	damage_bonus = 0.0
+	_xp_fraction = 0.0
 	Events.run_started.emit()
 	Events.xp_changed.emit(xp, xp_to_next, level)
 
@@ -51,7 +57,11 @@ func power_left(id: String) -> float:
 func add_xp(amount: int) -> void:
 	if state != State.PLAYING:
 		return
-	xp += amount
+	# Scholar: bonus XP, carried as a fraction until it adds up to a point.
+	_xp_fraction += amount * Upgrades.mult_of("xp_gain")
+	var gained := int(_xp_fraction)
+	_xp_fraction -= gained
+	xp += gained
 	Events.xp_collected.emit(amount)
 	while xp >= xp_to_next:
 		xp -= xp_to_next

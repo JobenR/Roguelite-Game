@@ -1,477 +1,2272 @@
 {
-  "upgrades": {
-    "rapid_fire": {
-      "name": "Quick Quill",
-      "desc": "+8% fire rate",
-      "max_level": 8,
-      "effects": [
-        {
-          "stat": "fire_rate",
-          "mult": 0.08
-        }
-      ],
-      "category": "weapon",
-      "icon": "rapid_fire",
-      "first_level_double": true
-    },
-    "damage": {
-      "name": "Dense Ink",
-      "desc": "+10% damage",
-      "max_level": 8,
-      "effects": [
-        {
-          "stat": "damage",
-          "mult": 0.1
-        }
-      ],
-      "category": "weapon",
-      "icon": "damage",
-      "first_level_double": true
-    },
-    "move_speed": {
-      "name": "Light Feet",
-      "desc": "+5% move speed",
-      "max_level": 6,
-      "effects": [
-        {
-          "stat": "move_speed",
-          "mult": 0.05
-        }
-      ],
-      "category": "stat",
-      "icon": "move_speed",
-      "first_level_double": true
-    },
-    "max_hp": {
-      "name": "Deep Well",
-      "desc": "+10 max health, and heal 10",
-      "max_level": 8,
-      "effects": [
-        {
-          "stat": "max_hp",
-          "add": 10
-        }
-      ],
-      "category": "stat",
-      "icon": "max_hp",
-      "first_level_double": true
-    },
-    "pickup_radius": {
-      "name": "Blotting Paper",
-      "desc": "+20% pickup radius",
-      "max_level": 5,
-      "effects": [
-        {
-          "stat": "pickup_radius",
-          "mult": 0.2
-        }
-      ],
-      "category": "stat",
-      "icon": "pickup_radius",
-      "first_level_double": true
-    },
-    "pierce": {
-      "name": "Sharp Nib",
-      "desc": "Shots pass through +1 enemy",
-      "max_level": 3,
-      "effects": [
-        {
-          "stat": "pierce",
-          "add": 1
-        }
-      ],
-      "category": "weapon",
-      "icon": "pierce"
-    },
-    "multishot": {
-      "name": "Twin Nib",
-      "desc": "+1 parallel shot (double, then triple). Each shot is a little weaker",
-      "max_level": 2,
-      "effects": [
-        {
-          "stat": "multishot",
-          "add": 1
-        }
-      ],
-      "category": "weapon",
-      "icon": "multishot"
-    },
-    "ricochet": {
-      "name": "Skipping Stone",
-      "desc": "Shots bounce to +1 nearby enemy",
-      "max_level": 3,
-      "effects": [
-        {
-          "stat": "ricochet",
-          "add": 1
-        }
-      ],
-      "category": "weapon",
-      "icon": "ricochet"
-    },
-    "explosive": {
-      "name": "Burst Cartridge",
-      "desc": "Shots burst on impact for 30% damage (+25 burst radius)",
-      "max_level": 4,
-      "effects": [
-        {
-          "stat": "explosive",
-          "add": 25
-        }
-      ],
-      "category": "weapon",
-      "icon": "explosive"
-    },
-    "healing_ink": {
-      "name": "Healing Ink",
-      "desc": "Regenerate +0.8 health per second while on your ink",
-      "max_level": 5,
-      "effects": [
-        {
-          "stat": "ink_regen",
-          "add": 0.8
-        }
-      ],
-      "category": "ink",
-      "icon": "healing_ink",
-      "first_level_double": true
-    },
-    "caustic_ink": {
-      "name": "Caustic Ink",
-      "desc": "Enemies standing on your ink take +3 damage per second",
-      "max_level": 6,
-      "effects": [
-        {
-          "stat": "ink_burn",
-          "add": 3
-        }
-      ],
-      "category": "ink",
-      "icon": "caustic_ink",
-      "first_level_double": true
-    },
-    "broad_stroke": {
-      "name": "Broad Stroke",
-      "desc": "+15% trail width",
-      "max_level": 4,
-      "effects": [
-        {
-          "stat": "trail_radius",
-          "mult": 0.15
-        }
-      ],
-      "category": "ink",
-      "icon": "broad_stroke",
-      "first_level_double": true
-    },
-    "wide_ripple": {
-      "name": "Wide Ripple",
-      "desc": "+12% pulse reach",
-      "max_level": 5,
-      "effects": [
-        {
-          "stat": "pulse_radius",
-          "mult": 0.12
-        }
-      ],
-      "category": "ink",
-      "icon": "wide_ripple",
-      "first_level_double": true
-    },
-    "heavy_blots": {
-      "name": "Heavy Blots",
-      "desc": "+12% kill splat size",
-      "max_level": 5,
-      "effects": [
-        {
-          "stat": "splat_size",
-          "mult": 0.12
-        }
-      ],
-      "category": "ink",
-      "icon": "heavy_blots",
-      "first_level_double": true
-    },
-    "slick_page": {
-      "name": "Slick Page",
-      "desc": "+5% extra move speed on your ink",
-      "max_level": 5,
-      "effects": [
-        {
-          "stat": "ink_speed",
-          "add": 0.05
-        }
-      ],
-      "category": "ink",
-      "icon": "slick_page",
-      "first_level_double": true
-    },
-    "scatter": {
-      "name": "Scatter",
-      "desc": "+2 angled side shots at 40% damage",
-      "max_level": 3,
-      "category": "weapon",
-      "icon": "scatter",
-      "effects": [
-        {
-          "stat": "scatter",
-          "add": 2
-        }
-      ]
-    },
-    "laser": {
-      "name": "Ink Jet",
-      "desc": "A piercing beam every few seconds that leaves a line of ink. Levels fire faster",
-      "max_level": 5,
-      "category": "weapon",
-      "icon": "laser",
-      "effects": [
-        {
-          "stat": "laser",
-          "add": 1
-        }
-      ]
-    },
-    "orbit": {
-      "name": "Orbiting Blots",
-      "desc": "+1 ink ball circling you that damages enemies it touches",
-      "max_level": 5,
-      "category": "weapon",
-      "icon": "orbit",
-      "effects": [
-        {
-          "stat": "orbit",
-          "add": 1
-        }
-      ]
-    },
-    "steady_hand": {
-      "name": "Steady Hand",
-      "desc": "Auto-Aim pickups last +2 seconds",
-      "max_level": 3,
-      "category": "stat",
-      "icon": "steady_hand",
-      "effects": [
-        {
-          "stat": "auto_aim_duration",
-          "add": 2
-        }
-      ]
-    },
-    "ring_bomb": {
-      "name": "Ring Bomb",
-      "desc": "The ink bomb paints a ring: an instant loop to pulse. Levels widen the ring",
-      "max_level": 3,
-      "category": "ink",
-      "icon": "ring_bomb",
-      "effects": [
-        {
-          "stat": "ring_bomb",
-          "add": 1
-        }
-      ]
-    },
-    "forgiving_pulse": {
-      "name": "Forgiving Pulse",
-      "desc": "The pulse closes gaps of +1 step in a loop",
-      "max_level": 3,
-      "category": "ink",
-      "icon": "forgiving_pulse",
-      "effects": [
-        {
-          "stat": "pulse_gap",
-          "add": 1
-        }
-      ]
-    },
-    "permanent_marker": {
-      "name": "Permanent Marker",
-      "desc": "Ink filled by a pulse can never be smudged",
-      "max_level": 1,
-      "category": "ink",
-      "icon": "permanent_marker",
-      "effects": [
-        {
-          "stat": "permanent_marker",
-          "add": 1
-        }
-      ]
-    },
-    "painter": {
-      "name": "Painter's Shots",
-      "desc": "Shots leave dots of ink along their path. Levels pack the dots closer",
-      "max_level": 3,
-      "category": "ink",
-      "icon": "painter",
-      "effects": [
-        {
-          "stat": "painter",
-          "add": 1
-        }
-      ]
-    },
-    "quicksand": {
-      "name": "Quicksand Ink",
-      "desc": "Enemies on your ink are slowed by +10%",
-      "max_level": 3,
-      "category": "ink",
-      "icon": "quicksand",
-      "effects": [
-        {
-          "stat": "ink_slow",
-          "add": 0.1
-        }
-      ]
-    },
-    "territory_tax": {
-      "name": "Territory Tax",
-      "desc": "Every 10 seconds, gain XP for the share of the page you own",
-      "max_level": 4,
-      "category": "ink",
-      "icon": "territory_tax",
-      "effects": [
-        {
-          "stat": "territory_tax",
-          "add": 0.25
-        }
-      ]
-    },
-    "shockwave": {
-      "name": "Shockwave",
-      "desc": "The pulse always blasts enemies in reach back for +12 damage, loop or not",
-      "max_level": 4,
-      "category": "ink",
-      "icon": "shockwave",
-      "effects": [
-        {
-          "stat": "shockwave",
-          "add": 12
-        }
-      ]
-    },
-    "homing": {
-      "name": "Homing Ink",
-      "desc": "Shots curve toward nearby enemies. Levels turn harder",
-      "max_level": 3,
-      "category": "weapon",
-      "icon": "homing",
-      "effects": [
-        {
-          "stat": "homing",
-          "add": 1.6
-        }
-      ]
-    },
-    "dash": {
-      "name": "Dash",
-      "desc": "Unlocks DASH (Shift): a short burst through enemies. Levels recharge faster",
-      "max_level": 4,
-      "category": "stat",
-      "icon": "dash",
-      "effects": [
-        {
-          "stat": "dash",
-          "add": 1
-        }
-      ]
-    },
-    "mortar": {
-      "name": "Ink Mortar",
-      "desc": "Lobs a shell at the thickest crowd every few seconds. Big splat on landing",
-      "max_level": 5,
-      "category": "weapon",
-      "icon": "mortar",
-      "effects": [
-        {
-          "stat": "mortar",
-          "add": 1
-        }
-      ]
-    },
-    "reroll": {
-      "name": "Reroll",
-      "desc": "+1 redraw of the cards at every level-up",
-      "max_level": 2,
-      "category": "stat",
-      "icon": "reroll",
-      "effects": [
-        {
-          "stat": "reroll",
-          "add": 1
-        }
-      ]
+ "upgrades": {
+  "rapid_fire": {
+   "name": "Quick Quill",
+   "desc": "+8% fire rate",
+   "max_level": 8,
+   "effects": [
+    {
+     "stat": "fire_rate",
+     "mult": 0.08
     }
+   ],
+   "category": "weapon",
+   "icon": "rapid_fire",
+   "first_level_double": true,
+   "set": "nib",
+   "rarity": "common"
   },
-  "synergies": {
-    "cluster_rounds": {
-      "name": "Cluster Rounds",
-      "desc": "Bursts are 60% larger",
-      "requires": [
-        "scatter",
-        "explosive"
-      ],
-      "effects": [
-        {
-          "stat": "explosive_size",
-          "mult": 0.6
-        }
-      ]
-    },
-    "pinball": {
-      "name": "Pinball",
-      "desc": "+2 bounces per shot",
-      "requires": [
-        "ricochet",
-        "pierce"
-      ],
-      "effects": [
-        {
-          "stat": "ricochet",
-          "add": 2
-        }
-      ]
-    },
-    "acid_bath": {
-      "name": "Acid Bath",
-      "desc": "Kill splats deal 10 damage to enemies they land on",
-      "requires": [
-        "caustic_ink",
-        "heavy_blots"
-      ],
-      "effects": [
-        {
-          "stat": "splat_damage",
-          "add": 10
-        }
-      ]
-    },
-    "tidal_pulse": {
-      "name": "Tidal Pulse",
-      "desc": "A successful pulse heals 10 health",
-      "requires": [
-        "wide_ripple",
-        "healing_ink"
-      ],
-      "effects": [
-        {
-          "stat": "pulse_heal",
-          "add": 10
-        }
-      ]
-    },
-    "drawn_circle": {
-      "name": "Drawn Circle",
-      "desc": "+50% pulse reach",
-      "requires": [
-        "ring_bomb",
-        "wide_ripple"
-      ],
-      "effects": [
-        {
-          "stat": "pulse_radius",
-          "mult": 0.5
-        }
-      ]
+  "damage": {
+   "name": "Dense Ink",
+   "desc": "+10% damage",
+   "max_level": 8,
+   "effects": [
+    {
+     "stat": "damage",
+     "mult": 0.1
     }
+   ],
+   "category": "weapon",
+   "icon": "damage",
+   "first_level_double": true,
+   "set": "nib",
+   "rarity": "common"
+  },
+  "move_speed": {
+   "name": "Light Feet",
+   "desc": "+5% move speed",
+   "max_level": 6,
+   "effects": [
+    {
+     "stat": "move_speed",
+     "mult": 0.05
+    }
+   ],
+   "category": "stat",
+   "icon": "move_speed",
+   "first_level_double": true,
+   "set": "stride",
+   "rarity": "common"
+  },
+  "max_hp": {
+   "name": "Deep Well",
+   "desc": "+10 max health, and heal 10",
+   "max_level": 8,
+   "effects": [
+    {
+     "stat": "max_hp",
+     "add": 10
+    }
+   ],
+   "category": "stat",
+   "icon": "max_hp",
+   "first_level_double": true,
+   "set": "guard",
+   "rarity": "common"
+  },
+  "pickup_radius": {
+   "name": "Blotting Paper",
+   "desc": "+20% pickup radius",
+   "max_level": 5,
+   "effects": [
+    {
+     "stat": "pickup_radius",
+     "mult": 0.2
+    }
+   ],
+   "category": "stat",
+   "icon": "pickup_radius",
+   "first_level_double": true,
+   "set": "mind",
+   "rarity": "common"
+  },
+  "pierce": {
+   "name": "Sharp Nib",
+   "desc": "Shots pass through +1 enemy",
+   "max_level": 3,
+   "effects": [
+    {
+     "stat": "pierce",
+     "add": 1
+    }
+   ],
+   "category": "weapon",
+   "icon": "pierce",
+   "set": "nib",
+   "rarity": "rare"
+  },
+  "multishot": {
+   "name": "Twin Nib",
+   "desc": "+1 parallel shot (double, then triple). Each shot is a little weaker",
+   "max_level": 2,
+   "effects": [
+    {
+     "stat": "multishot",
+     "add": 1
+    }
+   ],
+   "category": "weapon",
+   "icon": "multishot",
+   "set": "nib",
+   "rarity": "epic"
+  },
+  "ricochet": {
+   "name": "Skipping Stone",
+   "desc": "Shots bounce to +1 nearby enemy",
+   "max_level": 3,
+   "effects": [
+    {
+     "stat": "ricochet",
+     "add": 1
+    }
+   ],
+   "category": "weapon",
+   "icon": "ricochet",
+   "set": "nib",
+   "rarity": "rare"
+  },
+  "explosive": {
+   "name": "Burst Cartridge",
+   "desc": "Shots burst on impact for 30% damage (+25 burst radius)",
+   "max_level": 4,
+   "effects": [
+    {
+     "stat": "explosive",
+     "add": 25
+    }
+   ],
+   "category": "weapon",
+   "icon": "explosive",
+   "set": "nib",
+   "rarity": "rare"
+  },
+  "healing_ink": {
+   "name": "Healing Ink",
+   "desc": "Regenerate +0.8 health per second while on your ink",
+   "max_level": 5,
+   "effects": [
+    {
+     "stat": "ink_regen",
+     "add": 0.8
+    }
+   ],
+   "category": "ink",
+   "icon": "healing_ink",
+   "first_level_double": true,
+   "set": "guard",
+   "rarity": "common"
+  },
+  "caustic_ink": {
+   "name": "Caustic Ink",
+   "desc": "Enemies standing on your ink take +3 damage per second",
+   "max_level": 6,
+   "effects": [
+    {
+     "stat": "ink_burn",
+     "add": 3
+    }
+   ],
+   "category": "ink",
+   "icon": "caustic_ink",
+   "first_level_double": true,
+   "set": "ink",
+   "rarity": "common"
+  },
+  "broad_stroke": {
+   "name": "Broad Stroke",
+   "desc": "+15% trail width",
+   "max_level": 4,
+   "effects": [
+    {
+     "stat": "trail_radius",
+     "mult": 0.15
+    }
+   ],
+   "category": "ink",
+   "icon": "broad_stroke",
+   "first_level_double": true,
+   "set": "ink",
+   "rarity": "common"
+  },
+  "wide_ripple": {
+   "name": "Wide Ripple",
+   "desc": "+12% pulse reach",
+   "max_level": 5,
+   "effects": [
+    {
+     "stat": "pulse_radius",
+     "mult": 0.12
+    }
+   ],
+   "category": "ink",
+   "icon": "wide_ripple",
+   "first_level_double": true,
+   "set": "pulse",
+   "rarity": "common"
+  },
+  "heavy_blots": {
+   "name": "Heavy Blots",
+   "desc": "+12% kill splat size",
+   "max_level": 5,
+   "effects": [
+    {
+     "stat": "splat_size",
+     "mult": 0.12
+    }
+   ],
+   "category": "ink",
+   "icon": "heavy_blots",
+   "first_level_double": true,
+   "set": "ink",
+   "rarity": "common"
+  },
+  "slick_page": {
+   "name": "Slick Page",
+   "desc": "+5% extra move speed on your ink",
+   "max_level": 5,
+   "effects": [
+    {
+     "stat": "ink_speed",
+     "add": 0.05
+    }
+   ],
+   "category": "ink",
+   "icon": "slick_page",
+   "first_level_double": true,
+   "set": "stride",
+   "rarity": "common"
+  },
+  "scatter": {
+   "name": "Scatter",
+   "desc": "+2 angled side shots at 40% damage",
+   "max_level": 3,
+   "category": "weapon",
+   "icon": "scatter",
+   "effects": [
+    {
+     "stat": "scatter",
+     "add": 2
+    }
+   ],
+   "set": "nib",
+   "rarity": "rare"
+  },
+  "laser": {
+   "name": "Ink Jet",
+   "desc": "A piercing beam every few seconds that leaves a line of ink. Levels fire faster",
+   "max_level": 5,
+   "category": "weapon",
+   "icon": "laser",
+   "effects": [
+    {
+     "stat": "laser",
+     "add": 1
+    }
+   ],
+   "set": "arsenal",
+   "rarity": "rare"
+  },
+  "orbit": {
+   "name": "Orbiting Blots",
+   "desc": "+1 ink ball circling you that damages enemies it touches",
+   "max_level": 5,
+   "category": "weapon",
+   "icon": "orbit",
+   "effects": [
+    {
+     "stat": "orbit",
+     "add": 1
+    }
+   ],
+   "set": "arsenal",
+   "rarity": "rare"
+  },
+  "steady_hand": {
+   "name": "Steady Hand",
+   "desc": "Auto-Aim pickups last +2 seconds",
+   "max_level": 3,
+   "category": "stat",
+   "icon": "steady_hand",
+   "effects": [
+    {
+     "stat": "auto_aim_duration",
+     "add": 2
+    }
+   ],
+   "set": "mind",
+   "rarity": "common"
+  },
+  "ring_bomb": {
+   "name": "Ring Bomb",
+   "desc": "The ink bomb paints a ring: an instant loop to pulse. Levels widen the ring",
+   "max_level": 3,
+   "category": "ink",
+   "icon": "ring_bomb",
+   "effects": [
+    {
+     "stat": "ring_bomb",
+     "add": 1
+    }
+   ],
+   "set": "bomb",
+   "rarity": "epic"
+  },
+  "forgiving_pulse": {
+   "name": "Forgiving Pulse",
+   "desc": "The pulse closes gaps of +1 step in a loop",
+   "max_level": 3,
+   "category": "ink",
+   "icon": "forgiving_pulse",
+   "effects": [
+    {
+     "stat": "pulse_gap",
+     "add": 1
+    }
+   ],
+   "set": "pulse",
+   "rarity": "rare"
+  },
+  "permanent_marker": {
+   "name": "Permanent Marker",
+   "desc": "Ink filled by a pulse can never be smudged",
+   "max_level": 1,
+   "category": "ink",
+   "icon": "permanent_marker",
+   "effects": [
+    {
+     "stat": "permanent_marker",
+     "add": 1
+    }
+   ],
+   "set": "pulse",
+   "rarity": "legendary"
+  },
+  "painter": {
+   "name": "Painter's Shots",
+   "desc": "Shots leave dots of ink along their path. Levels pack the dots closer",
+   "max_level": 3,
+   "category": "ink",
+   "icon": "painter",
+   "effects": [
+    {
+     "stat": "painter",
+     "add": 1
+    }
+   ],
+   "set": "ink",
+   "rarity": "rare"
+  },
+  "quicksand": {
+   "name": "Quicksand Ink",
+   "desc": "Enemies on your ink are slowed by +10%",
+   "max_level": 3,
+   "category": "ink",
+   "icon": "quicksand",
+   "effects": [
+    {
+     "stat": "ink_slow",
+     "add": 0.1
+    }
+   ],
+   "set": "ink",
+   "rarity": "rare"
+  },
+  "territory_tax": {
+   "name": "Territory Tax",
+   "desc": "Every 10 seconds, gain XP for the share of the page you own",
+   "max_level": 4,
+   "category": "ink",
+   "icon": "territory_tax",
+   "effects": [
+    {
+     "stat": "territory_tax",
+     "add": 0.25
+    }
+   ],
+   "set": "mind",
+   "rarity": "rare"
+  },
+  "shockwave": {
+   "name": "Shockwave",
+   "desc": "The pulse always blasts enemies in reach back for +12 damage, loop or not",
+   "max_level": 4,
+   "category": "ink",
+   "icon": "shockwave",
+   "effects": [
+    {
+     "stat": "shockwave",
+     "add": 12
+    }
+   ],
+   "set": "pulse",
+   "rarity": "rare"
+  },
+  "homing": {
+   "name": "Homing Ink",
+   "desc": "Shots curve toward nearby enemies. Levels turn harder",
+   "max_level": 3,
+   "category": "weapon",
+   "icon": "homing",
+   "effects": [
+    {
+     "stat": "homing",
+     "add": 1.6
+    }
+   ],
+   "set": "nib",
+   "rarity": "rare"
+  },
+  "dash": {
+   "name": "Dash",
+   "desc": "Unlocks DASH (Shift): a short burst through enemies. Levels recharge faster",
+   "max_level": 4,
+   "category": "stat",
+   "icon": "dash",
+   "effects": [
+    {
+     "stat": "dash",
+     "add": 1
+    }
+   ],
+   "set": "stride",
+   "rarity": "rare"
+  },
+  "mortar": {
+   "name": "Ink Mortar",
+   "desc": "Lobs a shell at the thickest crowd every few seconds. Big splat on landing",
+   "max_level": 5,
+   "category": "weapon",
+   "icon": "mortar",
+   "effects": [
+    {
+     "stat": "mortar",
+     "add": 1
+    }
+   ],
+   "set": "arsenal",
+   "rarity": "rare"
+  },
+  "reroll": {
+   "name": "Reroll",
+   "desc": "+1 redraw of the cards at every level-up",
+   "max_level": 2,
+   "category": "stat",
+   "icon": "reroll",
+   "effects": [
+    {
+     "stat": "reroll",
+     "add": 1
+    }
+   ],
+   "set": "mind",
+   "rarity": "rare"
+  },
+  "fountain": {
+   "name": "Fountain",
+   "desc": "A ring of shots bursts out from you every few seconds. Levels add shots",
+   "max_level": 4,
+   "category": "weapon",
+   "set": "arsenal",
+   "rarity": "rare",
+   "icon": "scatter",
+   "badge": "Fo",
+   "effects": [
+    {
+     "stat": "fountain",
+     "add": 1
+    }
+   ]
+  },
+  "quill_volley": {
+   "name": "Quill Volley",
+   "desc": "Homing quills launch at the nearest enemies. Levels add quills",
+   "max_level": 4,
+   "category": "weapon",
+   "set": "arsenal",
+   "rarity": "rare",
+   "icon": "homing",
+   "badge": "Qv",
+   "effects": [
+    {
+     "stat": "quill_volley",
+     "add": 1
+    }
+   ]
+  },
+  "boomerang": {
+   "name": "Boomerang Nib",
+   "desc": "A blade flies out and returns, cutting and inking both ways",
+   "max_level": 4,
+   "category": "weapon",
+   "set": "arsenal",
+   "rarity": "rare",
+   "icon": "boomerang",
+   "badge": "",
+   "effects": [
+    {
+     "stat": "boomerang",
+     "add": 1
+    }
+   ]
+  },
+  "sprinkler": {
+   "name": "Sprinkler",
+   "desc": "A rotating stream sprays short shots in a spiral around you",
+   "max_level": 4,
+   "category": "weapon",
+   "set": "arsenal",
+   "rarity": "rare",
+   "icon": "rain",
+   "badge": "Sp",
+   "effects": [
+    {
+     "stat": "sprinkler",
+     "add": 1
+    }
+   ]
+  },
+  "chain_blot": {
+   "name": "Chain Blot",
+   "desc": "A bolt jumps between nearby enemies. Levels add jumps",
+   "max_level": 4,
+   "category": "weapon",
+   "set": "arsenal",
+   "rarity": "rare",
+   "icon": "bolt",
+   "badge": "",
+   "effects": [
+    {
+     "stat": "chain_blot",
+     "add": 1
+    }
+   ]
+  },
+  "mines": {
+   "name": "Ink Mines",
+   "desc": "You drop a mine every few seconds that bursts when an enemy steps near",
+   "max_level": 4,
+   "category": "weapon",
+   "set": "arsenal",
+   "rarity": "rare",
+   "icon": "mine",
+   "badge": "",
+   "effects": [
+    {
+     "stat": "mines",
+     "add": 1
+    }
+   ]
+  },
+  "whip": {
+   "name": "Whip Stroke",
+   "desc": "A wide slash in front of you every second that paints an arc of ink",
+   "max_level": 4,
+   "category": "weapon",
+   "set": "arsenal",
+   "rarity": "rare",
+   "icon": "whip",
+   "badge": "",
+   "effects": [
+    {
+     "stat": "whip",
+     "add": 1
+    }
+   ]
+  },
+  "stamp": {
+   "name": "Stamp",
+   "desc": "A heavy seal slams down on a nearby enemy every few seconds",
+   "max_level": 4,
+   "category": "weapon",
+   "set": "arsenal",
+   "rarity": "rare",
+   "icon": "stamp",
+   "badge": "",
+   "effects": [
+    {
+     "stat": "stamp",
+     "add": 1
+    }
+   ]
+  },
+  "turret": {
+   "name": "Ink Turret",
+   "desc": "Places a turret where you stand. It fires only while it sits on your ink",
+   "max_level": 3,
+   "category": "weapon",
+   "set": "arsenal",
+   "rarity": "epic",
+   "icon": "turret",
+   "badge": "",
+   "effects": [
+    {
+     "stat": "turret",
+     "add": 1
+    }
+   ]
+  },
+  "planes": {
+   "name": "Paper Planes",
+   "desc": "Slow paper planes launch and steer themselves into enemies",
+   "max_level": 4,
+   "category": "weapon",
+   "set": "arsenal",
+   "rarity": "rare",
+   "icon": "plane",
+   "badge": "",
+   "effects": [
+    {
+     "stat": "planes",
+     "add": 1
+    }
+   ]
+  },
+  "tidal_wave": {
+   "name": "Tidal Wave",
+   "desc": "A wall of ink rolls forward where you aim, damaging and painting a swath",
+   "max_level": 3,
+   "category": "weapon",
+   "set": "arsenal",
+   "rarity": "legendary",
+   "icon": "wave",
+   "badge": "",
+   "effects": [
+    {
+     "stat": "tidal_wave",
+     "add": 1
+    }
+   ]
+  },
+  "ink_rain": {
+   "name": "Ink Rain",
+   "desc": "Drops fall around you at random, each a small burst and splat",
+   "max_level": 4,
+   "category": "weapon",
+   "set": "arsenal",
+   "rarity": "rare",
+   "icon": "rain",
+   "badge": "",
+   "effects": [
+    {
+     "stat": "ink_rain",
+     "add": 1
+    }
+   ]
+  },
+  "flamethrower": {
+   "name": "Spray Nozzle",
+   "desc": "While firing, a short cone of spray damages everything in front of you",
+   "max_level": 4,
+   "category": "weapon",
+   "set": "arsenal",
+   "rarity": "epic",
+   "icon": "flame",
+   "badge": "",
+   "effects": [
+    {
+     "stat": "flamethrower",
+     "add": 1
+    }
+   ]
+  },
+  "saw": {
+   "name": "Saw Blot",
+   "desc": "A spinning disc bounces around the screen, cutting what it touches",
+   "max_level": 3,
+   "category": "weapon",
+   "set": "arsenal",
+   "rarity": "epic",
+   "icon": "saw",
+   "badge": "",
+   "effects": [
+    {
+     "stat": "saw",
+     "add": 1
+    }
+   ]
+  },
+  "black_hole": {
+   "name": "Black Hole Blot",
+   "desc": "Opens a hole in the thickest crowd that drags enemies in, then bursts",
+   "max_level": 3,
+   "category": "weapon",
+   "set": "arsenal",
+   "rarity": "legendary",
+   "icon": "hole",
+   "badge": "",
+   "effects": [
+    {
+     "stat": "black_hole",
+     "add": 1
+    }
+   ]
+  },
+  "guardian": {
+   "name": "Guardian Blot",
+   "desc": "A floating blot strikes the nearest enemy that gets close",
+   "max_level": 3,
+   "category": "weapon",
+   "set": "arsenal",
+   "rarity": "rare",
+   "icon": "orbit",
+   "badge": "Gd",
+   "effects": [
+    {
+     "stat": "guardian",
+     "add": 1
+    }
+   ]
+  },
+  "rear_guard": {
+   "name": "Rear Guard",
+   "desc": "A second gun fires backwards. Levels add shots",
+   "max_level": 3,
+   "category": "weapon",
+   "set": "nib",
+   "rarity": "rare",
+   "icon": "multishot",
+   "badge": "Re",
+   "effects": [
+    {
+     "stat": "rear_guard",
+     "add": 1
+    }
+   ]
+  },
+  "side_guns": {
+   "name": "Side Guns",
+   "desc": "Shots also fire to your left and right. Levels strengthen them",
+   "max_level": 3,
+   "category": "weapon",
+   "set": "nib",
+   "rarity": "rare",
+   "icon": "scatter",
+   "badge": "Sd",
+   "effects": [
+    {
+     "stat": "side_guns",
+     "add": 1
+    }
+   ]
+  },
+  "sniper_nib": {
+   "name": "Sniper Nib",
+   "desc": "Every 10th shot is a huge, fast round that pierces everything. Levels make it more frequent",
+   "max_level": 4,
+   "category": "weapon",
+   "set": "nib",
+   "rarity": "epic",
+   "icon": "pierce",
+   "badge": "Sn",
+   "effects": [
+    {
+     "stat": "sniper",
+     "add": 1
+    }
+   ]
+  },
+  "echo_shot": {
+   "name": "Echo Shot",
+   "desc": "Each volley fires again half a second later at reduced damage",
+   "max_level": 3,
+   "category": "weapon",
+   "set": "nib",
+   "rarity": "epic",
+   "icon": "rapid_fire",
+   "badge": "Ec",
+   "effects": [
+    {
+     "stat": "echo",
+     "add": 1
+    }
+   ]
+  },
+  "splitting": {
+   "name": "Splitting Shots",
+   "desc": "A shot that hits splits into two smaller shots",
+   "max_level": 3,
+   "category": "weapon",
+   "set": "nib",
+   "rarity": "epic",
+   "icon": "scatter",
+   "badge": "Sx",
+   "effects": [
+    {
+     "stat": "split",
+     "add": 1
+    }
+   ]
+  },
+  "heavy_rounds": {
+   "name": "Heavy Rounds",
+   "desc": "Bigger, slower shots that hit harder and knock enemies back",
+   "max_level": 3,
+   "category": "weapon",
+   "set": "nib",
+   "rarity": "rare",
+   "icon": "damage",
+   "badge": "Hv",
+   "effects": [
+    {
+     "stat": "heavy",
+     "add": 1
+    }
+   ]
+  },
+  "long_reach": {
+   "name": "Long Reach",
+   "desc": "+15% shot speed and range",
+   "max_level": 3,
+   "category": "weapon",
+   "set": "nib",
+   "rarity": "common",
+   "icon": "pierce",
+   "badge": "Lr",
+   "effects": [
+    {
+     "stat": "reach",
+     "mult": 0.15
+    }
+   ]
+  },
+  "critical": {
+   "name": "Critical Blot",
+   "desc": "+5% chance for a shot to deal triple damage and leave an extra splat",
+   "max_level": 4,
+   "category": "weapon",
+   "set": "nib",
+   "rarity": "rare",
+   "icon": "star",
+   "badge": "",
+   "effects": [
+    {
+     "stat": "crit",
+     "add": 0.05
+    }
+   ]
+  },
+  "frost_ink": {
+   "name": "Frost Ink",
+   "desc": "Shots slow the enemies they hit for 2 seconds",
+   "max_level": 3,
+   "category": "weapon",
+   "set": "nib",
+   "rarity": "rare",
+   "icon": "snow",
+   "badge": "",
+   "effects": [
+    {
+     "stat": "frost",
+     "add": 1
+    }
+   ]
+  },
+  "staining": {
+   "name": "Staining Shots",
+   "desc": "Enemies you hit take +10% damage from everything for 3 seconds",
+   "max_level": 3,
+   "category": "weapon",
+   "set": "nib",
+   "rarity": "rare",
+   "icon": "damage",
+   "badge": "St",
+   "effects": [
+    {
+     "stat": "stain",
+     "add": 0.1
+    }
+   ]
+  },
+  "bleeding_ink": {
+   "name": "Bleeding Ink",
+   "desc": "Shots add +4 damage per second for 3 seconds",
+   "max_level": 4,
+   "category": "weapon",
+   "set": "nib",
+   "rarity": "rare",
+   "icon": "caustic_ink",
+   "badge": "Bl",
+   "effects": [
+    {
+     "stat": "bleed",
+     "add": 4
+    }
+   ]
+  },
+  "executioner": {
+   "name": "Executioner",
+   "desc": "Enemies below +5% health die instantly (not bosses)",
+   "max_level": 3,
+   "category": "weapon",
+   "set": "nib",
+   "rarity": "epic",
+   "icon": "skull",
+   "badge": "",
+   "effects": [
+    {
+     "stat": "execute",
+     "add": 0.05
+    }
+   ]
+  },
+  "overcharge": {
+   "name": "Overcharge",
+   "desc": "Firing while standing still ramps up your fire rate",
+   "max_level": 3,
+   "category": "weapon",
+   "set": "nib",
+   "rarity": "rare",
+   "icon": "rapid_fire",
+   "badge": "Oc",
+   "effects": [
+    {
+     "stat": "overcharge",
+     "add": 0.1
+    }
+   ]
+  },
+  "run_and_gun": {
+   "name": "Run and Gun",
+   "desc": "+6% fire rate while moving",
+   "max_level": 4,
+   "category": "weapon",
+   "set": "nib",
+   "rarity": "common",
+   "icon": "move_speed",
+   "badge": "Rg",
+   "effects": [
+    {
+     "stat": "run_gun",
+     "add": 0.06
+    }
+   ]
+  },
+  "first_strike": {
+   "name": "First Strike",
+   "desc": "+25% damage to enemies at full health",
+   "max_level": 4,
+   "category": "weapon",
+   "set": "nib",
+   "rarity": "common",
+   "icon": "damage",
+   "badge": "1s",
+   "effects": [
+    {
+     "stat": "first_strike",
+     "add": 0.25
+    }
+   ]
+  },
+  "wall_bounce": {
+   "name": "Wall Bounce",
+   "desc": "Shots bounce off the page edge",
+   "max_level": 2,
+   "category": "weapon",
+   "set": "nib",
+   "rarity": "common",
+   "icon": "ricochet",
+   "badge": "Wb",
+   "effects": [
+    {
+     "stat": "wall_bounce",
+     "add": 1
+    }
+   ]
+  },
+  "giant_slayer": {
+   "name": "Giant Slayer",
+   "desc": "+15% damage to Brutes and bosses",
+   "max_level": 4,
+   "category": "weapon",
+   "set": "nib",
+   "rarity": "rare",
+   "icon": "skull",
+   "badge": "Gs",
+   "effects": [
+    {
+     "stat": "giant",
+     "add": 0.15
+    }
+   ]
+  },
+  "thick_ink": {
+   "name": "Thick Ink",
+   "desc": "Enemy smudges are 20% less likely to cut through your ink",
+   "max_level": 3,
+   "category": "ink",
+   "set": "ink",
+   "rarity": "rare",
+   "icon": "permanent_marker",
+   "badge": "Tk",
+   "effects": [
+    {
+     "stat": "ink_tough",
+     "add": 0.2
+    }
+   ]
+  },
+  "living_ink": {
+   "name": "Living Ink",
+   "desc": "Your ink slowly spreads outward on its own",
+   "max_level": 3,
+   "category": "ink",
+   "set": "ink",
+   "rarity": "epic",
+   "icon": "flower",
+   "badge": "Lv",
+   "effects": [
+    {
+     "stat": "living",
+     "add": 1
+    }
+   ]
+  },
+  "electric_ink": {
+   "name": "Electric Ink",
+   "desc": "Every second, lightning strikes an enemy standing on your ink",
+   "max_level": 4,
+   "category": "ink",
+   "set": "ink",
+   "rarity": "rare",
+   "icon": "bolt",
+   "badge": "El",
+   "effects": [
+    {
+     "stat": "electric",
+     "add": 1
+    }
+   ]
+  },
+  "thorn_ink": {
+   "name": "Thorn Ink",
+   "desc": "Enemies that step onto your ink take 8 damage",
+   "max_level": 4,
+   "category": "ink",
+   "set": "ink",
+   "rarity": "rare",
+   "icon": "caustic_ink",
+   "badge": "Tn",
+   "effects": [
+    {
+     "stat": "thorn_ink",
+     "add": 8
+    }
+   ]
+  },
+  "home_turf": {
+   "name": "Home Turf",
+   "desc": "+5% damage while standing on your ink",
+   "max_level": 4,
+   "category": "ink",
+   "set": "ink",
+   "rarity": "common",
+   "icon": "damage",
+   "badge": "Ht",
+   "effects": [
+    {
+     "stat": "home_turf",
+     "add": 0.05
+    }
+   ]
+  },
+  "ink_armor": {
+   "name": "Ink Armor",
+   "desc": "Take 7% less damage while standing on your ink",
+   "max_level": 3,
+   "category": "ink",
+   "set": "ink",
+   "rarity": "common",
+   "icon": "shield",
+   "badge": "Ia",
+   "effects": [
+    {
+     "stat": "ink_armor",
+     "add": 0.07
+    }
+   ]
+  },
+  "eraser_steps": {
+   "name": "Clean Steps",
+   "desc": "Your footsteps wipe away smudge in a band around you",
+   "max_level": 3,
+   "category": "ink",
+   "set": "ink",
+   "rarity": "common",
+   "icon": "broad_stroke",
+   "badge": "Cs",
+   "effects": [
+    {
+     "stat": "eraser",
+     "add": 16
+    }
+   ]
+  },
+  "ink_reserve": {
+   "name": "Ink Reserve",
+   "desc": "Gain a regenerating shield: +2 points for every 5% of the page you own",
+   "max_level": 4,
+   "category": "ink",
+   "set": "ink",
+   "rarity": "rare",
+   "icon": "shield",
+   "badge": "Ir",
+   "effects": [
+    {
+     "stat": "reserve",
+     "add": 2
+    }
+   ]
+  },
+  "double_trail": {
+   "name": "Double Trail",
+   "desc": "You leave two parallel trails",
+   "max_level": 1,
+   "category": "ink",
+   "set": "ink",
+   "rarity": "epic",
+   "icon": "broad_stroke",
+   "badge": "2x",
+   "effects": [
+    {
+     "stat": "double_trail",
+     "add": 1
+    }
+   ]
+  },
+  "full_stride": {
+   "name": "Full Stride",
+   "desc": "+20% trail width while moving at full speed",
+   "max_level": 3,
+   "category": "ink",
+   "set": "ink",
+   "rarity": "common",
+   "icon": "broad_stroke",
+   "badge": "Fs",
+   "effects": [
+    {
+     "stat": "trail_run",
+     "add": 0.2
+    }
+   ]
+  },
+  "ink_sprouts": {
+   "name": "Ink Sprouts",
+   "desc": "Your ink grows small turret flowers near you",
+   "max_level": 3,
+   "category": "ink",
+   "set": "ink",
+   "rarity": "epic",
+   "icon": "flower",
+   "badge": "",
+   "effects": [
+    {
+     "stat": "sprouts",
+     "add": 1
+    }
+   ]
+  },
+  "sticky_splats": {
+   "name": "Sticky Splats",
+   "desc": "Kill splats slow the enemies they land on",
+   "max_level": 3,
+   "category": "ink",
+   "set": "ink",
+   "rarity": "common",
+   "icon": "quicksand",
+   "badge": "Sk",
+   "effects": [
+    {
+     "stat": "sticky",
+     "add": 0.15
+    }
+   ]
+  },
+  "chain_splat": {
+   "name": "Chain Splat",
+   "desc": "A kill on your ink makes a 20% larger splat",
+   "max_level": 3,
+   "category": "ink",
+   "set": "ink",
+   "rarity": "common",
+   "icon": "heavy_blots",
+   "badge": "Ch",
+   "effects": [
+    {
+     "stat": "chain_splat",
+     "add": 0.2
+    }
+   ]
+  },
+  "reclaim": {
+   "name": "Reclaim",
+   "desc": "Killing an enemy on smudge cleans the smudge around it",
+   "max_level": 3,
+   "category": "ink",
+   "set": "ink",
+   "rarity": "common",
+   "icon": "heavy_blots",
+   "badge": "Rc",
+   "effects": [
+    {
+     "stat": "reclaim",
+     "add": 0.5
+    }
+   ]
+  },
+  "ink_bridges": {
+   "name": "Ink Bridges",
+   "desc": "Small gaps between your ink patches close on their own",
+   "max_level": 2,
+   "category": "ink",
+   "set": "ink",
+   "rarity": "rare",
+   "icon": "forgiving_pulse",
+   "badge": "Br",
+   "effects": [
+    {
+     "stat": "bridges",
+     "add": 1
+    }
+   ]
+  },
+  "watermark": {
+   "name": "Watermark",
+   "desc": "Smudge over your ink wears off: the ink shows through again after about 10 seconds",
+   "max_level": 1,
+   "category": "ink",
+   "set": "ink",
+   "rarity": "legendary",
+   "icon": "permanent_marker",
+   "badge": "Wm",
+   "effects": [
+    {
+     "stat": "watermark",
+     "add": 1
+    }
+   ]
+  },
+  "ink_tide": {
+   "name": "Ink Tide",
+   "desc": "Every 30 seconds, the edges of your ink near you grow outward",
+   "max_level": 2,
+   "category": "ink",
+   "set": "ink",
+   "rarity": "epic",
+   "icon": "wave",
+   "badge": "Ti",
+   "effects": [
+    {
+     "stat": "tide",
+     "add": 1
+    }
+   ]
+  },
+  "quick_charge": {
+   "name": "Quick Charge",
+   "desc": "The pulse charges 10% faster",
+   "max_level": 4,
+   "category": "ink",
+   "set": "pulse",
+   "rarity": "common",
+   "icon": "wide_ripple",
+   "badge": "Qc",
+   "effects": [
+    {
+     "stat": "pulse_charge",
+     "mult": 0.1
+    }
+   ]
+  },
+  "double_pulse": {
+   "name": "Double Pulse",
+   "desc": "Store a second pulse charge",
+   "max_level": 1,
+   "category": "ink",
+   "set": "pulse",
+   "rarity": "legendary",
+   "icon": "wide_ripple",
+   "badge": "2x",
+   "effects": [
+    {
+     "stat": "pulse_store",
+     "add": 1
+    }
+   ]
+  },
+  "harvest_pulse": {
+   "name": "Harvest Pulse",
+   "desc": "Filling an area with a pulse pays out XP for its size",
+   "max_level": 3,
+   "category": "ink",
+   "set": "pulse",
+   "rarity": "rare",
+   "icon": "territory_tax",
+   "badge": "Hp",
+   "effects": [
+    {
+     "stat": "harvest",
+     "add": 1
+    }
+   ]
+  },
+  "mending_pulse": {
+   "name": "Mending Pulse",
+   "desc": "A pulse that finds no loop repairs small breaks in your trail instead",
+   "max_level": 1,
+   "category": "ink",
+   "set": "pulse",
+   "rarity": "rare",
+   "icon": "forgiving_pulse",
+   "badge": "Mp",
+   "effects": [
+    {
+     "stat": "mending",
+     "add": 1
+    }
+   ]
+  },
+  "aftershock": {
+   "name": "Aftershock",
+   "desc": "Areas filled by a pulse burn enemies for 3 seconds",
+   "max_level": 4,
+   "category": "ink",
+   "set": "pulse",
+   "rarity": "rare",
+   "icon": "flame",
+   "badge": "As",
+   "effects": [
+    {
+     "stat": "aftershock",
+     "add": 8
+    }
+   ]
+  },
+  "pulse_shield": {
+   "name": "Pulse Shield",
+   "desc": "A successful pulse makes you invulnerable for a moment",
+   "max_level": 3,
+   "category": "ink",
+   "set": "pulse",
+   "rarity": "rare",
+   "icon": "shield",
+   "badge": "Ps",
+   "effects": [
+    {
+     "stat": "pulse_shield",
+     "add": 0.8
+    }
+   ]
+  },
+  "big_loop": {
+   "name": "Big Loop Bonus",
+   "desc": "A large pulse fill grants +10% damage for 10 seconds",
+   "max_level": 3,
+   "category": "ink",
+   "set": "pulse",
+   "rarity": "rare",
+   "icon": "wide_ripple",
+   "badge": "Bg",
+   "effects": [
+    {
+     "stat": "loop_fury",
+     "add": 0.1
+    }
+   ]
+  },
+  "chain_pulse": {
+   "name": "Chain Pulse",
+   "desc": "A successful pulse refunds 10% of its charge",
+   "max_level": 3,
+   "category": "ink",
+   "set": "pulse",
+   "rarity": "common",
+   "icon": "wide_ripple",
+   "badge": "Cp",
+   "effects": [
+    {
+     "stat": "pulse_refund",
+     "add": 0.1
+    }
+   ]
+  },
+  "quick_fuse": {
+   "name": "Quick Fuse",
+   "desc": "The ink bomb recharges 10% faster",
+   "max_level": 4,
+   "category": "weapon",
+   "set": "bomb",
+   "rarity": "common",
+   "icon": "bomb",
+   "badge": "Qf",
+   "effects": [
+    {
+     "stat": "bomb_rate",
+     "mult": 0.1
+    }
+   ]
+  },
+  "cluster_bomb": {
+   "name": "Cluster Bomb",
+   "desc": "The bomb scatters smaller bombs around its blast. Levels add more",
+   "max_level": 3,
+   "category": "weapon",
+   "set": "bomb",
+   "rarity": "epic",
+   "icon": "bomb",
+   "badge": "Cl",
+   "effects": [
+    {
+     "stat": "cluster",
+     "add": 1
+    }
+   ]
+  },
+  "twin_bombs": {
+   "name": "Twin Bombs",
+   "desc": "Store a second ink bomb",
+   "max_level": 1,
+   "category": "weapon",
+   "set": "bomb",
+   "rarity": "legendary",
+   "icon": "bomb",
+   "badge": "2x",
+   "effects": [
+    {
+     "stat": "bomb_store",
+     "add": 1
+    }
+   ]
+  },
+  "sticky_bomb": {
+   "name": "Sticky Bomb",
+   "desc": "The bomb slows everything it hits for 4 seconds",
+   "max_level": 3,
+   "category": "weapon",
+   "set": "bomb",
+   "rarity": "common",
+   "icon": "bomb",
+   "badge": "Sk",
+   "effects": [
+    {
+     "stat": "bomb_slow",
+     "add": 0.15
+    }
+   ]
+  },
+  "big_bang": {
+   "name": "Big Bang",
+   "desc": "+12% bomb blast and splat size",
+   "max_level": 4,
+   "category": "weapon",
+   "set": "bomb",
+   "rarity": "common",
+   "icon": "bomb",
+   "badge": "Bb",
+   "effects": [
+    {
+     "stat": "bomb_size",
+     "mult": 0.12
+    }
+   ]
+  },
+  "vacuum_bomb": {
+   "name": "Vacuum Bomb",
+   "desc": "The bomb drags enemies toward it before it bursts",
+   "max_level": 2,
+   "category": "weapon",
+   "set": "bomb",
+   "rarity": "rare",
+   "icon": "hole",
+   "badge": "Vb",
+   "effects": [
+    {
+     "stat": "vacuum",
+     "add": 1
+    }
+   ]
+  },
+  "napalm": {
+   "name": "Burning Blot",
+   "desc": "The bomb's splat burns enemies for 5 seconds",
+   "max_level": 4,
+   "category": "weapon",
+   "set": "bomb",
+   "rarity": "rare",
+   "icon": "flame",
+   "badge": "Bn",
+   "effects": [
+    {
+     "stat": "napalm",
+     "add": 6
+    }
+   ]
+  },
+  "paper_shield": {
+   "name": "Paper Shield",
+   "desc": "Blocks one hit, then recharges. Levels recharge faster",
+   "max_level": 3,
+   "category": "stat",
+   "set": "guard",
+   "rarity": "rare",
+   "icon": "shield",
+   "badge": "",
+   "effects": [
+    {
+     "stat": "paper_shield",
+     "add": 1
+    }
+   ]
+  },
+  "second_wind": {
+   "name": "Second Wind",
+   "desc": "Once per run, survive a killing blow with 30% health",
+   "max_level": 1,
+   "category": "stat",
+   "set": "guard",
+   "rarity": "legendary",
+   "icon": "max_hp",
+   "badge": "2w",
+   "effects": [
+    {
+     "stat": "second_wind",
+     "add": 1
+    }
+   ]
+  },
+  "vampiric": {
+   "name": "Vampiric Ink",
+   "desc": "+2% chance to heal 1 health on a kill",
+   "max_level": 4,
+   "category": "stat",
+   "set": "guard",
+   "rarity": "common",
+   "icon": "max_hp",
+   "badge": "Va",
+   "effects": [
+    {
+     "stat": "vampiric",
+     "add": 0.02
+    }
+   ]
+  },
+  "thorns": {
+   "name": "Thorns",
+   "desc": "Enemies that hurt you take 6 damage",
+   "max_level": 4,
+   "category": "stat",
+   "set": "guard",
+   "rarity": "common",
+   "icon": "star",
+   "badge": "Th",
+   "effects": [
+    {
+     "stat": "thorns",
+     "add": 6
+    }
+   ]
+  },
+  "dodge": {
+   "name": "Dodge",
+   "desc": "+4% chance to avoid a hit entirely",
+   "max_level": 4,
+   "category": "stat",
+   "set": "guard",
+   "rarity": "common",
+   "icon": "dash",
+   "badge": "Dg",
+   "effects": [
+    {
+     "stat": "dodge",
+     "add": 0.04
+    }
+   ]
+  },
+  "longer_mercy": {
+   "name": "Longer Mercy",
+   "desc": "+0.15 seconds of invulnerability after being hit",
+   "max_level": 3,
+   "category": "stat",
+   "set": "guard",
+   "rarity": "common",
+   "icon": "shield",
+   "badge": "Lm",
+   "effects": [
+    {
+     "stat": "mercy",
+     "add": 0.15
+    }
+   ]
+  },
+  "retaliation": {
+   "name": "Retaliation",
+   "desc": "Taking a hit fires a free ring of shots",
+   "max_level": 3,
+   "category": "stat",
+   "set": "guard",
+   "rarity": "rare",
+   "icon": "scatter",
+   "badge": "Rt",
+   "effects": [
+    {
+     "stat": "retaliation",
+     "add": 1
+    }
+   ]
+  },
+  "regeneration": {
+   "name": "Regeneration",
+   "desc": "Recover +0.2 health per second everywhere",
+   "max_level": 5,
+   "category": "stat",
+   "set": "guard",
+   "rarity": "common",
+   "icon": "max_hp",
+   "badge": "Rg",
+   "effects": [
+    {
+     "stat": "regen",
+     "add": 0.2
+    }
+   ]
+  },
+  "last_stand": {
+   "name": "Last Stand",
+   "desc": "Below 25% health, gain +12% damage and fire rate",
+   "max_level": 3,
+   "category": "stat",
+   "set": "guard",
+   "rarity": "rare",
+   "icon": "skull",
+   "badge": "Ls",
+   "effects": [
+    {
+     "stat": "last_stand",
+     "add": 0.12
+    }
+   ]
+  },
+  "ink_skate": {
+   "name": "Ink Skate",
+   "desc": "Double the base speed bonus on your ink",
+   "max_level": 1,
+   "category": "stat",
+   "set": "stride",
+   "rarity": "rare",
+   "icon": "slick_page",
+   "badge": "Sk",
+   "effects": [
+    {
+     "stat": "ink_speed",
+     "add": 0.1
+    }
+   ]
+  },
+  "slipstream": {
+   "name": "Slipstream",
+   "desc": "Moving in a straight line builds up to +8% speed",
+   "max_level": 3,
+   "category": "stat",
+   "set": "stride",
+   "rarity": "common",
+   "icon": "move_speed",
+   "badge": "Ss",
+   "effects": [
+    {
+     "stat": "slipstream",
+     "add": 0.08
+    }
+   ]
+  },
+  "ghost_step": {
+   "name": "Ghost Step",
+   "desc": "After being hit, move +20% faster for a moment",
+   "max_level": 3,
+   "category": "stat",
+   "set": "stride",
+   "rarity": "common",
+   "icon": "dash",
+   "badge": "Gh",
+   "effects": [
+    {
+     "stat": "ghost_step",
+     "add": 0.2
+    }
+   ]
+  },
+  "trailblazer": {
+   "name": "Trailblazer",
+   "desc": "Your fresh trail burns enemies that cross it",
+   "max_level": 4,
+   "category": "stat",
+   "set": "stride",
+   "rarity": "rare",
+   "icon": "flame",
+   "badge": "Tb",
+   "effects": [
+    {
+     "stat": "trailblazer",
+     "add": 6
+    }
+   ]
+  },
+  "momentum": {
+   "name": "Momentum Shots",
+   "desc": "+8% damage while moving",
+   "max_level": 4,
+   "category": "stat",
+   "set": "stride",
+   "rarity": "common",
+   "icon": "move_speed",
+   "badge": "Mo",
+   "effects": [
+    {
+     "stat": "momentum",
+     "add": 0.08
+    }
+   ]
+  },
+  "scholar": {
+   "name": "Scholar",
+   "desc": "+6% XP from gems",
+   "max_level": 5,
+   "category": "stat",
+   "set": "mind",
+   "rarity": "common",
+   "icon": "book",
+   "badge": "",
+   "effects": [
+    {
+     "stat": "xp_gain",
+     "mult": 0.06
+    }
+   ]
+  },
+  "lucky_draw": {
+   "name": "Lucky Draw",
+   "desc": "Every level-up offers one more card",
+   "max_level": 1,
+   "category": "stat",
+   "set": "mind",
+   "rarity": "legendary",
+   "icon": "cards",
+   "badge": "",
+   "effects": [
+    {
+     "stat": "extra_cards",
+     "add": 1
+    }
+   ]
+  },
+  "banish": {
+   "name": "Banish",
+   "desc": "+1 banish per level-up: remove a card you never want to see again this run",
+   "max_level": 3,
+   "category": "stat",
+   "set": "mind",
+   "rarity": "rare",
+   "icon": "cards",
+   "badge": "Ba",
+   "effects": [
+    {
+     "stat": "banish",
+     "add": 1
+    }
+   ]
   }
+ },
+ "synergies": {
+  "cluster_rounds": {
+   "name": "Cluster Rounds",
+   "desc": "Bursts are 60% larger",
+   "requires": [
+    "scatter",
+    "explosive"
+   ],
+   "effects": [
+    {
+     "stat": "explosive_size",
+     "mult": 0.6
+    }
+   ]
+  },
+  "pinball": {
+   "name": "Pinball",
+   "desc": "+2 bounces per shot",
+   "requires": [
+    "ricochet",
+    "pierce"
+   ],
+   "effects": [
+    {
+     "stat": "ricochet",
+     "add": 2
+    }
+   ]
+  },
+  "acid_bath": {
+   "name": "Acid Bath",
+   "desc": "Kill splats deal 10 damage to enemies they land on",
+   "requires": [
+    "caustic_ink",
+    "heavy_blots"
+   ],
+   "effects": [
+    {
+     "stat": "splat_damage",
+     "add": 10
+    }
+   ]
+  },
+  "tidal_pulse": {
+   "name": "Tidal Pulse",
+   "desc": "A successful pulse heals 10 health",
+   "requires": [
+    "wide_ripple",
+    "healing_ink"
+   ],
+   "effects": [
+    {
+     "stat": "pulse_heal",
+     "add": 10
+    }
+   ]
+  },
+  "drawn_circle": {
+   "name": "Drawn Circle",
+   "desc": "+50% pulse reach",
+   "requires": [
+    "ring_bomb",
+    "wide_ripple"
+   ],
+   "effects": [
+    {
+     "stat": "pulse_radius",
+     "mult": 0.5
+    }
+   ]
+  },
+  "frostbite": {
+   "name": "Frostbite",
+   "desc": "Bleeding deals double damage",
+   "requires": [
+    "frost_ink",
+    "bleeding_ink"
+   ],
+   "effects": [
+    {
+     "stat": "bleed",
+     "mult": 1.0
+    }
+   ]
+  },
+  "storm_front": {
+   "name": "Storm Front",
+   "desc": "Ink Rain gains 2 levels",
+   "requires": [
+    "ink_rain",
+    "electric_ink"
+   ],
+   "effects": [
+    {
+     "stat": "ink_rain",
+     "add": 2
+    }
+   ]
+  },
+  "sharpshooter": {
+   "name": "Sharpshooter",
+   "desc": "+15% critical chance",
+   "requires": [
+    "sniper_nib",
+    "critical"
+   ],
+   "effects": [
+    {
+     "stat": "crit",
+     "add": 0.15
+    }
+   ]
+  },
+  "carpet_bomber": {
+   "name": "Carpet Bomber",
+   "desc": "Ink Mortar gains 2 levels",
+   "requires": [
+    "cluster_bomb",
+    "mortar"
+   ],
+   "effects": [
+    {
+     "stat": "mortar",
+     "add": 2
+    }
+   ]
+  },
+  "juggernaut": {
+   "name": "Juggernaut",
+   "desc": "Thorns deal double damage",
+   "requires": [
+    "thorns",
+    "paper_shield"
+   ],
+   "effects": [
+    {
+     "stat": "thorns",
+     "mult": 1.0
+    }
+   ]
+  },
+  "speed_demon": {
+   "name": "Speed Demon",
+   "desc": "+15% move speed",
+   "requires": [
+    "dash",
+    "slipstream"
+   ],
+   "effects": [
+    {
+     "stat": "move_speed",
+     "mult": 0.15
+    }
+   ]
+  },
+  "gardener": {
+   "name": "Gardener",
+   "desc": "Ink Sprouts gain 2 levels",
+   "requires": [
+    "living_ink",
+    "ink_sprouts"
+   ],
+   "effects": [
+    {
+     "stat": "sprouts",
+     "add": 2
+    }
+   ]
+  },
+  "echo_chamber": {
+   "name": "Echo Chamber",
+   "desc": "Fountain gains 2 levels",
+   "requires": [
+    "echo_shot",
+    "fountain"
+   ],
+   "effects": [
+    {
+     "stat": "fountain",
+     "add": 2
+    }
+   ]
+  },
+  "gravity_well": {
+   "name": "Gravity Well",
+   "desc": "Black Hole Blot gains 2 levels",
+   "requires": [
+    "black_hole",
+    "vacuum_bomb"
+   ],
+   "effects": [
+    {
+     "stat": "black_hole",
+     "add": 2
+    }
+   ]
+  },
+  "bookworm": {
+   "name": "Bookworm",
+   "desc": "Harvest Pulse gains 2 levels",
+   "requires": [
+    "scholar",
+    "harvest_pulse"
+   ],
+   "effects": [
+    {
+     "stat": "harvest",
+     "add": 2
+    }
+   ]
+  },
+  "bulwark": {
+   "name": "Bulwark",
+   "desc": "Ink Reserve shield is 50% larger",
+   "requires": [
+    "ink_armor",
+    "ink_reserve"
+   ],
+   "effects": [
+    {
+     "stat": "reserve",
+     "mult": 0.5
+    }
+   ]
+  },
+  "minefield": {
+   "name": "Minefield",
+   "desc": "Ink Mines gain 2 levels",
+   "requires": [
+    "mines",
+    "turret"
+   ],
+   "effects": [
+    {
+     "stat": "mines",
+     "add": 2
+    }
+   ]
+  },
+  "bullet_storm": {
+   "name": "Bullet Storm",
+   "desc": "+15% fire rate",
+   "requires": [
+    "rear_guard",
+    "side_guns"
+   ],
+   "effects": [
+    {
+     "stat": "fire_rate",
+     "mult": 0.15
+    }
+   ]
+  },
+  "glacier": {
+   "name": "Glacier",
+   "desc": "Quicksand Ink slows 20% more",
+   "requires": [
+    "frost_ink",
+    "quicksand"
+   ],
+   "effects": [
+    {
+     "stat": "ink_slow",
+     "add": 0.2
+    }
+   ]
+  },
+  "wildfire": {
+   "name": "Wildfire",
+   "desc": "Aftershock and Burning Blot deal +10 damage per second",
+   "requires": [
+    "aftershock",
+    "napalm"
+   ],
+   "effects": [
+    {
+     "stat": "aftershock",
+     "add": 10
+    },
+    {
+     "stat": "napalm",
+     "add": 10
+    }
+   ]
+  }
+ },
+ "rarity_weights": {
+  "common": 100,
+  "rare": 45,
+  "epic": 18,
+  "legendary": 6
+ },
+ "owned_weight_mult": 2.2,
+ "sets": {
+  "nib": {
+   "name": "Nib",
+   "tiers": [
+    {
+     "count": 3,
+     "desc": "+8% damage",
+     "effects": [
+      {
+       "stat": "damage",
+       "mult": 0.08
+      }
+     ]
+    },
+    {
+     "count": 6,
+     "desc": "+12% fire rate",
+     "effects": [
+      {
+       "stat": "fire_rate",
+       "mult": 0.12
+      }
+     ]
+    }
+   ]
+  },
+  "arsenal": {
+   "name": "Arsenal",
+   "tiers": [
+    {
+     "count": 3,
+     "desc": "Extra weapons fire 15% faster",
+     "effects": [
+      {
+       "stat": "arsenal_haste",
+       "mult": 0.15
+      }
+     ]
+    },
+    {
+     "count": 6,
+     "desc": "Extra weapons deal +25% damage",
+     "effects": [
+      {
+       "stat": "arsenal_damage",
+       "mult": 0.25
+      }
+     ]
+    }
+   ]
+  },
+  "ink": {
+   "name": "Ink",
+   "tiers": [
+    {
+     "count": 3,
+     "desc": "+15% kill splat size",
+     "effects": [
+      {
+       "stat": "splat_size",
+       "mult": 0.15
+      }
+     ]
+    },
+    {
+     "count": 6,
+     "desc": "+1.5 health per second on your ink",
+     "effects": [
+      {
+       "stat": "ink_regen",
+       "add": 1.5
+      }
+     ]
+    }
+   ]
+  },
+  "pulse": {
+   "name": "Pulse",
+   "tiers": [
+    {
+     "count": 3,
+     "desc": "+20% pulse charge speed",
+     "effects": [
+      {
+       "stat": "pulse_charge",
+       "mult": 0.2
+      }
+     ]
+    },
+    {
+     "count": 5,
+     "desc": "+20% pulse reach",
+     "effects": [
+      {
+       "stat": "pulse_radius",
+       "mult": 0.2
+      }
+     ]
+    }
+   ]
+  },
+  "bomb": {
+   "name": "Bomb",
+   "tiers": [
+    {
+     "count": 3,
+     "desc": "+20% bomb recharge speed",
+     "effects": [
+      {
+       "stat": "bomb_rate",
+       "mult": 0.2
+      }
+     ]
+    },
+    {
+     "count": 5,
+     "desc": "+50% bomb damage",
+     "effects": [
+      {
+       "stat": "bomb_damage",
+       "mult": 0.5
+      }
+     ]
+    }
+   ]
+  },
+  "guard": {
+   "name": "Guard",
+   "tiers": [
+    {
+     "count": 3,
+     "desc": "+20 max health",
+     "effects": [
+      {
+       "stat": "max_hp",
+       "add": 20
+      }
+     ]
+    },
+    {
+     "count": 6,
+     "desc": "Take 10% less damage",
+     "effects": [
+      {
+       "stat": "armor",
+       "add": 0.1
+      }
+     ]
+    }
+   ]
+  },
+  "stride": {
+   "name": "Stride",
+   "tiers": [
+    {
+     "count": 3,
+     "desc": "+6% move speed",
+     "effects": [
+      {
+       "stat": "move_speed",
+       "mult": 0.06
+      }
+     ]
+    },
+    {
+     "count": 5,
+     "desc": "+10% move speed",
+     "effects": [
+      {
+       "stat": "move_speed",
+       "mult": 0.1
+      }
+     ]
+    }
+   ]
+  },
+  "mind": {
+   "name": "Mind",
+   "tiers": [
+    {
+     "count": 3,
+     "desc": "+10% XP",
+     "effects": [
+      {
+       "stat": "xp_gain",
+       "mult": 0.1
+      }
+     ]
+    },
+    {
+     "count": 5,
+     "desc": "+1 reroll per level-up",
+     "effects": [
+      {
+       "stat": "reroll",
+       "add": 1
+      }
+     ]
+    }
+   ]
+  }
+ }
 }
