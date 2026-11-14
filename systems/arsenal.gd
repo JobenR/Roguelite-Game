@@ -24,9 +24,12 @@ var _trail: Array[Dictionary] = []
 var _saw_tick: float = 0.0
 var _trail_tick: float = 0.0
 var _watermark_left: float = 1.0
+var _secondary: SecondarySystem
+var _wall_points: Array[Dictionary] = []
 
 
-func setup(player: Player, enemies: EnemyManager, bullets: BulletManager, ink: InkSystem, effects: Effects, hazards: Hazards) -> void:
+func setup(player: Player, enemies: EnemyManager, bullets: BulletManager, ink: InkSystem, effects: Effects, hazards: Hazards, secondary: SecondarySystem) -> void:
+	_secondary = secondary
 	_player = player
 	_enemies = enemies
 	_bullets = bullets
@@ -110,7 +113,8 @@ func _process(delta: float) -> void:
 
 	level = _level("mines")
 	if _due("mines", level, delta):
-		_hazards.add_mine(pos, _damage("mines", level), _num("mines", "radius", 90.0), _num("mines", "trigger", 55.0), int(_num("mines", "max", 5.0)) + level)
+		_hazards.add_mine(pos, _damage("mines", level), _num("mines", "radius", 90.0), _num("mines", "trigger", 55.0), int(_num("mines", "max", 5.0)) + level,
+				_num("mines", "slow", 0.0), _num("mines", "slow_seconds", 0.0))
 
 	level = _level("whip")
 	if _due("whip", level, delta):
@@ -413,6 +417,26 @@ func _update_ink_passives(delta: float) -> void:
 					keep.append(index)
 			grid.smudged_ink = keep
 
+	if GameState.has_power("bomb_rain"):
+		var rain_left := float(_timers.get("bomb_rain", 0.0)) - delta
+		if rain_left <= 0.0:
+			rain_left = _num("bomb_rain", "interval", 0.45)
+			var at := pos + Vector2.from_angle(randf() * TAU) * randf_range(80.0, _num("bomb_rain", "range", 420.0))
+			_secondary.drop_at(at, _num("bomb_rain", "size", 0.7))
+		_timers["bomb_rain"] = rain_left
+
+	# Wet Ink Wall: remember the fresh trail so it can be drawn while it holds.
+	var wall := Upgrades.bonus("ink_wall")
+	if wall > 0.0:
+		var hold := _num("ink_wall", "seconds", 2.0) + _num("ink_wall", "seconds_per_level", 1.0) * (wall - 1.0)
+		if _wall_points.is_empty() or pos.distance_to(_wall_points[_wall_points.size() - 1]["pos"]) > 10.0:
+			if not _wall_points.is_empty():
+				grid.mark_wall_line(_wall_points[_wall_points.size() - 1]["pos"], pos, 10.0, GameState.run_time + hold)
+			_wall_points.append({"pos": pos, "until": GameState.run_time + hold, "hold": hold})
+		while not _wall_points.is_empty() and float(_wall_points[0]["until"]) <= GameState.run_time:
+			_wall_points.remove_at(0)
+		queue_redraw()
+
 	if GameState.has_power("ink_storm"):
 		var left := float(_timers.get("ink_storm", 0.0)) - delta
 		if left <= 0.0:
@@ -437,6 +461,15 @@ func _on_power_granted(id: String, _seconds: float) -> void:
 
 func _draw() -> void:
 	var spin := Time.get_ticks_msec() * 0.012
+	# The wet wall: bright while fresh, fading as it dries.
+	for i in range(1, _wall_points.size()):
+		var a: Dictionary = _wall_points[i - 1]
+		var b: Dictionary = _wall_points[i]
+		if (a["pos"] as Vector2).distance_to(b["pos"]) > 60.0:
+			continue
+		var wet := clampf((float(b["until"]) - GameState.run_time) / float(b["hold"]), 0.0, 1.0)
+		draw_line(a["pos"], b["pos"], Color(0.02, 0.06, 0.25, 0.9 * wet), 14.0)
+		draw_line(a["pos"], b["pos"], Color(0.7, 0.9, 1.0, wet), 4.0)
 	for rang in _boomerangs:
 		var pos: Vector2 = rang["pos"]
 		var arm := Vector2.from_angle(spin * 2.0) * 16.0

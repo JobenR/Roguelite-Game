@@ -1,7 +1,7 @@
 {
   "walker": {
     "name": "Walker",
-    "hp": 20,
+    "hp": 17,
     "speed": 70,
     "radius": 16,
     "damage": 8,
@@ -15,8 +15,10 @@
       "color": "#3fbf4f",
       "outline": "#0f3d1a",
       "rotation_deg": 45,
-      "eyes": "two"
-    }
+      "eyes": "two",
+      "outline_width": 0.26
+    },
+    "flank": 0.55
   },
   "runner": {
     "name": "Runner",
@@ -32,10 +34,14 @@
     "face_move": true,
     "visual": {
       "sides": 3,
-      "color": "#facc15",
-      "outline": "#713f12",
-      "eyes": "two"
-    }
+      "color": "#ea580c",
+      "outline": "#1c0a00",
+      "eyes": "two",
+      "streak": 16,
+      "glow": "#fb923c",
+      "outline_width": 0.26
+    },
+    "flank": 0.8
   },
   "spitter": {
     "name": "Spitter",
@@ -60,8 +66,10 @@
       "color": "#a855f7",
       "outline": "#3b0764",
       "rotation_deg": -90,
-      "eyes": "one"
-    }
+      "eyes": "one",
+      "outline_width": 0.26
+    },
+    "flank": 0.0
   },
   "brute": {
     "name": "Brute",
@@ -83,11 +91,13 @@
     "charge_time": 0.55,
     "visual": {
       "sides": 6,
-      "color": "#ef4444",
+      "color": "#b91c1c",
       "outline": "#450a0a",
       "eyes": "two",
-      "brow": true
-    }
+      "brow": true,
+      "outline_width": 0.26
+    },
+    "flank": 0.3
   },
   "splitter": {
     "name": "Splitter",
@@ -106,8 +116,10 @@
       "sides": 4,
       "color": "#14b8a6",
       "outline": "#042f2e",
-      "eyes": "two"
-    }
+      "eyes": "two",
+      "outline_width": 0.26
+    },
+    "flank": 0.5
   },
   "mite": {
     "name": "Mite",
@@ -124,8 +136,10 @@
       "sides": 4,
       "color": "#5eead4",
       "outline": "#042f2e",
-      "eyes": "two"
-    }
+      "eyes": "two",
+      "outline_width": 0.26
+    },
+    "flank": 0.7
   },
   "corruptor": {
     "name": "Corruptor",
@@ -143,8 +157,10 @@
       "color": "#3f3f46",
       "outline": "#09090b",
       "eyes": "one",
-      "aura": "#52525b"
-    }
+      "aura": "#52525b",
+      "outline_width": 0.26
+    },
+    "flank": 0.35
   },
   "eraser": {
     "name": "The Eraser",
@@ -171,7 +187,9 @@
       "outline": "#500724",
       "rotation_deg": 22.5,
       "eyes": "two",
-      "brow": true
-    }
+      "brow": true,
+      "outline_width": 0.26
+    },
+    "flank": 0.0
   }
 }

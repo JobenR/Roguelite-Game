@@ -32,11 +32,13 @@
   "jump_range": 220
  },
  "mines": {
-  "cooldown": 3.5,
+  "cooldown": 3.0,
   "damage": 30,
   "radius": 90,
   "trigger": 55,
-  "max": 5
+  "max": 5,
+  "slow": 0.45,
+  "slow_seconds": 3.5
  },
  "whip": {
   "cooldown": 1.6,
@@ -162,7 +164,7 @@
   "damage_scale_per_level": 0.15
  },
  "rear_guard": {
-  "damage_scale": 0.8,
+  "damage_scale": 1.0,
   "spread_deg": 14
  },
  "split": {
@@ -229,5 +231,25 @@
  },
  "ghost_step": {
   "seconds": 1.5
+ },
+ "spotter": {
+  "time_scale": 0.2,
+  "reticle_speed": 620,
+  "max_range": 520
+ },
+ "bomb_core": {
+  "length": 380,
+  "length_per_level": 90,
+  "width": 26,
+  "damage_scale": 1.5
+ },
+ "bomb_rain": {
+  "interval": 0.45,
+  "range": 420,
+  "size": 0.7
+ },
+ "ink_wall": {
+  "seconds": 2.0,
+  "seconds_per_level": 1.0
  }
 }

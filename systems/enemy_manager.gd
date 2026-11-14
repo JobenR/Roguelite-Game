@@ -244,6 +244,9 @@ func _process(delta: float) -> void:
 	var thorn_ink := Upgrades.bonus("thorn_ink")
 	var thorns := Upgrades.bonus("thorns")
 	var cut_scale := 1.0 - minf(Upgrades.bonus("ink_tough"), 0.75)
+	var weave_time := GameState.run_time * 1.7
+	var walls := Upgrades.bonus("ink_wall") > 0.0
+	var now := GameState.run_time
 
 	for enemy in active:
 		var pos := enemy.position
@@ -262,7 +265,10 @@ func _process(delta: float) -> void:
 		var step := Vector2.ZERO
 		match (-1 if frozen else int(enemy.behavior)):
 			Enemy.Behavior.CHASE:
-				step = toward * pace * delta
+				# Curve in from this enemy's own side (fading out up close) and
+				# weave, so the horde fans out and surrounds instead of queueing.
+				var bend := enemy.flank * clampf((dist - 90.0) / 260.0, 0.0, 1.0) + sin(weave_time + enemy.weave_phase) * 0.22
+				step = toward.rotated(bend) * pace * delta
 			Enemy.Behavior.CHARGE:
 				step = _charge_step(enemy, toward, dist, pace, delta)
 			Enemy.Behavior.RANGED:
@@ -285,7 +291,21 @@ func _process(delta: float) -> void:
 		if enemy.heavy:
 			push *= 0.15
 
-		pos += step + push * push_factor
+		var move := step + push * push_factor
+		if walls and not enemy.heavy and move != Vector2.ZERO:
+			# Wet Ink Wall: a blocked enemy slides along the wall instead.
+			var feeler := move.normalized() * enemy.radius * 0.7
+			if ink_grid.is_wall(pos + move + feeler, now):
+				if not ink_grid.is_wall(pos + Vector2(move.x, 0.0) + Vector2(feeler.x, 0.0), now) and absf(move.x) > 0.01:
+					move = Vector2(signf(move.x) * move.length(), 0.0)
+				elif not ink_grid.is_wall(pos + Vector2(0.0, move.y) + Vector2(0.0, feeler.y), now) and absf(move.y) > 0.01:
+					move = Vector2(0.0, signf(move.y) * move.length())
+				else:
+					# Fully blocked: shuffle sideways to find a way around.
+					move = toward.orthogonal() * (1.0 if enemy.flank >= 0.0 else -1.0) * move.length()
+					if ink_grid.is_wall(pos + move + move.normalized() * enemy.radius * 0.7, now):
+						move = Vector2.ZERO
+		pos += move
 		pos.x = clampf(pos.x, min_x, max_x)
 		pos.y = clampf(pos.y, min_y, max_y)
 		enemy.position = pos

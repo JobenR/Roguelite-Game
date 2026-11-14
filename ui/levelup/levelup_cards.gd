@@ -99,6 +99,7 @@ func _open_next() -> void:
 		return
 	is_open = true
 	visible = true
+	Engine.time_scale = 1.0  # in case the bomb's slow motion was active
 	get_tree().paused = true
 
 

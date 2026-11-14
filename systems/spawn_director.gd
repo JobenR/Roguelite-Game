@@ -45,6 +45,13 @@ func hp_multiplier() -> float:
 	return 1.0 + float(_cfg.get("hp_growth_per_minute", 0.0)) * minutes + float(_cfg.get("hp_growth_per_minute_squared", 0.0)) * minutes * minutes
 
 
+## Most enemies allowed alive right now. The cap starts low and rises each
+## minute, so the early horde stays a size the starting gun can manage.
+func enemy_cap() -> int:
+	var ramp := float(_cfg.get("max_enemies_start", 400.0)) + float(_cfg.get("max_enemies_per_minute", 0.0)) * GameState.run_time / 60.0
+	return mini(int(_cfg.get("max_enemies", 400)), int(ramp))
+
+
 ## Seconds until the next mini-boss, or -1 when none is scheduled.
 func time_to_boss() -> float:
 	return _next_boss - GameState.run_time if _next_boss < INF else -1.0
@@ -79,7 +86,7 @@ func _process(delta: float) -> void:
 		# Past the last wave the horde keeps growing.
 		var overtime := (GameState.run_time - float(wave.get("start", 0.0))) / 60.0
 		batch += int(overtime * float(_cfg.get("overtime_batch_per_minute", 0.0)))
-	var room := int(_cfg.get("max_enemies", 400)) - _enemies.active.size()
+	var room := enemy_cap() - _enemies.active.size()
 	var hp_mult := hp_multiplier()
 	for i in mini(batch, room):
 		_enemies.spawn(_pick_type(wave), _spawn_point(), hp_mult)

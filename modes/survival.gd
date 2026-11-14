@@ -40,7 +40,7 @@ func _ready() -> void:
 	player.setup(enemies, bullets, rect, ink, effects)
 	hazards.setup(enemies, ink, effects)
 	secondary.setup(player, enemies, ink, effects, hazards)
-	arsenal.setup(player, enemies, bullets, ink, effects, hazards)
+	arsenal.setup(player, enemies, bullets, ink, effects, hazards, secondary)
 	glyphs.setup(player, enemies, ink, effects)
 	pulse.setup(player, enemies, ink, effects, glyphs, hazards)
 	milestones.setup(ink, player, pulse)

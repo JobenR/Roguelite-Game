@@ -543,11 +543,11 @@
   },
   "mines": {
    "name": "Ink Mines",
-   "desc": "You drop a mine every few seconds that bursts when an enemy steps near",
-   "max_level": 4,
+   "desc": "You drop a mine every few seconds. It bursts when enemies step near and slows the survivors",
+   "max_level": 5,
    "category": "weapon",
    "set": "arsenal",
-   "rarity": "rare",
+   "rarity": "common",
    "icon": "mine",
    "badge": "",
    "effects": [
@@ -719,11 +719,11 @@
   },
   "rear_guard": {
    "name": "Rear Guard",
-   "desc": "A second gun fires backwards. Levels add shots",
-   "max_level": 3,
+   "desc": "+1 shot fired straight behind you at full damage. Stacks",
+   "max_level": 5,
    "category": "weapon",
    "set": "nib",
-   "rarity": "rare",
+   "rarity": "common",
    "icon": "multishot",
    "badge": "Re",
    "effects": [
@@ -1769,6 +1769,54 @@
    "effects": [
     {
      "stat": "banish",
+     "add": 1
+    }
+   ]
+  },
+  "spotter": {
+   "name": "Spotter",
+   "desc": "Hold BOMB to slow time and steer a target with the move stick; release to throw exactly there",
+   "max_level": 1,
+   "category": "weapon",
+   "set": "bomb",
+   "rarity": "rare",
+   "icon": "steady_hand",
+   "badge": "Bm",
+   "effects": [
+    {
+     "stat": "bomb_aim",
+     "add": 1
+    }
+   ]
+  },
+  "piercing_core": {
+   "name": "Piercing Core",
+   "desc": "The bomb's core flies on in a straight line, tearing through everything, then bursts",
+   "max_level": 3,
+   "category": "weapon",
+   "set": "bomb",
+   "rarity": "epic",
+   "icon": "laser",
+   "badge": "Bc",
+   "effects": [
+    {
+     "stat": "bomb_core",
+     "add": 1
+    }
+   ]
+  },
+  "ink_wall": {
+   "name": "Wet Ink Wall",
+   "desc": "Your fresh trail is a wall: enemies cannot cross it until it dries. Brutes and bosses break through",
+   "max_level": 3,
+   "category": "ink",
+   "set": "ink",
+   "rarity": "epic",
+   "icon": "shield",
+   "badge": "Wl",
+   "effects": [
+    {
+     "stat": "ink_wall",
      "add": 1
     }
    ]

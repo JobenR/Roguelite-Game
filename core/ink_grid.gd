@@ -21,6 +21,9 @@ var mask: PackedByteArray = PackedByteArray()
 ## Watermark: when on, cells smudged over the player's ink are remembered here.
 var track_smudged_ink: bool = false
 var smudged_ink: PackedInt32Array = PackedInt32Array()
+## Wet Ink Wall: per-cell time until which the cell blocks enemies. Allocated
+## only when the upgrade is first used.
+var wall_until: PackedFloat32Array = PackedFloat32Array()
 
 
 func _init(area_size: Vector2, p_cell_size: float) -> void:
@@ -96,6 +99,25 @@ func paint_circle(pos: Vector2, radius: float, state: int, protect: int = -1) ->
 			var dx := (x + 0.5) * cell_size - pos.x
 			if dx * dx + dy * dy <= r_sq and cells[y * cols + x] != protect:
 				set_cell(y * cols + x, state)
+
+
+## Marks every cell along the segment as a wall until time `until`.
+func mark_wall_line(from: Vector2, to: Vector2, radius: float, until: float) -> void:
+	if wall_until.is_empty():
+		wall_until.resize(cols * rows)
+	var steps := maxi(1, int(ceil(from.distance_to(to) / (cell_size * 0.5))))
+	var reach := int(ceil(radius / cell_size))
+	for i in steps + 1:
+		var p := from.lerp(to, float(i) / steps)
+		var cx := clampi(int(p.x / cell_size), 0, cols - 1)
+		var cy := clampi(int(p.y / cell_size), 0, rows - 1)
+		for y in range(maxi(cy - reach, 0), mini(cy + reach, rows - 1) + 1):
+			for x in range(maxi(cx - reach, 0), mini(cx + reach, cols - 1) + 1):
+				wall_until[y * cols + x] = until
+
+
+func is_wall(pos: Vector2, now: float) -> bool:
+	return not wall_until.is_empty() and wall_until[cell_index(pos)] > now
 
 
 ## Wipes smudge inside the circle back to blank paper. Ink is untouched.

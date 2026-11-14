@@ -31,10 +31,10 @@ func add_hole(pos: Vector2, radius: float, seconds: float, burst_damage: float, 
 	_holes.append({"pos": pos, "radius": radius, "left": seconds, "total": seconds, "damage": burst_damage, "pull": pull_speed})
 
 
-func add_mine(pos: Vector2, mine_damage: float, radius: float, trigger: float, limit: int) -> void:
+func add_mine(pos: Vector2, mine_damage: float, radius: float, trigger: float, limit: int, slow: float = 0.0, slow_seconds: float = 0.0) -> void:
 	while _mines.size() >= mini(limit, MAX_MINES_HARD):
 		_mines.remove_at(0)
-	_mines.append({"pos": pos, "damage": mine_damage, "radius": radius, "trigger": trigger, "arm": 0.6})
+	_mines.append({"pos": pos, "damage": mine_damage, "radius": radius, "trigger": trigger, "arm": 0.6, "slow": slow, "slow_seconds": slow_seconds})
 
 
 func _process(delta: float) -> void:
@@ -89,6 +89,9 @@ func _process(delta: float) -> void:
 				_mines.remove_at(i)
 				_ink.splat(pos, float(mine["radius"]) * 0.7, Vector2.ZERO)
 				_enemies.damage_area(pos, float(mine["radius"]), float(mine["damage"]))
+				if float(mine["slow"]) > 0.0:
+					# Survivors over a wider area are slowed, to break up the mass.
+					_enemies.slow_area(pos, float(mine["radius"]) * 1.6, float(mine["slow"]), float(mine["slow_seconds"]))
 				_effects.ring(pos, float(mine["radius"]), Color(0.12, 0.23, 0.54, 0.9), 0.3)
 		i -= 1
 	queue_redraw()

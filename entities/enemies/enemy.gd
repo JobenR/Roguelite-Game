@@ -40,6 +40,10 @@ var stain_amount: float = 0.0
 var bleed_left: float = 0.0
 var bleed_dps: float = 0.0
 var was_on_ink: bool = false
+# Approach style: each enemy curves in from its own side and weaves a little,
+# so a horde spreads out instead of forming one line.
+var flank: float = 0.0
+var weave_phase: float = 0.0
 
 @onready var visual: Node2D = $Visual
 
@@ -77,6 +81,9 @@ func spawn(p_type_id: String, p_data: Dictionary, pos: Vector2, hp_mult: float) 
 	ability_state = 0
 	ability_dir = Vector2.ZERO
 	aux_left = 0.0
+	var spread := float(data.get("flank", 0.0))
+	flank = randf_range(-spread, spread)
+	weave_phase = randf() * TAU
 	slow_left = 0.0
 	stain_left = 0.0
 	bleed_left = 0.0

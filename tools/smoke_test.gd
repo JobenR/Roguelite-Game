@@ -30,7 +30,7 @@ func _process(_delta: float) -> bool:
 		Input.action_press("secondary")
 		Input.action_press("pulse")
 		Input.action_press("dash")
-		gs.grant_power(["frenzy", "magnet", "auto_aim", "freeze", "giant_brush", "ink_storm", "invincible", "eraser_wave"][(_frames / 120) % 8], 2.0)
+		gs.grant_power(["frenzy", "magnet", "auto_aim", "freeze", "giant_brush", "ink_storm", "invincible", "eraser_wave", "bomb_rain"][(_frames / 120) % 9], 2.0)
 	elif _frames % 120 == 1:
 		Input.action_release("secondary")
 		Input.action_release("pulse")

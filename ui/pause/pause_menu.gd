@@ -55,6 +55,7 @@ func _process(_delta: float) -> void:
 		_resume()
 	elif GameState.is_playing() and not (_levelup != null and _levelup.is_open):
 		visible = true
+		Engine.time_scale = 1.0
 		get_tree().paused = true
 
 

@@ -20,6 +20,7 @@ var _outline_points: PackedVector2Array = PackedVector2Array()
 var _highlight: PackedVector2Array = PackedVector2Array()
 var _color: Color = Color.WHITE
 var _outline: Color = Color.BLACK
+var _outline_width: float = 0.2
 var _radius: float = 10.0
 var _eyes: String = ""  # "", "two" or "one"
 var _brow: bool = false
@@ -38,6 +39,7 @@ func setup(data: Dictionary, radius: float) -> void:
 	_radius = radius
 	_color = Color(String(data.get("color", "#ffffff")))
 	_outline = Color(String(data.get("outline", _color.darkened(0.6).to_html())))
+	_outline_width = float(data.get("outline_width", 0.2))
 	var eyes: Variant = data.get("eyes", "")
 	_eyes = ("two" if eyes else "") if eyes is bool else String(eyes)
 	_brow = bool(data.get("brow", false))
@@ -93,8 +95,8 @@ func _draw() -> void:
 		draw_set_transform(Vector2.ZERO)
 	draw_colored_polygon(_points, _color)
 	draw_colored_polygon(_highlight, _color.lightened(0.35))
-	draw_polyline(_outline_points, _outline, maxf(2.0, _radius * 0.2), true)
-	if _streak > 0.0:
+	draw_polyline(_outline_points, _outline, maxf(2.0, _radius * _outline_width), true)
+	if _streak > 0.0 and _eyes == "":
 		draw_circle(Vector2(_radius * 0.25, 0.0), _radius * 0.35, Color(1, 1, 1, 0.9))
 	if _eyes == "one":
 		var big := _radius * 0.36
