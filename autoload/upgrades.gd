@@ -24,6 +24,9 @@ func reset() -> void:
 	banished.clear()
 	_add.clear()
 	_mult.clear()
+	# The chosen ink's strengths and weaknesses apply for the whole run.
+	_apply_effects(DataDB.inks.get(GameState.ink_id, {}).get("effects", []))
+	Events.upgrade_applied.emit("")
 
 
 ## Final value of a stat given its base.

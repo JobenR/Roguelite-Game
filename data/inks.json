@@ -1,0 +1,37 @@
+{
+  "blue": {
+    "name": "Blue",
+    "tagline": "Balanced",
+    "desc": "No strengths, no weaknesses. The ink to learn with.",
+    "color": "#1a4df2", "light": "#4d8fff",
+    "effects": []
+  },
+  "crimson": {
+    "name": "Crimson",
+    "tagline": "Aggressive",
+    "desc": "Enemies standing on your ink burn for 5 damage a second. You have 20% less health.",
+    "color": "#cc1a29", "light": "#ff5959",
+    "effects": [ { "stat": "ink_burn", "add": 5 }, { "stat": "max_hp", "mult": -0.2 } ]
+  },
+  "emerald": {
+    "name": "Emerald",
+    "tagline": "Holds ground",
+    "desc": "Your ink heals you for 1 health a second and slowly spreads on its own. Shots deal 10% less damage.",
+    "color": "#0d9954", "light": "#4dd980",
+    "effects": [ { "stat": "ink_regen", "add": 1.0 }, { "stat": "living", "add": 1 }, { "stat": "damage", "mult": -0.1 } ]
+  },
+  "violet": {
+    "name": "Violet",
+    "tagline": "Loops and glyphs",
+    "desc": "Enemies on your ink are slowed by 15% and your pulse reaches 20% further. Your fire rate is 10% lower.",
+    "color": "#7333d9", "light": "#ad7aff",
+    "effects": [ { "stat": "ink_slow", "add": 0.15 }, { "stat": "pulse_radius", "mult": 0.2 }, { "stat": "fire_rate", "mult": -0.1 } ]
+  },
+  "gold": {
+    "name": "Gold",
+    "tagline": "Late bloomer",
+    "desc": "Gain 25% more XP and charge the pulse 15% faster. Shots deal 15% less damage.",
+    "color": "#c7921a", "light": "#ffd04d",
+    "effects": [ { "stat": "xp_gain", "mult": 0.25 }, { "stat": "pulse_charge", "mult": 0.15 }, { "stat": "damage", "mult": -0.15 } ]
+  }
+}

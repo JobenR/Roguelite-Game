@@ -68,7 +68,7 @@ func big_moment(pos: Vector2, radius: float, color: Color, duration: float = 0.5
 ## A blast of the player's ink in the brush style: blue strokes flung
 ## outward, a broken pale ring, and a spray of droplets.
 func ink_burst(pos: Vector2, radius: float, duration: float = 0.5) -> void:
-	var ink := Color(0.16, 0.40, 1.0)
+	var ink := GameState.ink_color
 	var count := clampi(int(radius / 5.5), 14, 34)
 	for i in count:
 		var angle := TAU * i / count + randf_range(-0.15, 0.15)
@@ -78,7 +78,7 @@ func ink_burst(pos: Vector2, radius: float, duration: float = 0.5) -> void:
 			"duration": duration * randf_range(0.8, 1.3), "age": 0.0,
 		})
 	var start := randf() * TAU
-	_rings.append({"pos": pos, "radius": radius * 0.58, "color": Color(0.7, 0.86, 1.0, 0.95), "duration": duration * 0.9, "age": 0.0, "start": start, "sweep": TAU - 0.9, "grow": 0.35})
+	_rings.append({"pos": pos, "radius": radius * 0.58, "color": Color(GameState.ink_light.lerp(Color.WHITE, 0.4), 0.95), "duration": duration * 0.9, "age": 0.0, "start": start, "sweep": TAU - 0.9, "grow": 0.35})
 	burst(pos, Vector2.ZERO, ink, 12)
 
 

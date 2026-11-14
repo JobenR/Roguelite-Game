@@ -10,6 +10,12 @@ var level: int = 1
 var xp: int = 0
 var xp_to_next: int = 5
 var debug_visible: bool = false
+## The ink chosen for the run: a play style and a colour (data/inks.json).
+## Kept between runs. `pick_ink` asks the mode to show the ink choice first.
+var ink_id: String = "blue"
+var pick_ink: bool = true
+var ink_color: Color = Color("#1a4df2")
+var ink_light: Color = Color("#4d8fff")
 ## Temporary powers: id -> seconds left.
 var powers: Dictionary = {}
 ## Extra damage share from the player's current situation (on ink, low health,
@@ -21,6 +27,16 @@ var _xp_fraction: float = 0.0
 func _ready() -> void:
 	Events.enemy_killed.connect(_on_enemy_killed)
 	Events.player_died.connect(_on_player_died)
+	set_ink(ink_id)
+
+
+func set_ink(id: String) -> void:
+	if not DataDB.inks.has(id):
+		id = "blue"
+	ink_id = id
+	var def: Dictionary = DataDB.inks.get(id, {})
+	ink_color = Color(String(def.get("color", "#1a4df2")))
+	ink_light = Color(String(def.get("light", "#4d8fff")))
 
 
 func start_run() -> void:

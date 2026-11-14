@@ -33,6 +33,11 @@ func setup(arena: Rect2, enemies: EnemyManager, p_cell_size: float) -> void:
 	var material := ShaderMaterial.new()
 	material.shader = INK_SHADER
 	material.set_shader_parameter("grid_size", Vector2(grid.cols, grid.rows))
+	# The page is painted in the chosen ink; pulse fills are a paler shade of it.
+	material.set_shader_parameter("ink_color", Color(GameState.ink_color, 0.94))
+	material.set_shader_parameter("ink_light", GameState.ink_light)
+	material.set_shader_parameter("glow_color", Color(GameState.ink_light.lerp(Color.WHITE, 0.35), 0.92))
+	material.set_shader_parameter("locked_color", Color(GameState.ink_color.darkened(0.45), 0.95))
 	_bleed_image = Image.create_from_data(grid.bleed_cols, grid.bleed_rows, false, Image.FORMAT_L8, grid.bleed)
 	_bleed_texture = ImageTexture.create_from_image(_bleed_image)
 	material.set_shader_parameter("bleed_tex", _bleed_texture)

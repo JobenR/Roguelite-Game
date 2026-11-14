@@ -41,12 +41,12 @@ func setup(player: Player, enemies: EnemyManager, bullets: BulletManager, ink: I
 	# Variants of the main gun used by the extra weapons.
 	_quill = _pistol.duplicate(true)
 	_quill.merge({"bullet_speed": 520.0, "bullet_life": 1.6, "homing": 5.0, "homing_range": 320.0, "no_split": true,
-		"visual": {"sides": 3, "color": "#1f4fe0", "outline": "#1f4fe0", "glow": "#c1272d", "streak": 20, "shadow": false, "brush_shot": true}}, true)
+		"visual": {"sides": 3, "color": GameState.ink_color.to_html(), "outline": GameState.ink_color.to_html(), "glow": GameState.ink_light.to_html(), "streak": 20, "shadow": false, "brush_shot": true}}, true)
 	_spray = _pistol.duplicate(true)
 	_spray.merge({"bullet_life": 0.35, "bullet_radius": 4.0, "no_split": true}, true)
 	_plane = _pistol.duplicate(true)
 	_plane.merge({"bullet_speed": 250.0, "bullet_life": 4.5, "bullet_radius": 9.0, "homing": 5.5, "homing_range": 420.0, "no_split": true,
-		"visual": {"sides": 3, "color": "#f6f1e3", "outline": "#1f4fe0", "glow": "#9cc0ff", "streak": 14, "shadow": false}}, true)
+		"visual": {"sides": 3, "color": "#f6f1e3", "outline": "#141210", "glow": "#b8ad96", "streak": 14, "shadow": false}}, true)
 	Events.player_hurt.connect(_on_player_hurt)
 	Events.power_granted.connect(_on_power_granted)
 
@@ -124,7 +124,7 @@ func _process(delta: float) -> void:
 				_mine_progress = 0.0
 				_hazards.add_mine(pos, _damage("mines", level), _num("mines", "radius", 90.0), _num("mines", "trigger", 55.0), int(_num("mines", "max", 5.0)) + level,
 						_num("mines", "slow", 0.0), _num("mines", "slow_seconds", 0.0))
-				_effects.ring(pos, 46.0, Color(0.16, 0.40, 1.0, 0.9), 0.3)
+				_effects.ring(pos, 46.0, Color(GameState.ink_color, 0.9), 0.3)
 		queue_redraw()
 
 	level = _level("whip")
@@ -134,7 +134,7 @@ func _process(delta: float) -> void:
 		_enemies.damage_area(center, reach, _damage("whip", level))
 		for i in 9:
 			grid.paint_circle(pos + aim.rotated(-1.0 + i * 0.25) * (reach + 30.0), 7.0, InkGrid.INK)
-		_effects.ring(center, reach, Color(0.16, 0.40, 1.0, 0.8), 0.18)
+		_effects.ring(center, reach, Color(GameState.ink_color, 0.8), 0.18)
 
 	level = _level("stamp")
 	if _due("stamp", level, delta):
@@ -145,7 +145,7 @@ func _process(delta: float) -> void:
 			for k in 7:
 				grid.paint_line(at + Vector2(-half, -half + k * half / 3.0), at + Vector2(half, -half + k * half / 3.0), 6.0, InkGrid.INK)
 			_enemies.damage_area(at, _num("stamp", "radius", 62.0), _damage("stamp", level))
-			_effects.ring(at, _num("stamp", "radius", 62.0), Color(0.16, 0.40, 1.0, 0.9), 0.25)
+			_effects.ring(at, _num("stamp", "radius", 62.0), Color(GameState.ink_color, 0.9), 0.25)
 			Events.screen_shake.emit(4.0)
 
 	_update_turrets(delta)
@@ -180,7 +180,7 @@ func _process(delta: float) -> void:
 	if _due("guardian", level, delta):
 		var close := _enemies.nearest(pos, _num("guardian", "range", 170.0))
 		if close != null:
-			_effects.beam(pos, close.position, Color(0.16, 0.40, 1.0), 10.0, 0.2)
+			_effects.beam(pos, close.position, GameState.ink_color, 10.0, 0.2)
 			_enemies.damage(close, _damage("guardian", level), (close.position - pos).normalized())
 		else:
 			_timers["guardian"] = 0.2  # nothing in range: stay ready
@@ -218,7 +218,7 @@ func _chain(level: int) -> void:
 			break
 		var at := target.position
 		struck.append(target)
-		_effects.beam(from, at, Color(0.16, 0.40, 1.0), 6.0, 0.18)
+		_effects.beam(from, at, GameState.ink_color, 6.0, 0.18)
 		_enemies.damage(target, bolt_damage, (at - from).normalized())
 		from = at
 		target = _enemies.nearest_excluding(from, _num("chain_blot", "jump_range", 220.0), struck)
@@ -228,7 +228,7 @@ func _drop_blot(id: String, level: int, around: Vector2, max_range: float) -> vo
 	var at := around + Vector2.from_angle(randf() * TAU) * randf_range(40.0, max_range)
 	_ink.splat(at, _num(id, "radius", 34.0) * 0.65, Vector2.ZERO)
 	_enemies.damage_area(at, _num(id, "radius", 34.0), _damage(id, maxi(level, 1)))
-	_effects.ring(at, _num(id, "radius", 34.0), Color(0.16, 0.40, 1.0, 0.7), 0.2)
+	_effects.ring(at, _num(id, "radius", 34.0), Color(GameState.ink_color, 0.7), 0.2)
 
 
 ## Spray Nozzle: everything in a short cone in front of the player.
@@ -245,7 +245,7 @@ func _spray_cone(level: int) -> void:
 		var d := offset.length()
 		if enemy.active and d <= reach + enemy.radius and d > 0.01 and offset.dot(aim) >= cos_half * d:
 			_enemies.damage(enemy, spray_damage, aim)
-	_effects.burst(pos + aim * 24.0, aim * 1.4, Color(0.16, 0.40, 1.0), 4)
+	_effects.burst(pos + aim * 24.0, aim * 1.4, GameState.ink_color, 4)
 
 
 ## Ink Turret (placed where you stand) and Ink Sprouts (grown on your ink).
@@ -409,7 +409,7 @@ func _update_ink_passives(delta: float) -> void:
 	level = _level("tide")
 	if _due("tide", level, delta):
 		grid.grow_ink(pos, _num("tide", "radius", 520.0), level)
-		_effects.ring(pos, _num("tide", "radius", 520.0), Color(0.16, 0.40, 1.0, 0.6), 0.6)
+		_effects.ring(pos, _num("tide", "radius", 520.0), Color(GameState.ink_color, 0.6), 0.6)
 
 	# Watermark: smudge over former ink wears off and the ink returns.
 	grid.track_smudged_ink = Upgrades.bonus("watermark") > 0.0
@@ -474,8 +474,8 @@ func _draw() -> void:
 	var spin := Time.get_ticks_msec() * 0.012
 	# Mine being planted: a ring around the player fills as you hold still.
 	if _mine_progress > 0.02 and _player != null:
-		draw_arc(_player.position, _player.radius + 22.0, 0.0, TAU, 40, Color(0.16, 0.40, 1.0, 0.25), 5.0)
-		draw_arc(_player.position, _player.radius + 22.0, -PI * 0.5, -PI * 0.5 + TAU * _mine_progress, 40, Color(0.16, 0.40, 1.0, 0.95), 5.0)
+		draw_arc(_player.position, _player.radius + 22.0, 0.0, TAU, 40, Color(GameState.ink_color, 0.25), 5.0)
+		draw_arc(_player.position, _player.radius + 22.0, -PI * 0.5, -PI * 0.5 + TAU * _mine_progress, 40, Color(GameState.ink_color, 0.95), 5.0)
 	# The wet wall: bright while fresh, fading as it dries.
 	for i in range(1, _wall_points.size()):
 		var a: Dictionary = _wall_points[i - 1]
@@ -488,23 +488,23 @@ func _draw() -> void:
 	for rang in _boomerangs:
 		var pos: Vector2 = rang["pos"]
 		var arm := Vector2.from_angle(spin * 2.0) * 16.0
-		draw_line(pos - arm, pos, Color("#1f4fe0"), 7.0)
-		draw_line(pos, pos + arm.orthogonal(), Color("#1f4fe0"), 7.0)
-		draw_circle(pos, 5.0, Color("#1f4fe0"))
+		draw_line(pos - arm, pos, GameState.ink_color, 7.0)
+		draw_line(pos, pos + arm.orthogonal(), GameState.ink_color, 7.0)
+		draw_circle(pos, 5.0, GameState.ink_color)
 	for wave in _waves:
 		var pos: Vector2 = wave["pos"]
 		var dir: Vector2 = wave["dir"]
 		var half := (_num("tidal_wave", "width", 110.0) + _num("tidal_wave", "width_per_level", 25.0) * (int(wave["level"]) - 1)) * 0.5
 		var side := dir.orthogonal() * half
-		draw_line(pos - side, pos + side, Color(0.16, 0.40, 1.0, 0.5), 30.0)
-		draw_line(pos - side + dir * 10.0, pos + side + dir * 10.0, Color(0.16, 0.40, 1.0, 0.9), 6.0)
+		draw_line(pos - side, pos + side, Color(GameState.ink_color, 0.5), 30.0)
+		draw_line(pos - side + dir * 10.0, pos + side + dir * 10.0, Color(GameState.ink_color, 0.9), 6.0)
 	for saw in _saws:
 		var pos: Vector2 = saw["pos"]
 		var teeth := PackedVector2Array()
 		for k in 16:
 			teeth.append(pos + Vector2.from_angle(spin + TAU * k / 16.0) * (30.0 if k % 2 == 0 else 20.0))
-		draw_colored_polygon(teeth, Color("#1f4fe0"))
-		draw_circle(pos, 9.0, Color("#9cc0ff"))
+		draw_colored_polygon(teeth, GameState.ink_color)
+		draw_circle(pos, 9.0, GameState.ink_light)
 	for turret in _turrets:
 		var pos: Vector2 = turret["pos"]
 		var fade := clampf(float(turret["life"]) / 2.0, 0.25, 1.0)

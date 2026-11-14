@@ -4,6 +4,7 @@ extends Control
 
 var _ink: InkSystem
 var _stats: Label
+var _ink_line: Label
 var _caption: Label
 var _picture_slot: VBoxContainer
 
@@ -45,6 +46,10 @@ func _ready() -> void:
 	heading.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	Sumi.title(heading, 50, Sumi.SEAL)
 	box.add_child(heading)
+	_ink_line = Label.new()
+	_ink_line.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	Sumi.body(_ink_line, 18, Sumi.FADED)
+	box.add_child(_ink_line)
 	_stats = Label.new()
 	_stats.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	Sumi.title(_stats, 28)
@@ -56,6 +61,15 @@ func _ready() -> void:
 	Sumi.ink_button(restart, 28)
 	restart.pressed.connect(_restart)
 	box.add_child(restart)
+	var change := Button.new()
+	change.text = "Change ink"
+	change.custom_minimum_size = Vector2(260.0, 56.0)
+	change.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	Sumi.ink_button(change, 24)
+	change.pressed.connect(func() -> void:
+		GameState.pick_ink = true
+		_restart())
+	box.add_child(change)
 
 	Events.player_died.connect(_on_player_died)
 
@@ -77,23 +91,25 @@ func _on_player_died() -> void:
 		_picture_slot.add_child(_ink.make_painting(500.0))
 		_picture_slot.add_child(_caption)
 	_caption.text = "\"%s\"\nYour ink %d%%   Smudge %d%%   Bare paper %d%%" % [_title_for(mine, theirs), mine, theirs, maxi(0, 100 - mine - theirs)]
+	_ink_line.text = "%s ink" % String(DataDB.inks.get(GameState.ink_id, {}).get("name", "Blue"))
 	_stats.text = "Survived %s\nLevel %d\nKills %d" % [GameState.format_time(GameState.run_time), GameState.level, GameState.kills]
 	visible = true
 
 
 ## A name for the painting, from how the page was shared.
 func _title_for(mine: int, theirs: int) -> String:
+	var ink_name := String(DataDB.inks.get(GameState.ink_id, {}).get("name", "Blue"))
 	if mine + theirs < 6:
 		return "First marks"
 	if mine >= 60:
 		return "The page is mine"
 	if mine >= theirs * 2:
-		return "Blue ascendant"
+		return "%s ascendant" % ink_name
 	if theirs >= mine * 2:
 		return "Lost in the grey"
 	if mine + theirs >= 70:
 		return "No paper left unspoken"
-	return "Blue against the grey"
+	return "%s against the grey" % ink_name
 
 
 func _process(_delta: float) -> void:

@@ -13,8 +13,10 @@ reward.** The user picked mock-up A plus E and rejected a first attempt that
 "looked like a recoloured version of the last one", so hold to this closely:
 
 - Rice paper with fibres, a brushed black frame, a red seal. No notebook lines.
-- The player's ink is luminous blue (trail, splats, shots, blasts, extra
-  weapons); the horde is black. The user tried all-black ink and asked for
+- The player's ink is luminous and coloured by the chosen ink, blue by
+  default (trail, splats, shots, blasts, extra weapons); the horde is black.
+  Never hard-code the ink colour: use `GameState.ink_color` and
+  `GameState.ink_light`. The user tried all-black ink and asked for
   blue back. Ink has dry-brush edges, bristle streaks, and a soft bleed halo
   where it soaked into the paper. Splats throw streaks and many droplets.
 - Enemies are ragged black brush shapes with a pooled shade underneath, told
@@ -89,8 +91,10 @@ reward.** The user picked mock-up A plus E and rejected a first attempt that
    painting with ink, smudge and bare-paper shares; the camera zooms in on touch
    devices (`camera_zoom_touch` in modes.json) because the phone view looked
    far less detailed than the laptop one.
-   Open question put to the user: selectable ink colours (cosmetic, functional,
-   or matched against enemy types).
+   Inks (done): five inks chosen before a run, each a colour and a play style
+   (`data/inks.json`): Blue, Crimson, Emerald, Violet, Gold. All are available
+   now; unlocking them with currency belongs to the meta milestone. The user
+   chose to keep ink-blending visual only, the 30% touch zoom, and 3-second mines.
 5. Burning Page mode: shrink, dead ground, flow field, strip payouts.
 6. Mobile: touch polish, iOS export, performance pass (60fps with 300+ enemies).
 7. Meta: currency, unlocks, JSON save, menus, audio, haptics.
@@ -104,7 +108,7 @@ explicitly. This includes end-of-update feedback questions: offer choices.
 ## Layout
 
 - `data/` JSON content: enemies, weapons, player, modes, waves, pulses, upgrades,
-  progression, pickups, glyphs, milestones, arsenal (numbers for upgrade
+  progression, pickups, glyphs, milestones, inks, arsenal (numbers for upgrade
   effects, read with `DataDB.arsenal_num(id, key, default)`). Loaded by `DataDB`.
 - `autoload/` `Events` (signal bus), `DataDB`, `GameState` (run clock, XP, level),
   `Upgrades` (run-scoped stat modifiers).

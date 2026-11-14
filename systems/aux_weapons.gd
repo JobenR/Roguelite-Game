@@ -87,7 +87,7 @@ func _land_shell(shell: Dictionary) -> void:
 	_ink.splat(pos, float(_mortar.get("splat_radius", 80.0)), Vector2.ZERO)
 	_enemies.damage_area(pos, radius, shell_damage)
 	_effects.ink_burst(pos, radius)
-	_effects.burst(pos, Vector2.ZERO, Color(0.16, 0.40, 1.0), 12)
+	_effects.burst(pos, Vector2.ZERO, GameState.ink_color, 12)
 	Events.screen_shake.emit(5.0)
 
 
@@ -108,7 +108,7 @@ func _fire_laser() -> void:
 		if closest.distance_squared_to(enemy.position) <= reach * reach:
 			_enemies.damage(enemy, beam_damage, dir)
 	_ink.grid.paint_line(from, to, float(_laser.get("ink_radius", 5.0)), InkGrid.INK)
-	_effects.beam(from, to, Color(0.16, 0.40, 1.0), width)
+	_effects.beam(from, to, GameState.ink_color, width)
 	Events.screen_shake.emit(3.0)
 
 
@@ -124,13 +124,13 @@ func _draw() -> void:
 		# Target marker, ground shadow, then the shell arcing above it.
 		draw_arc(to, 26.0, 0.0, TAU, 24, Color(0.85, 0.15, 0.2, 0.5), 3.0)
 		draw_circle(ground, 9.0, Color(0, 0, 0, 0.2))
-		draw_circle(ground - Vector2(0.0, height), 11.0 + height * 0.04, Color("#1f4fe0"))
-		draw_circle(ground - Vector2(3.0, height + 3.0), 4.0, Color("#9cc0ff"))
+		draw_circle(ground - Vector2(0.0, height), 11.0 + height * 0.04, GameState.ink_color)
+		draw_circle(ground - Vector2(3.0, height + 3.0), 4.0, GameState.ink_light)
 	var balls := int(Upgrades.bonus("orbit"))
 	var ball_radius := float(_orbit.get("ball_radius", 12.0))
 	for i in balls:
 		var pos := _ball_pos(i, balls)
 		draw_circle(pos + Vector2(2.0, 4.0), ball_radius, Color(0, 0, 0, 0.25))
-		draw_circle(pos, ball_radius, Color("#1f4fe0"))
-		draw_circle(pos - Vector2(ball_radius, ball_radius) * 0.28, ball_radius * 0.4, Color("#9cc0ff"))
-		draw_arc(pos, ball_radius, 0.0, TAU, 20, Color("#1f4fe0"), 2.5)
+		draw_circle(pos, ball_radius, GameState.ink_color)
+		draw_circle(pos - Vector2(ball_radius, ball_radius) * 0.28, ball_radius * 0.4, GameState.ink_light)
+		draw_arc(pos, ball_radius, 0.0, TAU, 20, GameState.ink_color, 2.5)

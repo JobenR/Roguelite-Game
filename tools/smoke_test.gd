@@ -8,6 +8,7 @@ var _scene: Node
 
 
 func _initialize() -> void:
+	root.get_node("GameState").pick_ink = false  # skip the ink choice screen
 	_scene = load("res://modes/survival.tscn").instantiate()
 	root.add_child(_scene)
 	current_scene = _scene

@@ -23,6 +23,7 @@ const MODE_ID := "survival"
 @onready var gems: GemManager = $GemManager
 @onready var levelup: Control = $UI/LevelUpCards
 @onready var pause_menu: Control = $UI/PauseMenu
+@onready var ink_select: Control = $UI/InkSelect
 @onready var run_summary: Control = $UI/RunSummary
 @onready var hud: Control = $UI/SafeArea/HUD
 @onready var debug_overlay: DebugOverlay = $UI/SafeArea/DebugOverlay
@@ -66,3 +67,4 @@ func _ready() -> void:
 	run_summary.setup(ink)
 
 	GameState.start_run()
+	ink_select.offer()
