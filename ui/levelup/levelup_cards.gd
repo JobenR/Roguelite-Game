@@ -11,6 +11,8 @@ var _pending: int = 0
 var _title: Label
 var _row: HBoxContainer
 var _guard_left: float = 0.0
+var _reroll: Button
+var _rerolls_left: int = 0
 
 
 func _ready() -> void:
@@ -40,6 +42,13 @@ func _ready() -> void:
 	_row.add_theme_constant_override("separation", 24)
 	box.add_child(_row)
 
+	_reroll = Button.new()
+	_reroll.custom_minimum_size = Vector2(240.0, 60.0)
+	_reroll.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	_reroll.add_theme_font_size_override("font_size", 24)
+	_reroll.pressed.connect(_on_reroll)
+	box.add_child(_reroll)
+
 	Events.level_up.connect(_on_level_up)
 	Events.player_died.connect(_close)
 
@@ -51,21 +60,42 @@ func _on_level_up(_level: int) -> void:
 
 
 func _open_next() -> void:
-	var choices := Upgrades.roll_choices(3)
-	if choices.is_empty() or not GameState.is_playing():
+	if not GameState.is_playing():
 		_pending = 0
 		_close()
 		return
 	_pending -= 1
-	for child in _row.get_children():
-		child.queue_free()
+	_rerolls_left = int(Upgrades.bonus("reroll"))
 	_title.text = "LEVEL %d: CHOOSE AN UPGRADE" % (GameState.level - _pending)
-	for id in choices:
-		_row.add_child(_make_card(id))
+	if not _deal():
+		_pending = 0
+		_close()
+		return
 	is_open = true
 	visible = true
-	_guard_left = INPUT_GUARD
 	get_tree().paused = true
+
+
+## Deals a fresh hand of cards. Returns false when every upgrade is maxed.
+func _deal() -> bool:
+	var choices := Upgrades.roll_choices(3)
+	if choices.is_empty():
+		return false
+	for child in _row.get_children():
+		_row.remove_child(child)
+		child.queue_free()
+	for id in choices:
+		_row.add_child(_make_card(id))
+	_guard_left = INPUT_GUARD
+	_reroll.visible = _rerolls_left > 0
+	_reroll.text = "Reroll (%d left)" % _rerolls_left
+	return true
+
+
+func _on_reroll() -> void:
+	if is_open and _rerolls_left > 0 and _guard_left <= 0.0:
+		_rerolls_left -= 1
+		_deal()
 
 
 const CATEGORY_COLORS := {"weapon": Color("#f97316"), "stat": Color("#22c55e"), "ink": Color("#3b82f6")}

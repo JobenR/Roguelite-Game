@@ -26,6 +26,28 @@ func burst(pos: Vector2, dir: Vector2, color: Color, count: int = 6) -> void:
 		})
 
 
+## A single slow droplet, shed by a shot in flight.
+func drip(pos: Vector2, color: Color, size: float) -> void:
+	if _drops.size() >= MAX_DROPS:
+		return
+	_drops.append({
+		"pos": pos, "vel": Vector2.from_angle(randf() * TAU) * randf_range(5.0, 30.0),
+		"color": color, "size": size, "duration": randf_range(0.2, 0.4), "age": 0.0,
+	})
+
+
+## Muzzle flash: a quick bright ring and a few droplets thrown forward.
+func muzzle(pos: Vector2, dir: Vector2, color: Color) -> void:
+	_rings.append({"pos": pos, "radius": 16.0, "color": Color(color, 0.9), "duration": 0.1, "age": 0.0})
+	for i in 3:
+		if _drops.size() >= MAX_DROPS:
+			return
+		_drops.append({
+			"pos": pos, "vel": dir.rotated(randf_range(-0.5, 0.5)) * randf_range(120.0, 300.0),
+			"color": color, "size": randf_range(2.0, 3.5), "duration": 0.18, "age": 0.0,
+		})
+
+
 func beam(from: Vector2, to: Vector2, color: Color, width: float, duration: float = 0.25) -> void:
 	_beams.append({"from": from, "to": to, "color": color, "width": width, "duration": duration, "age": 0.0})
 

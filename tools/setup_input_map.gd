@@ -16,6 +16,7 @@ func _init() -> void:
 	_action("fire", [_key(KEY_SPACE), _button(JOY_BUTTON_A), _axis(JOY_AXIS_TRIGGER_RIGHT, 1.0)])
 	_action("secondary", [_key(KEY_E), _button(JOY_BUTTON_X)])
 	_action("pulse", [_key(KEY_Q), _button(JOY_BUTTON_Y)])
+	_action("dash", [_key(KEY_SHIFT), _button(JOY_BUTTON_B)])
 	_action("pause", [_key(KEY_ESCAPE), _button(JOY_BUTTON_START)])
 	_action("restart", [_key(KEY_R), _button(JOY_BUTTON_BACK)])
 	_action("debug_toggle", [_key(KEY_F3)])

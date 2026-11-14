@@ -80,7 +80,17 @@ func _explode() -> void:
 	visual.visible = false
 	var radius := float(_weapon.get("blast_radius", 100.0))
 	# Paint first, then damage: kill splats land on top either way.
-	_ink.splat(_to, float(_weapon.get("splat_radius", radius)) * 1.25, Vector2.ZERO)
+	var ring_level := int(Upgrades.bonus("ring_bomb"))
+	if ring_level > 0:
+		# Ring Bomb: a closed circle of ink, ready for a pulse.
+		var ring := float(_weapon.get("ring_radius", 120.0)) + float(_weapon.get("ring_radius_per_level", 25.0)) * (ring_level - 1)
+		var thickness := float(_weapon.get("ring_thickness", 7.0))
+		var steps := int(ceil(TAU * ring / 6.0))
+		for i in steps:
+			_ink.grid.paint_circle(_to + Vector2.from_angle(TAU * i / steps) * ring, thickness, InkGrid.INK)
+		_effects.ring(_to, ring, Color(0.22, 0.45, 0.95, 0.9), 0.4)
+	else:
+		_ink.splat(_to, float(_weapon.get("splat_radius", radius)) * 1.25, Vector2.ZERO)
 	_enemies.damage_area(_to, radius, float(_weapon.get("damage", 30.0)))
 	_effects.ring(_to, radius, Color(0.12, 0.23, 0.54, 0.9), 0.35)
 	_effects.burst(_to, Vector2.ZERO, Color(0.15, 0.3, 0.8), 16)

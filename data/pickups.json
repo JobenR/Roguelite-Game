@@ -1,11 +1,30 @@
 {
-  "auto_aim": {
-    "name": "Auto-Aim",
-    "duration": 8,
-    "drop_chance": 0.04,
-    "max_seconds_between": 25,
-    "lifetime": 25,
-    "color": "#e11d48",
-    "first_drop_seconds": 8
+  "drop_chance": 0.012,
+  "max_seconds_between": 60,
+  "first_drop_seconds": 25,
+  "lifetime": 25,
+  "types": {
+    "auto_aim": {
+      "name": "Auto-Aim",
+      "duration": 8,
+      "weight": 3,
+      "color": "#e11d48",
+      "icon": "crosshair"
+    },
+    "frenzy": {
+      "name": "Frenzy",
+      "duration": 8,
+      "weight": 2,
+      "color": "#f97316",
+      "icon": "chevrons",
+      "fire_rate_mult": 2.0
+    },
+    "magnet": {
+      "name": "Magnet",
+      "duration": 1,
+      "weight": 2,
+      "color": "#a855f7",
+      "icon": "magnet"
+    }
   }
 }

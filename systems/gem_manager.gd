@@ -20,6 +20,7 @@ func setup(player: Player) -> void:
 	_max_gems = int(DataDB.progression.get("max_gems", 400))
 	_magnet_speed = float(DataDB.progression.get("gem_magnet_speed", 520.0))
 	Events.enemy_killed.connect(_on_enemy_killed)
+	Events.power_granted.connect(_on_power_granted)
 
 
 func _on_enemy_killed(_type_id: String, pos: Vector2, _splat_radius: float, xp: int, _dir: Vector2) -> void:
@@ -31,6 +32,13 @@ func _on_enemy_killed(_type_id: String, pos: Vector2, _splat_radius: float, xp: 
 	var gem: Gem = _pool.acquire()
 	gem.drop(pos, xp)
 	active.append(gem)
+
+
+## The Magnet pickup pulls in every gem on the page.
+func _on_power_granted(id: String, _seconds: float) -> void:
+	if id == "magnet":
+		for gem in active:
+			gem.magnet = true
 
 
 func _process(delta: float) -> void:

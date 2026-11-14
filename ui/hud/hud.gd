@@ -111,7 +111,7 @@ func _process(delta: float) -> void:
 	_update_wave_label(delta)
 	var power_text := ""
 	for id: String in GameState.powers:
-		var def: Dictionary = DataDB.pickups.get(id, {})
+		var def: Dictionary = DataDB.pickups.get("types", {}).get(id, {})
 		power_text += "%s %ds  " % [String(def.get("name", id)).to_upper(), int(ceil(GameState.power_left(id)))]
 	_power_label.text = power_text.strip_edges()
 	var ink_text := ""

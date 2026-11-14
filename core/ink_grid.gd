@@ -6,12 +6,13 @@ extends RefCounted
 const NEUTRAL := 0
 const INK := 1      # the player's ink
 const SMUDGE := 2   # the horde's smudge
+const LOCKED := 3   # the player's ink made permanent; nothing overwrites it
 
 var cell_size: float
 var cols: int
 var rows: int
 var cells: PackedByteArray = PackedByteArray()
-var pixels: PackedByteArray = PackedByteArray()  # RGBA8: R = ink, G = smudge
+var pixels: PackedByteArray = PackedByteArray()  # RGBA8: R = ink, G = smudge, B = locked
 var ink_count: int = 0
 var smudge_count: int = 0
 var dirty: bool = true
@@ -42,22 +43,29 @@ func state_at(pos: Vector2) -> int:
 	return cells[cell_index(pos)]
 
 
+## True where the ground belongs to the player (normal or permanent ink).
+func is_ink(pos: Vector2) -> bool:
+	var state := cells[cell_index(pos)]
+	return state == INK or state == LOCKED
+
+
 func set_cell(index: int, state: int) -> void:
 	var old := cells[index]
-	if old == state:
+	if old == state or old == LOCKED:
 		return
 	if old == INK:
 		ink_count -= 1
 	elif old == SMUDGE:
 		smudge_count -= 1
-	if state == INK:
+	if state == INK or state == LOCKED:
 		ink_count += 1
 	elif state == SMUDGE:
 		smudge_count += 1
 	cells[index] = state
 	var p := index * 4
-	pixels[p] = 255 if state == INK else 0
+	pixels[p] = 255 if (state == INK or state == LOCKED) else 0
 	pixels[p + 1] = 255 if state == SMUDGE else 0
+	pixels[p + 2] = 255 if state == LOCKED else 0
 	dirty = true
 
 
@@ -93,9 +101,10 @@ func paint_line(from: Vector2, to: Vector2, radius: float, state: int) -> void:
 
 ## Finds every non-ink cell that is fully walled in by ink (or by ink plus the
 ## page edge) inside the square reach of a pulse. A shape that extends past the
-## reach, or whose outline has any gap, is not enclosed. Returns cell indices
-## and marks them 1 in `mask`.
-func find_enclosed(center: Vector2, radius: float) -> PackedInt32Array:
+## reach, or whose outline has a gap, is not enclosed. `gap_cells` forgives
+## gaps up to that many cells wide. Returns cell indices and marks them 1 in
+## `mask`.
+func find_enclosed(center: Vector2, radius: float, gap_cells: int = 0) -> PackedInt32Array:
 	var raw_x0 := int(floor((center.x - radius) / cell_size))
 	var raw_x1 := int(floor((center.x + radius) / cell_size))
 	var raw_y0 := int(floor((center.y - radius) / cell_size))
@@ -105,10 +114,15 @@ func find_enclosed(center: Vector2, radius: float) -> PackedInt32Array:
 	var y0 := maxi(raw_y0, 0)
 	var y1 := mini(raw_y1, rows - 1)
 	mask.fill(0)
-	var stack := PackedInt32Array()
+
+	# Gap forgiveness, step 1: thicken the walls. Cells next to ink become a
+	# halo (3) that the flood cannot pass, which plugs small gaps.
+	for pass_index in gap_cells:
+		_grow(x0, x1, y0, y1, 3, true)
 
 	# Seed the flood from each side of the reach that is open ground. A side
 	# that sits on the page edge is a wall and seeds nothing.
+	var stack := PackedInt32Array()
 	for x in range(x0, x1 + 1):
 		if raw_y0 > 0:
 			_seed(y0 * cols + x, stack)
@@ -136,20 +150,54 @@ func find_enclosed(center: Vector2, radius: float) -> PackedInt32Array:
 		if y < y1:
 			_seed(index + cols, stack)
 
+	# Step 2: give the halo on the outside of walls back to the outside, so
+	# only halo cells that are truly inside a shape remain.
+	for pass_index in gap_cells:
+		_grow(x0, x1, y0, y1, 2, false)
+
 	var enclosed := PackedInt32Array()
 	for y in range(y0, y1 + 1):
 		for x in range(x0, x1 + 1):
 			var index := y * cols + x
-			if cells[index] != INK and mask[index] == 0:
+			if _open(index) and mask[index] != 2:
 				mask[index] = 1
 				enclosed.append(index)
 	return enclosed
 
 
+func _open(index: int) -> bool:
+	var state := cells[index]
+	return state != INK and state != LOCKED
+
+
 func _seed(index: int, stack: PackedInt32Array) -> void:
-	if mask[index] == 0 and cells[index] != INK:
+	if mask[index] == 0 and _open(index):
 		mask[index] = 2
 		stack.append(index)
+
+
+## One step of growth inside the box. With from_ink, unmarked open cells that
+## touch ink or the halo become `value`; otherwise halo cells that touch the
+## outside (2) become `value`. Uses 8 neighbours.
+func _grow(x0: int, x1: int, y0: int, y1: int, value: int, from_ink: bool) -> void:
+	var changed := PackedInt32Array()
+	for y in range(y0, y1 + 1):
+		for x in range(x0, x1 + 1):
+			var index := y * cols + x
+			if not _open(index) or mask[index] != (0 if from_ink else 3):
+				continue
+			var touches := false
+			for ny in range(maxi(y - 1, y0), mini(y + 1, y1) + 1):
+				for nx in range(maxi(x - 1, x0), mini(x + 1, x1) + 1):
+					var n := ny * cols + nx
+					if from_ink:
+						touches = touches or not _open(n) or mask[n] == 3
+					else:
+						touches = touches or mask[n] == 2
+			if touches:
+				changed.append(index)
+	for index in changed:
+		mask[index] = value
 
 
 func cell_center(index: int) -> Vector2:

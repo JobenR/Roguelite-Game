@@ -5,6 +5,7 @@
     "charge_per_kill": 4,
     "fill": 1.0,
     "damage": 40,
-    "charge_per_xp": 1
+    "charge_per_xp": 1,
+    "shockwave_knockback": 70
   }
 }

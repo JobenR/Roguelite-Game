@@ -34,11 +34,14 @@ func _ready() -> void:
 		_button("fire", "FIRE", 70.0, Vector2(-110, -110), false),
 		_button("secondary", "BOMB", 46.0, Vector2(-260, -70), false),
 		_button("pulse", "PULSE", 46.0, Vector2(-80, -260), false),
+		_button("dash", "DASH", 40.0, Vector2(-235, -185), false),
 		_button("pause", "II", 24.0, Vector2(-30, 140), true),
 		_button("debug_toggle", "DBG", 24.0, Vector2(-30, 80), true),
 	]
 	Events.secondary_charge_changed.connect(_set_charge.bind("secondary"))
 	Events.pulse_charge_changed.connect(_set_charge.bind("pulse"))
+	Events.dash_charge_changed.connect(_set_charge.bind("dash"))
+	Events.upgrade_applied.connect(func(_id: String) -> void: queue_redraw())
 
 
 func _button(action: String, label: String, radius: float, offset: Vector2, top: bool) -> Dictionary:
@@ -51,6 +54,11 @@ func _set_charge(ratio: float, action: String) -> void:
 			button["charge"] = ratio
 			button["ready"] = ratio >= 1.0
 	queue_redraw()
+
+
+## DASH only exists once its upgrade is owned.
+func _is_hidden(button: Dictionary) -> bool:
+	return button["action"] == "dash" and Upgrades.bonus("dash") <= 0.0
 
 
 func _button_center(button: Dictionary) -> Vector2:
@@ -77,6 +85,8 @@ func _input(event: InputEvent) -> void:
 
 func _touch_down(index: int, pos: Vector2) -> void:
 	for button in _buttons:
+		if _is_hidden(button):
+			continue
 		var radius: float = button["radius"]
 		if pos.distance_to(_button_center(button)) <= radius * 1.25:
 			button["touch"] = index
@@ -168,6 +178,8 @@ func _draw() -> void:
 	draw_circle(base + _stick_vec * STICK_RADIUS, 30.0, Color(1, 1, 1, alpha + 0.25))
 
 	for button in _buttons:
+		if _is_hidden(button):
+			continue
 		var center := _button_center(button)
 		var radius: float = button["radius"]
 		var pressed: bool = button["touch"] != -1

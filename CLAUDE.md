@@ -20,7 +20,8 @@ You are a drop of living ink on a blank page; the horde is a grey smudge.
   Auto-aim is NOT default: it is a temporary power from a pickup. Also a
   secondary weapon (ink bomb) that recharges over time and from kills, and the
   pulse, charged by XP and kills.
-- PC keys: WASD move, arrow keys aim, Space fire, E bomb, Q pulse, Esc pause.
+- PC keys: WASD move, arrow keys aim, Space fire, E bomb, Q pulse, Shift dash
+  (once the Dash upgrade is owned), Esc pause.
 - Modes: Survival (bounded arena about 3x3 screens, endless) and Burning Page
   (arena shrinks; your swallowed ink stays walkable and locked in, everything
   else swallowed is impassable for everyone; each swallowed strip pays out by
@@ -34,7 +35,13 @@ You are a drop of living ink on a blank page; the horde is a grey smudge.
    Feedback pass after 3 (done): thin trail on an 8px ink grid, directional splats,
    manual aim with Auto-Aim pickup, illustrated cards, outlined enemies with eyes,
    wave warnings, more sensitive stick, Twin Nib/Scatter/Ink Jet/Orbiting Blots.
-   `docs/powerup_ideas.md` lists 100 candidates awaiting the user's approval.
+   `docs/powerup_ideas.md` lists 100 candidates. Built from it so far: 3, 21, 33, 38,
+   45, 53, 58, 60, 71, 84, 90, 91, 99 (30 upgrade cards, 3 pickups).
+   Second feedback pass (done): slower XP curve, rarer pickups, smaller per-level
+   upgrade steps with more levels, comet-style shots. The user wants gradual
+   power growth: keep new upgrades to small steps over many levels.
+   Pending the user's choice: a pattern system (draw a recognised shape with the
+   trail, unbroken, to trigger a mega action scaled by its size).
 4. Horde: Runner, Brute, Corruptor, mini-boss, spawn director tuning.
 5. Burning Page mode: shrink, dead ground, flow field, strip payouts.
 6. Mobile: touch polish, iOS export, performance pass (60fps with 300+ enemies).
@@ -65,7 +72,7 @@ Commit after each milestone and tell the user exactly what to test and report.
   actions from `_input` events: the touch UI feeds actions with
   `Input.action_press()`, which generates no events. Raw touch events are allowed
   only in `ui/touch/`.
-- **Actions:** `move_left/right/up/down`, `aim_left/right/up/down`, `fire`, `secondary`, `pulse`, `pause`,
+- **Actions:** `move_left/right/up/down`, `aim_left/right/up/down`, `fire`, `secondary`, `pulse`, `dash`, `pause`,
   `restart`, `debug_toggle` (F3), `debug_spawn` (F2). Defined in `project.godot`;
   regenerate with `tools/setup_input_map.gd`.
 - **Performance:** no physics bodies and no per-entity `_process` for enemies,
@@ -106,19 +113,23 @@ Commit after each milestone and tell the user exactly what to test and report.
   `fire_rate, damage, move_speed, max_hp, pickup_radius, pierce, multishot,
   scatter, laser, orbit, ricochet, explosive, explosive_size, ink_regen,
   ink_burn, trail_radius, pulse_radius, splat_size, splat_damage, ink_speed,
-  pulse_heal, auto_aim_duration`.
+  pulse_heal, auto_aim_duration, ring_bomb, pulse_gap, permanent_marker,
+  painter, ink_slow, territory_tax, shockwave, homing, dash, mortar, reroll`.
 - Each upgrade has a `category` (weapon/stat/ink: card border colour) and an
   `icon` id drawn in code by `ui/levelup/upgrade_icon.gd`. A new upgrade needs a
   new `match` branch there or it shows the default drop.
 - Temporary powers live in `GameState.powers` (id -> seconds left), granted by
-  pickups in `data/pickups.json`. `<id>_duration` is the stat that extends one.
+  pickups in `data/pickups.json` (one shared drop chance and pity timer, then a
+  weighted pick among `types`). `<id>_duration` is the stat that extends one.
 - Pausing uses `get_tree().paused`. UI that must run while paused
   (level-up cards, pause menu) sets `PROCESS_MODE_ALWAYS`. Never kill enemies
   while iterating `EnemyManager.active`; collect and apply after the loop.
 
 ## Ink rules (as implemented)
 
-- `InkGrid`: 8px cells (`ink_cell_size` in modes.json), one byte each (`NEUTRAL`, `INK`, `SMUDGE`), plus an RGBA
+- `InkGrid`: 8px cells (`ink_cell_size` in modes.json), one byte each (`NEUTRAL`, `INK`, `SMUDGE`,
+  `LOCKED` = permanent player ink that nothing overwrites; test ownership with
+  `grid.is_ink(pos)`, never `== INK`), plus an RGBA
   buffer uploaded as one texture and drawn by `entities/ground/ink.gdshader`.
 - Player footsteps paint a thin line (`trail_radius`). Kills call
   `InkSystem.splat(pos, radius, dir)`: a lumpy core plus a streak and droplets
@@ -130,7 +141,8 @@ Commit after each milestone and tell the user exactly what to test and report.
   square reach through non-ink cells. Whatever the flood cannot reach is
   enclosed and gets filled. Consequences: a shape must fit inside the reach, any
   gap in the outline voids it, and the page edge counts as a wall. A pulse that
-  finds nothing fizzles and keeps its charge.
+  finds nothing fizzles and keeps its charge (unless Shockwave is owned).
+  `gap_cells` (Forgiving Pulse) thickens walls before the flood to plug small gaps.
 
 ## Checking work
 

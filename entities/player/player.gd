@@ -29,6 +29,11 @@ var _assist_cos: float = 1.0
 var _aim_hold: float = 1.0
 var _aim_hold_left: float = 0.0
 var _raw_aim: Vector2 = Vector2.RIGHT
+var _effects: Effects
+var _stats: Dictionary = {}
+var _dash_left: float = 0.0
+var _dash_cooldown_left: float = 0.0
+var _dash_dir: Vector2 = Vector2.RIGHT
 
 @onready var visual: Node2D = $Visual
 @onready var aim_pivot: Node2D = $AimPivot
@@ -36,12 +41,14 @@ var _raw_aim: Vector2 = Vector2.RIGHT
 @onready var aim_guide: Node2D = $AimPivot/AimGuide
 
 
-func setup(enemies: EnemyManager, bullets: BulletManager, arena: Rect2, ink: InkSystem) -> void:
+func setup(enemies: EnemyManager, bullets: BulletManager, arena: Rect2, ink: InkSystem, effects: Effects) -> void:
+	_effects = effects
 	_enemies = enemies
 	_bullets = bullets
 	_arena = arena
 	_ink = ink
 	var stats: Dictionary = DataDB.player.get("default", {})
+	_stats = stats
 	radius = float(stats.get("radius", radius))
 	speed = float(stats.get("speed", speed))
 	max_hp = float(stats.get("max_hp", max_hp))
@@ -65,14 +72,18 @@ func _process(delta: float) -> void:
 	if not GameState.is_playing() or _enemies == null:
 		return
 	var move := Input.get_vector("move_left", "move_right", "move_up", "move_down")
-	var on_ink := _ink.grid.state_at(position) == InkGrid.INK
+	var on_ink := _ink.grid.is_ink(position)
 	var current_speed := Upgrades.value("move_speed", speed)
 	if on_ink:
 		current_speed *= 1.0 + _ink_speed_bonus + Upgrades.bonus("ink_speed")
 		var regen := Upgrades.bonus("ink_regen")
 		if regen > 0.0 and hp < max_hp:
 			heal(regen * delta)
-	position += move * current_speed * delta
+	_update_dash(move, delta)
+	if _dash_left > 0.0:
+		position += _dash_dir * current_speed * float(_stats.get("dash_speed_mult", 4.0)) * delta
+	else:
+		position += move * current_speed * delta
 	position.x = clampf(position.x, _arena.position.x + radius, _arena.end.x - radius)
 	position.y = clampf(position.y, _arena.position.y + radius, _arena.end.y - radius)
 
@@ -92,6 +103,8 @@ func _process(delta: float) -> void:
 
 	if Input.is_action_pressed("fire") and _cooldown <= 0.0 and not weapon.is_empty():
 		_cooldown = float(weapon.get("fire_interval", 0.3)) / Upgrades.mult_of("fire_rate")
+		if GameState.has_power("frenzy"):
+			_cooldown /= float(DataDB.pickups.get("types", {}).get("frenzy", {}).get("fire_rate_mult", 2.0))
 		_fire_volley()
 
 
@@ -128,8 +141,11 @@ func _fire_volley() -> void:
 	var side := aim_dir.orthogonal()
 	var parallel := 1 + int(Upgrades.bonus("multishot"))
 	var spacing := float(weapon.get("parallel_spacing", 14.0))
+	# Each extra parallel shot makes all of them a little weaker.
+	var parallel_scale := 1.0 / (1.0 + float(weapon.get("parallel_damage_falloff", 0.0)) * (parallel - 1))
 	for i in parallel:
-		_bullets.fire(muzzle + side * (i - (parallel - 1) * 0.5) * spacing, aim_dir, weapon)
+		_bullets.fire(muzzle + side * (i - (parallel - 1) * 0.5) * spacing, aim_dir, weapon, parallel_scale)
+	_effects.muzzle(muzzle, aim_dir, Color("#38bdf8"))
 	var scatter := int(Upgrades.bonus("scatter"))
 	var angle := deg_to_rad(float(weapon.get("scatter_angle_deg", 16.0)))
 	var scatter_damage := float(weapon.get("scatter_damage_mult", 0.6))
@@ -137,6 +153,26 @@ func _fire_volley() -> void:
 		var ring := i / 2 + 1
 		var sign_dir := 1.0 if i % 2 == 0 else -1.0
 		_bullets.fire(muzzle, aim_dir.rotated(sign_dir * ring * angle), weapon, scatter_damage)
+
+
+## Dash (unlocked by the Dash upgrade): a short invulnerable burst.
+func _update_dash(move: Vector2, delta: float) -> void:
+	var level := int(Upgrades.bonus("dash"))
+	if level <= 0:
+		return
+	var cooldown := maxf(1.0, float(_stats.get("dash_cooldown", 4.5)) - float(_stats.get("dash_cooldown_per_level", 0.5)) * (level - 1))
+	if _dash_left > 0.0:
+		_dash_left -= delta
+	if _dash_cooldown_left > 0.0:
+		_dash_cooldown_left -= delta
+		Events.dash_charge_changed.emit(clampf(1.0 - _dash_cooldown_left / cooldown, 0.0, 1.0))
+	elif Input.is_action_just_pressed("dash"):
+		_dash_dir = move.normalized() if move != Vector2.ZERO else aim_dir
+		_dash_left = float(_stats.get("dash_time", 0.18))
+		_dash_cooldown_left = cooldown
+		_invuln_left = maxf(_invuln_left, _dash_left + 0.15)
+		_effects.ring(position, 40.0, Color(0.22, 0.45, 0.95, 0.8), 0.25)
+		Events.dash_charge_changed.emit(0.0)
 
 
 func take_damage(amount: float) -> void:

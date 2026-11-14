@@ -23,6 +23,7 @@ var _radius: float = 10.0
 var _eyes: bool = false
 var _streak: float = 0.0
 var _shadow: bool = true
+var _glow: Color = Color.WHITE
 var _flash_left: float = 0.0
 
 
@@ -37,6 +38,7 @@ func setup(data: Dictionary, radius: float) -> void:
 	_eyes = bool(data.get("eyes", false))
 	_streak = float(data.get("streak", 0.0))
 	_shadow = bool(data.get("shadow", true))
+	_glow = Color(String(data.get("glow", _color.lightened(0.4).to_html())))
 	var sides := int(data.get("sides", 0))
 	if sides < 3:
 		sides = 20  # circle
@@ -70,8 +72,12 @@ func _draw() -> void:
 	if _points.size() < 3:
 		return
 	if _streak > 0.0:
-		draw_line(Vector2(-_streak, 0.0), Vector2.ZERO, Color(_color, 0.45), _radius * 1.5)
-		draw_line(Vector2(-_streak * 1.8, 0.0), Vector2(-_streak, 0.0), Color(_color, 0.18), _radius)
+		# A tapered comet tail fading to nothing, with a soft glow at the head.
+		var wide := PackedVector2Array([Vector2(0.0, -_radius * 1.5), Vector2(-_streak * 2.6, 0.0), Vector2(0.0, _radius * 1.5)])
+		draw_polygon(wide, PackedColorArray([Color(_glow, 0.45), Color(_glow, 0.0), Color(_glow, 0.45)]))
+		var core := PackedVector2Array([Vector2(0.0, -_radius * 0.8), Vector2(-_streak * 1.5, 0.0), Vector2(0.0, _radius * 0.8)])
+		draw_polygon(core, PackedColorArray([Color(_color, 0.9), Color(_color, 0.0), Color(_color, 0.9)]))
+		draw_circle(Vector2.ZERO, _radius * 2.1, Color(_glow, 0.22))
 	if _shadow:
 		draw_set_transform(Vector2(_radius * 0.18, _radius * 0.32))
 		draw_colored_polygon(_points, Color(0.0, 0.0, 0.0, 0.28))
@@ -79,6 +85,8 @@ func _draw() -> void:
 	draw_colored_polygon(_points, _color)
 	draw_colored_polygon(_highlight, _color.lightened(0.35))
 	draw_polyline(_outline_points, _outline, maxf(2.0, _radius * 0.2), true)
+	if _streak > 0.0:
+		draw_circle(Vector2(_radius * 0.25, 0.0), _radius * 0.35, Color(1, 1, 1, 0.9))
 	if _eyes:
 		var eye := _radius * 0.22
 		for side: float in [-1.0, 1.0]:

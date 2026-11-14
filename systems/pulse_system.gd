@@ -43,38 +43,48 @@ func _process(_delta: float) -> void:
 		fire()
 
 
-## Returns the number of cells filled (0 = fizzled).
+## Returns the number of cells filled (0 = nothing enclosed).
 func fire() -> int:
 	var center := _player.position
 	var radius := Upgrades.value("pulse_radius", float(_cfg.get("radius", 320.0)))
 	var grid := _ink.grid
-	var enclosed := grid.find_enclosed(center, radius)
-	if enclosed.is_empty():
+	var enclosed := grid.find_enclosed(center, radius, int(Upgrades.bonus("pulse_gap")))
+	var shock := Upgrades.bonus("shockwave")
+	if enclosed.is_empty() and shock <= 0.0:
+		# Nothing to fill and no Shockwave: fizzle and keep the charge.
 		_effects.ring(center, radius * 0.4, Color(0.85, 0.2, 0.2, 0.8), 0.25)
 		Events.pulse_fired.emit(0)
 		return 0
 
-	# Weaker pulses fill only part of what they enclose, nearest cells first.
-	var fill := clampf(float(_cfg.get("fill", 1.0)), 0.0, 1.0)
-	if fill < 1.0:
-		var ordered: Array = Array(enclosed)
-		ordered.sort_custom(func(a: int, b: int) -> bool:
-			return grid.cell_center(a).distance_squared_to(center) < grid.cell_center(b).distance_squared_to(center))
-		ordered.resize(maxi(1, int(ordered.size() * fill)))
-		grid.mask.fill(0)
-		enclosed = PackedInt32Array(ordered)
+	if shock > 0.0:
+		# Shockwave: blast and shove everything in reach, loop or not.
+		_enemies.damage_area(center, radius, shock)
+		_enemies.knockback(center, radius, float(_cfg.get("shockwave_knockback", 70.0)))
+
+	if not enclosed.is_empty():
+		# Weaker pulses fill only part of what they enclose, nearest cells first.
+		var fill := clampf(float(_cfg.get("fill", 1.0)), 0.0, 1.0)
+		if fill < 1.0:
+			var ordered: Array = Array(enclosed)
+			ordered.sort_custom(func(a: int, b: int) -> bool:
+				return grid.cell_center(a).distance_squared_to(center) < grid.cell_center(b).distance_squared_to(center))
+			ordered.resize(maxi(1, int(ordered.size() * fill)))
+			grid.mask.fill(0)
+			enclosed = PackedInt32Array(ordered)
+			for index in enclosed:
+				grid.mask[index] = 1
+
+		var pulse_damage := float(_cfg.get("damage", 0.0))
+		if pulse_damage > 0.0:
+			for enemy: Enemy in _enemies.active.duplicate():
+				if grid.mask[grid.cell_index(enemy.position)] == 1:
+					_enemies.damage(enemy, pulse_damage)
+		# Permanent Marker: pulse-filled ink can never be smudged.
+		var fill_state := InkGrid.LOCKED if Upgrades.bonus("permanent_marker") > 0.0 else InkGrid.INK
 		for index in enclosed:
-			grid.mask[index] = 1
+			grid.set_cell(index, fill_state)
+		_player.heal(Upgrades.bonus("pulse_heal"))
 
-	var pulse_damage := float(_cfg.get("damage", 0.0))
-	if pulse_damage > 0.0:
-		for enemy: Enemy in _enemies.active.duplicate():
-			if grid.mask[grid.cell_index(enemy.position)] == 1:
-				_enemies.damage(enemy, pulse_damage)
-	for index in enclosed:
-		grid.set_cell(index, InkGrid.INK)
-
-	_player.heal(Upgrades.bonus("pulse_heal"))
 	charge = 0.0
 	Events.pulse_charge_changed.emit(charge)
 	Events.pulse_fired.emit(enclosed.size())

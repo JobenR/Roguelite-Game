@@ -13,6 +13,7 @@ var _texture: ImageTexture
 var _sprite: Sprite2D
 var _enemies: EnemyManager
 var _pending_blasts: Array[Vector3] = []  # x, y, radius
+var _tax_left: float = 10.0
 
 
 func setup(arena: Rect2, enemies: EnemyManager, p_cell_size: float) -> void:
@@ -83,7 +84,14 @@ func _jitter(amount: float) -> Vector2:
 	return Vector2(randf_range(-amount, amount), randf_range(-amount, amount))
 
 
-func _process(_delta: float) -> void:
+func _process(delta: float) -> void:
+	var tax := Upgrades.bonus("territory_tax")
+	if tax > 0.0 and GameState.is_playing():
+		_tax_left -= delta
+		if _tax_left <= 0.0:
+			_tax_left = 10.0
+			# XP per percent of the page owned.
+			GameState.add_xp(int(round(ownership() * 100.0 * tax)))
 	if not _pending_blasts.is_empty() and GameState.is_playing():
 		var blasts := _pending_blasts.duplicate()
 		_pending_blasts.clear()

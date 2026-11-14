@@ -119,6 +119,65 @@ func _draw() -> void:
 			draw_arc(Vector2.ZERO, 11.0, 0.0, TAU, 20, red, 4.0)
 			for dir: Vector2 in [Vector2.RIGHT, Vector2.LEFT, Vector2.UP, Vector2.DOWN]:
 				draw_line(dir * 18.0, dir * 38.0, red, 5.0)
+		"ring_bomb":
+			draw_arc(Vector2.ZERO, 30.0, 0.0, TAU, 40, INK, 9.0)
+			draw_circle(Vector2.ZERO, 11.0, DARK)
+			draw_line(Vector2(6, -8), Vector2(14, -20), DARK, 4.0)
+			draw_circle(Vector2(16, -23), 4.0, GOLD)
+		"forgiving_pulse":
+			draw_arc(Vector2.ZERO, 30.0, 0.5, TAU - 0.5, 36, INK, 8.0)
+			draw_arc(Vector2.ZERO, 30.0, -0.5, 0.5, 8, GOLD, 5.0)
+			draw_circle(Vector2.ZERO, 7.0, INK)
+		"permanent_marker":
+			_blot(Color("#12235e"))
+			draw_rect(Rect2(-11, -2, 22, 17), GOLD)
+			draw_arc(Vector2(0, -3), 8.0, PI, TAU, 12, GOLD, 4.0)
+		"painter":
+			for i in 5:
+				draw_circle(Vector2(-36.0 + i * 15.0, 14.0 - i * 6.0), 5.0, Color(INK, 0.5 + i * 0.1))
+			_bullet(Vector2(40, -18), 14.0)
+		"quicksand":
+			draw_line(Vector2(-38, 14), Vector2(38, 14), INK, 20.0)
+			_enemy(Vector2(0, 2), 14.0)
+			draw_line(Vector2(-22, -24), Vector2(22, -24), DARK, 4.0)
+			draw_line(Vector2(-14, -34), Vector2(14, -34), DARK, 4.0)
+		"territory_tax":
+			draw_rect(Rect2(-32, -6, 64, 34), Color(INK, 0.85))
+			draw_rect(Rect2(-32, -6, 64, 34), DARK, false, 3.0)
+			_gem(Vector2(0, -22), 12.0)
+			_gem(Vector2(-24, -14), 7.0)
+			_gem(Vector2(24, -14), 7.0)
+		"shockwave":
+			draw_circle(Vector2.ZERO, 9.0, INK)
+			draw_arc(Vector2.ZERO, 24.0, 0.0, TAU, 32, INK, 6.0)
+			for i in 8:
+				var dir := Vector2.from_angle(TAU * i / 8.0)
+				draw_line(dir * 30.0, dir * 42.0, DARK, 5.0)
+		"homing":
+			var curve := PackedVector2Array()
+			for i in 12:
+				var t := i / 11.0
+				curve.append(Vector2(-38.0 + t * 60.0, 24.0 - sin(t * PI * 0.5) * 44.0))
+			draw_polyline(curve, INK, 6.0, true)
+			_enemy(Vector2(30, -22), 11.0)
+			draw_circle(curve[0], 6.0, DARK)
+		"dash":
+			_drop(Vector2(18, 2), 16.0, INK)
+			for i in 3:
+				draw_line(Vector2(-40, -14.0 + i * 14.0), Vector2(-8.0 - i * 4.0, -14.0 + i * 14.0), Color(INK, 0.7), 5.0)
+		"mortar":
+			var arc := PackedVector2Array()
+			for i in 12:
+				var t := i / 11.0
+				arc.append(Vector2(-36.0 + t * 66.0, 20.0 - sin(t * PI) * 46.0))
+			draw_polyline(arc, Color(INK, 0.5), 4.0, true)
+			draw_circle(arc[6], 12.0, DARK)
+			draw_arc(Vector2(30, 22), 12.0, 0.0, TAU, 20, Color("#dc2626"), 3.0)
+		"reroll":
+			draw_arc(Vector2.ZERO, 26.0, 0.6, TAU - 0.4, 32, Color("#16a34a"), 7.0)
+			draw_colored_polygon(PackedVector2Array([Vector2(30, -22), Vector2(34, 0), Vector2(14, -8)]), Color("#16a34a"))
+			draw_rect(Rect2(-9, -12, 18, 24), WHITE)
+			draw_rect(Rect2(-9, -12, 18, 24), DARK, false, 3.0)
 		_:
 			_drop(Vector2.ZERO, 24.0, INK)
 

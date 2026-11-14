@@ -10,6 +10,10 @@ var life: float = 0.0
 var pierce_left: int = 0
 var ricochet_left: int = 0
 var burst_radius: float = 0.0
+var burst_damage_mult: float = 0.3
+var paint_left: float = 0.0   # distance until the next Painter's Shots dot
+var shed_left: float = 0.0    # time until the next droplet shed in flight
+var glow: Color = Color.WHITE
 var hit: Array = []  # enemies already struck, so pierce and ricochet skip them
 
 @onready var visual: Node2D = $Visual
@@ -26,5 +30,10 @@ func launch(pos: Vector2, dir: Vector2, weapon: Dictionary, damage_scale: float 
 	pierce_left = int(Upgrades.bonus("pierce"))
 	ricochet_left = int(Upgrades.bonus("ricochet"))
 	burst_radius = Upgrades.bonus("explosive") * Upgrades.mult_of("explosive_size")
+	burst_damage_mult = float(weapon.get("burst_damage_mult", 0.3))
+	paint_left = 24.0
+	shed_left = randf() * 0.08
 	hit.clear()
-	visual.setup(weapon.get("visual", {}), radius)
+	var look: Dictionary = weapon.get("visual", {})
+	glow = Color(String(look.get("glow", "#38bdf8")))
+	visual.setup(look, radius)

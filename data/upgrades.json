@@ -2,12 +2,12 @@
   "upgrades": {
     "rapid_fire": {
       "name": "Quick Quill",
-      "desc": "+15% fire rate",
-      "max_level": 5,
+      "desc": "+8% fire rate",
+      "max_level": 8,
       "effects": [
         {
           "stat": "fire_rate",
-          "mult": 0.15
+          "mult": 0.08
         }
       ],
       "category": "weapon",
@@ -15,12 +15,12 @@
     },
     "damage": {
       "name": "Dense Ink",
-      "desc": "+20% damage",
-      "max_level": 5,
+      "desc": "+10% damage",
+      "max_level": 8,
       "effects": [
         {
           "stat": "damage",
-          "mult": 0.2
+          "mult": 0.1
         }
       ],
       "category": "weapon",
@@ -28,12 +28,12 @@
     },
     "move_speed": {
       "name": "Light Feet",
-      "desc": "+8% move speed",
-      "max_level": 5,
+      "desc": "+5% move speed",
+      "max_level": 6,
       "effects": [
         {
           "stat": "move_speed",
-          "mult": 0.08
+          "mult": 0.05
         }
       ],
       "category": "stat",
@@ -41,12 +41,12 @@
     },
     "max_hp": {
       "name": "Deep Well",
-      "desc": "+20 max health, and heal 20",
-      "max_level": 5,
+      "desc": "+10 max health, and heal 10",
+      "max_level": 8,
       "effects": [
         {
           "stat": "max_hp",
-          "add": 20
+          "add": 10
         }
       ],
       "category": "stat",
@@ -54,12 +54,12 @@
     },
     "pickup_radius": {
       "name": "Blotting Paper",
-      "desc": "+30% pickup radius",
-      "max_level": 4,
+      "desc": "+20% pickup radius",
+      "max_level": 5,
       "effects": [
         {
           "stat": "pickup_radius",
-          "mult": 0.3
+          "mult": 0.2
         }
       ],
       "category": "stat",
@@ -80,7 +80,7 @@
     },
     "multishot": {
       "name": "Twin Nib",
-      "desc": "+1 parallel shot: double, then triple",
+      "desc": "+1 parallel shot (double, then triple). Each shot is a little weaker",
       "max_level": 2,
       "effects": [
         {
@@ -106,12 +106,12 @@
     },
     "explosive": {
       "name": "Burst Cartridge",
-      "desc": "Shots burst on impact for 50% damage (+35 burst radius)",
-      "max_level": 3,
+      "desc": "Shots burst on impact for 30% damage (+25 burst radius)",
+      "max_level": 4,
       "effects": [
         {
           "stat": "explosive",
-          "add": 35
+          "add": 25
         }
       ],
       "category": "weapon",
@@ -119,12 +119,12 @@
     },
     "healing_ink": {
       "name": "Healing Ink",
-      "desc": "Regenerate +1.5 health per second while on your ink",
-      "max_level": 3,
+      "desc": "Regenerate +0.8 health per second while on your ink",
+      "max_level": 5,
       "effects": [
         {
           "stat": "ink_regen",
-          "add": 1.5
+          "add": 0.8
         }
       ],
       "category": "ink",
@@ -132,12 +132,12 @@
     },
     "caustic_ink": {
       "name": "Caustic Ink",
-      "desc": "Enemies standing on your ink take +6 damage per second",
-      "max_level": 4,
+      "desc": "Enemies standing on your ink take +3 damage per second",
+      "max_level": 6,
       "effects": [
         {
           "stat": "ink_burn",
-          "add": 6
+          "add": 3
         }
       ],
       "category": "ink",
@@ -145,12 +145,12 @@
     },
     "broad_stroke": {
       "name": "Broad Stroke",
-      "desc": "+25% trail width",
-      "max_level": 3,
+      "desc": "+15% trail width",
+      "max_level": 4,
       "effects": [
         {
           "stat": "trail_radius",
-          "mult": 0.25
+          "mult": 0.15
         }
       ],
       "category": "ink",
@@ -158,12 +158,12 @@
     },
     "wide_ripple": {
       "name": "Wide Ripple",
-      "desc": "+25% pulse reach",
-      "max_level": 3,
+      "desc": "+12% pulse reach",
+      "max_level": 5,
       "effects": [
         {
           "stat": "pulse_radius",
-          "mult": 0.25
+          "mult": 0.12
         }
       ],
       "category": "ink",
@@ -171,12 +171,12 @@
     },
     "heavy_blots": {
       "name": "Heavy Blots",
-      "desc": "+25% kill splat size",
-      "max_level": 3,
+      "desc": "+12% kill splat size",
+      "max_level": 5,
       "effects": [
         {
           "stat": "splat_size",
-          "mult": 0.25
+          "mult": 0.12
         }
       ],
       "category": "ink",
@@ -184,12 +184,12 @@
     },
     "slick_page": {
       "name": "Slick Page",
-      "desc": "+10% extra move speed on your ink",
-      "max_level": 3,
+      "desc": "+5% extra move speed on your ink",
+      "max_level": 5,
       "effects": [
         {
           "stat": "ink_speed",
-          "add": 0.1
+          "add": 0.05
         }
       ],
       "category": "ink",
@@ -197,7 +197,7 @@
     },
     "scatter": {
       "name": "Scatter",
-      "desc": "+2 angled side shots at 60% damage",
+      "desc": "+2 angled side shots at 40% damage",
       "max_level": 3,
       "category": "weapon",
       "icon": "scatter",
@@ -210,8 +210,8 @@
     },
     "laser": {
       "name": "Ink Jet",
-      "desc": "Fires a piercing beam every few seconds that leaves a line of ink. Levels fire faster",
-      "max_level": 4,
+      "desc": "A piercing beam every few seconds that leaves a line of ink. Levels fire faster",
+      "max_level": 5,
       "category": "weapon",
       "icon": "laser",
       "effects": [
@@ -236,14 +236,157 @@
     },
     "steady_hand": {
       "name": "Steady Hand",
-      "desc": "Auto-Aim pickups last +3 seconds",
+      "desc": "Auto-Aim pickups last +2 seconds",
       "max_level": 3,
       "category": "stat",
       "icon": "steady_hand",
       "effects": [
         {
           "stat": "auto_aim_duration",
-          "add": 3
+          "add": 2
+        }
+      ]
+    },
+    "ring_bomb": {
+      "name": "Ring Bomb",
+      "desc": "The ink bomb paints a ring: an instant loop to pulse. Levels widen the ring",
+      "max_level": 3,
+      "category": "ink",
+      "icon": "ring_bomb",
+      "effects": [
+        {
+          "stat": "ring_bomb",
+          "add": 1
+        }
+      ]
+    },
+    "forgiving_pulse": {
+      "name": "Forgiving Pulse",
+      "desc": "The pulse closes gaps of +1 step in a loop",
+      "max_level": 3,
+      "category": "ink",
+      "icon": "forgiving_pulse",
+      "effects": [
+        {
+          "stat": "pulse_gap",
+          "add": 1
+        }
+      ]
+    },
+    "permanent_marker": {
+      "name": "Permanent Marker",
+      "desc": "Ink filled by a pulse can never be smudged",
+      "max_level": 1,
+      "category": "ink",
+      "icon": "permanent_marker",
+      "effects": [
+        {
+          "stat": "permanent_marker",
+          "add": 1
+        }
+      ]
+    },
+    "painter": {
+      "name": "Painter's Shots",
+      "desc": "Shots leave dots of ink along their path. Levels pack the dots closer",
+      "max_level": 3,
+      "category": "ink",
+      "icon": "painter",
+      "effects": [
+        {
+          "stat": "painter",
+          "add": 1
+        }
+      ]
+    },
+    "quicksand": {
+      "name": "Quicksand Ink",
+      "desc": "Enemies on your ink are slowed by +10%",
+      "max_level": 3,
+      "category": "ink",
+      "icon": "quicksand",
+      "effects": [
+        {
+          "stat": "ink_slow",
+          "add": 0.1
+        }
+      ]
+    },
+    "territory_tax": {
+      "name": "Territory Tax",
+      "desc": "Every 10 seconds, gain XP for the share of the page you own",
+      "max_level": 4,
+      "category": "ink",
+      "icon": "territory_tax",
+      "effects": [
+        {
+          "stat": "territory_tax",
+          "add": 0.25
+        }
+      ]
+    },
+    "shockwave": {
+      "name": "Shockwave",
+      "desc": "The pulse always blasts enemies in reach back for +12 damage, loop or not",
+      "max_level": 4,
+      "category": "ink",
+      "icon": "shockwave",
+      "effects": [
+        {
+          "stat": "shockwave",
+          "add": 12
+        }
+      ]
+    },
+    "homing": {
+      "name": "Homing Ink",
+      "desc": "Shots curve toward nearby enemies. Levels turn harder",
+      "max_level": 3,
+      "category": "weapon",
+      "icon": "homing",
+      "effects": [
+        {
+          "stat": "homing",
+          "add": 1.6
+        }
+      ]
+    },
+    "dash": {
+      "name": "Dash",
+      "desc": "Unlocks DASH (Shift): a short burst through enemies. Levels recharge faster",
+      "max_level": 4,
+      "category": "stat",
+      "icon": "dash",
+      "effects": [
+        {
+          "stat": "dash",
+          "add": 1
+        }
+      ]
+    },
+    "mortar": {
+      "name": "Ink Mortar",
+      "desc": "Lobs a shell at the thickest crowd every few seconds. Big splat on landing",
+      "max_level": 5,
+      "category": "weapon",
+      "icon": "mortar",
+      "effects": [
+        {
+          "stat": "mortar",
+          "add": 1
+        }
+      ]
+    },
+    "reroll": {
+      "name": "Reroll",
+      "desc": "+1 redraw of the cards at every level-up",
+      "max_level": 2,
+      "category": "stat",
+      "icon": "reroll",
+      "effects": [
+        {
+          "stat": "reroll",
+          "add": 1
         }
       ]
     }
@@ -279,7 +422,7 @@
     },
     "acid_bath": {
       "name": "Acid Bath",
-      "desc": "Kill splats deal 15 damage to enemies they land on",
+      "desc": "Kill splats deal 10 damage to enemies they land on",
       "requires": [
         "caustic_ink",
         "heavy_blots"
@@ -287,13 +430,13 @@
       "effects": [
         {
           "stat": "splat_damage",
-          "add": 15
+          "add": 10
         }
       ]
     },
     "tidal_pulse": {
       "name": "Tidal Pulse",
-      "desc": "A successful pulse heals 15 health",
+      "desc": "A successful pulse heals 10 health",
       "requires": [
         "wide_ripple",
         "healing_ink"
@@ -301,7 +444,21 @@
       "effects": [
         {
           "stat": "pulse_heal",
-          "add": 15
+          "add": 10
+        }
+      ]
+    },
+    "drawn_circle": {
+      "name": "Drawn Circle",
+      "desc": "+50% pulse reach",
+      "requires": [
+        "ring_bomb",
+        "wide_ripple"
+      ],
+      "effects": [
+        {
+          "stat": "pulse_radius",
+          "mult": 0.5
         }
       ]
     }

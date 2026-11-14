@@ -6,6 +6,7 @@ shader_type canvas_item;
 
 uniform vec4 ink_color : source_color = vec4(0.20, 0.42, 0.95, 0.86);
 uniform vec4 ink_rim : source_color = vec4(0.05, 0.13, 0.45, 0.95);
+uniform vec4 locked_color : source_color = vec4(0.10, 0.16, 0.55, 0.95);
 uniform vec4 smudge_color : source_color = vec4(0.36, 0.34, 0.33, 0.62);
 uniform vec2 grid_size = vec2(480.0, 270.0);
 
@@ -33,6 +34,9 @@ void fragment() {
 
 	vec3 ink_rgb = mix(ink_rim.rgb, ink_color.rgb, core) * (0.93 + 0.14 * grain);
 	float ink_a = mix(ink_rim.a, ink_color.a, core);
+	float locked = smoothstep(0.4, 0.6, t.b) * core;
+	ink_rgb = mix(ink_rgb, locked_color.rgb * (0.9 + 0.2 * grain), locked);
+	ink_a = mix(ink_a, locked_color.a, locked);
 	vec3 smudge_rgb = smudge_color.rgb * (0.8 + 0.4 * grain);
 	COLOR = vec4(mix(smudge_rgb, ink_rgb, ink), max(ink * ink_a, smudge * smudge_color.a));
 }

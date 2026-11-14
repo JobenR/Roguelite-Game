@@ -29,11 +29,14 @@ func _process(_delta: float) -> bool:
 	if _frames % 120 == 0:
 		Input.action_press("secondary")
 		Input.action_press("pulse")
+		Input.action_press("dash")
+		gs.grant_power(["frenzy", "magnet", "auto_aim"][(_frames / 120) % 3], 2.0)
 	elif _frames % 120 == 1:
 		Input.action_release("secondary")
 		Input.action_release("pulse")
+		Input.action_release("dash")
 	if _frames == 600:
-		for id in ["scatter", "laser", "orbit", "multishot"]:
+		for id in ["scatter", "laser", "orbit", "multishot", "ring_bomb", "forgiving_pulse", "permanent_marker", "painter", "quicksand", "territory_tax", "shockwave", "homing", "dash", "mortar", "reroll"]:
 			upgrades.apply(id)
 	# Keep the test player alive so a long run exercises every upgrade.
 	_scene.player.hp = _scene.player.max_hp

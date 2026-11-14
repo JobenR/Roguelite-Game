@@ -5,18 +5,27 @@
     "fire_interval": 0.28,
     "bullet_speed": 720,
     "bullet_life": 0.9,
-    "bullet_radius": 5,
+    "bullet_radius": 6,
     "range": 520,
     "visual": {
       "sides": 0,
-      "color": "#12235e",
-      "outline": "#060d2b",
-      "streak": 16,
+      "color": "#0b1b4d",
+      "outline": "#050a1f",
+      "glow": "#38bdf8",
+      "streak": 24,
       "shadow": false
     },
-    "scatter_damage_mult": 0.6,
+    "scatter_damage_mult": 0.4,
     "scatter_angle_deg": 16,
-    "parallel_spacing": 14
+    "parallel_spacing": 14,
+    "burst_damage_mult": 0.3,
+    "parallel_damage_falloff": 0.35,
+    "painter_spacing": [
+      56,
+      36,
+      18
+    ],
+    "homing_range": 170
   },
   "ink_bomb": {
     "name": "Ink Bomb",
@@ -32,23 +41,37 @@
       "sides": 0,
       "color": "#0f1f4d",
       "outline": "#050a1f"
-    }
+    },
+    "ring_radius": 120,
+    "ring_radius_per_level": 25,
+    "ring_thickness": 7
   },
   "laser": {
     "name": "Ink Jet",
-    "damage": 18,
-    "cooldown": 3.0,
-    "cooldown_per_level": 0.25,
+    "damage": 12,
+    "cooldown": 4.5,
+    "cooldown_per_level": 0.2,
     "length": 700,
     "width": 14,
     "ink_radius": 5
   },
   "orbit": {
     "name": "Orbiting Blots",
-    "damage": 8,
+    "damage": 5,
     "radius": 78,
     "ball_radius": 11,
     "speed": 3.2,
     "tick": 0.2
+  },
+  "mortar": {
+    "name": "Ink Mortar",
+    "damage": 28,
+    "damage_per_level": 0.2,
+    "cooldown": 5.5,
+    "cooldown_per_level": 0.15,
+    "blast_radius": 95,
+    "splat_radius": 80,
+    "flight_time": 0.7,
+    "range": 650
   }
 }

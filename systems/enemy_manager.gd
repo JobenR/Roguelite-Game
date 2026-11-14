@@ -79,6 +79,34 @@ func nearest(pos: Vector2, max_range: float) -> Enemy:
 	return best
 
 
+## Pushes enemies inside the circle away from its centre.
+func knockback(center: Vector2, radius: float, distance: float) -> void:
+	for enemy in active:
+		var offset := enemy.position - center
+		var d := offset.length()
+		if d < radius and d > 0.01:
+			var pos := enemy.position + offset / d * distance * (1.0 - d / radius * 0.5)
+			pos.x = clampf(pos.x, _arena.position.x, _arena.end.x)
+			pos.y = clampf(pos.y, _arena.position.y, _arena.end.y)
+			enemy.position = pos
+
+
+## Centre of a crowded spot: the best of a few random enemies by neighbour count.
+func densest_point(near: Vector2, max_range: float, crowd_radius: float) -> Vector2:
+	var best := Vector2.INF
+	var best_count := 0
+	var found: Array = []
+	for i in mini(10, active.size()):
+		var enemy: Enemy = active[randi() % active.size()]
+		if enemy.position.distance_to(near) > max_range:
+			continue
+		grid.query(enemy.position, crowd_radius, found)
+		if found.size() > best_count:
+			best_count = found.size()
+			best = enemy.position
+	return best
+
+
 ## Nearest active enemy inside a cone around dir (cos_half = cosine of the
 ## cone's half angle). Used for aim assist.
 func nearest_in_cone(pos: Vector2, dir: Vector2, max_range: float, cos_half: float) -> Enemy:
@@ -132,6 +160,7 @@ func _process(delta: float) -> void:
 
 	# Caustic ink ticks four times a second. Victims are collected during the
 	# loop and damaged after it, because a kill edits `active`.
+	var slow := minf(Upgrades.bonus("ink_slow"), 0.8)
 	var burn := Upgrades.bonus("ink_burn")
 	var burn_tick := false
 	if burn > 0.0:
@@ -146,7 +175,10 @@ func _process(delta: float) -> void:
 		var dist := to_player.length()
 		var step := Vector2.ZERO
 		if dist > 0.001:
-			step = to_player / dist * enemy.speed * delta
+			var pace := enemy.speed
+			if slow > 0.0 and ink_grid.is_ink(pos):
+				pace *= 1.0 - slow
+			step = to_player / dist * pace * delta
 
 		# Push away from overlapping neighbours so the horde does not stack.
 		var push := Vector2.ZERO
@@ -176,7 +208,7 @@ func _process(delta: float) -> void:
 
 		if dist < enemy.radius + player_radius:
 			_player.take_damage(enemy.damage)
-		if burn_tick and ink_grid.state_at(pos) == InkGrid.INK:
+		if burn_tick and ink_grid.is_ink(pos):
 			_burning.append(enemy)
 
 	if burn_tick:
