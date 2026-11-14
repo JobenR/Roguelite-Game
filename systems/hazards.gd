@@ -67,7 +67,7 @@ func _process(delta: float) -> void:
 		if hole["left"] <= 0.0:
 			_enemies.damage_area(pos, radius, float(hole["damage"]))
 			_ink.splat(pos, radius * 0.6, Vector2.ZERO)
-			_effects.ring(pos, radius, Color(0.3, 0.2, 0.6, 0.95), 0.4)
+			_effects.ring(pos, radius, Color(0.08, 0.07, 0.06, 0.95), 0.4)
 			Events.screen_shake.emit(6.0)
 			_holes.remove_at(i)
 		i -= 1
@@ -92,7 +92,7 @@ func _process(delta: float) -> void:
 				if float(mine["slow"]) > 0.0:
 					# Survivors over a wider area are slowed, to break up the mass.
 					_enemies.slow_area(pos, float(mine["radius"]) * 1.6, float(mine["slow"]), float(mine["slow_seconds"]))
-				_effects.ring(pos, float(mine["radius"]), Color(0.12, 0.23, 0.54, 0.9), 0.3)
+				_effects.ring(pos, float(mine["radius"]), Color(0.08, 0.07, 0.06, 0.9), 0.3)
 		i -= 1
 	queue_redraw()
 
@@ -110,11 +110,11 @@ func _draw() -> void:
 		var t := 1.0 - float(hole["left"]) / float(hole["total"])
 		draw_circle(pos, radius * 0.35 * (0.6 + t), Color(0.05, 0.02, 0.12, 0.95))
 		for k in 3:
-			draw_arc(pos, radius * (0.5 + 0.25 * k), -spin * (1.0 + k * 0.5), -spin * (1.0 + k * 0.5) + 3.6, 24, Color(0.35, 0.25, 0.7, 0.7), 4.0)
+			draw_arc(pos, radius * (0.5 + 0.25 * k), -spin * (1.0 + k * 0.5), -spin * (1.0 + k * 0.5) + 3.6, 24, Color(0.08, 0.07, 0.06, 0.7), 4.0)
 	for mine in _mines:
 		var pos: Vector2 = mine["pos"]
 		var armed: bool = mine["arm"] <= 0.0
 		draw_circle(pos + Vector2(2, 3), 11.0, Color(0, 0, 0, 0.25))
-		draw_circle(pos, 11.0, Color("#0b1b4d"))
-		draw_arc(pos, 11.0, 0.0, TAU, 16, Color("#050a1f"), 2.5)
+		draw_circle(pos, 11.0, Color("#141210"))
+		draw_arc(pos, 11.0, 0.0, TAU, 16, Color("#141210"), 2.5)
 		draw_circle(pos, 4.0, Color("#ef4444") if armed and int(spin) % 2 == 0 else Color("#7f1d1d"))

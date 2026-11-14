@@ -10,26 +10,34 @@ func _ready() -> void:
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 
 	var dim := ColorRect.new()
-	dim.color = Color(0, 0, 0, 0.6)
+	dim.color = Color(0.05, 0.04, 0.03, 0.6)
 	add_child(dim)
 	dim.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	var center := CenterContainer.new()
 	add_child(center)
 	center.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	var sheet := PanelContainer.new()
+	sheet.add_theme_stylebox_override("panel", Sumi.paper())
+	center.add_child(sheet)
 	var box := VBoxContainer.new()
-	box.add_theme_constant_override("separation", 18)
-	center.add_child(box)
+	box.add_theme_constant_override("separation", 14)
+	sheet.add_child(box)
 
-	var title := Label.new()
-	title.text = "PAUSED"
-	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	title.add_theme_font_size_override("font_size", 48)
-	box.add_child(title)
+	var heading := Label.new()
+	heading.text = "Paused"
+	heading.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	Sumi.title(heading, 54, Sumi.SEAL)
+	box.add_child(heading)
+
+	var glyph_title := Label.new()
+	glyph_title.text = "Glyphs"
+	glyph_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	Sumi.title(glyph_title, 28)
+	box.add_child(glyph_title)
 	var help := Label.new()
-	help.text = "GLYPHS\nClose a shape with your trail, then PULSE it.\nCircle: Maelstrom pulls enemies in and grinds them.\nTriangle: Spike Burst fires a beam from each corner.\nSquare: Fortress turns it to permanent ink and shelters you.\nThe bigger the shape, the stronger the effect."
+	help.text = "Close a shape with your trail, then PULSE it.\nCircle: Maelstrom pulls enemies in and grinds them.\nTriangle: Spike Burst fires a beam from each corner.\nSquare: Fortress turns it to permanent ink and shelters you.\nThe bigger the shape, the stronger the effect."
 	help.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	help.add_theme_font_size_override("font_size", 20)
-	help.add_theme_color_override("font_color", Color("#fbd34d"))
+	Sumi.body(help, 19, Sumi.FADED)
 	box.add_child(help)
 	box.add_child(_make_button("Resume", _resume))
 	box.add_child(_make_button("Restart run", _restart))
@@ -42,8 +50,9 @@ func setup(levelup: Control) -> void:
 func _make_button(text: String, callback: Callable) -> Button:
 	var button := Button.new()
 	button.text = text
-	button.custom_minimum_size = Vector2(260.0, 72.0)
-	button.add_theme_font_size_override("font_size", 28)
+	button.custom_minimum_size = Vector2(280.0, 66.0)
+	button.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	Sumi.ink_button(button, 28)
 	button.pressed.connect(callback)
 	return button
 

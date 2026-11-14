@@ -8,13 +8,25 @@ Primary target: iPhone landscape. Secondary: PC (Windows/Mac).
 
 You are a drop of living ink on a blank page; the horde is a grey smudge.
 
-**Look (chosen by the user from drawn mock-ups): Sumi-e with glow.** Rice paper,
-black brush-ink enemies, and a red seal accent are the base. The player's ink
-(trail, splats, shots, blasts) is luminous blue with a soft glow. Each enemy
-type is told apart by a glowing core colour. Extra glow (`Effects.big_moment`:
-bloom plus flung brush strokes) is reserved for big moments: bombs, successful
-pulses, glyphs, boss deaths. Keep new visuals inside this language; do not add
-outlined cartoon shapes or notebook-paper elements.
+**Look (chosen by the user from drawn mock-ups): Sumi-e, with glow only as a
+reward.** The user picked mock-up A plus E and rejected a first attempt that
+"looked like a recoloured version of the last one", so hold to this closely:
+
+- Rice paper with fibres, a brushed black frame, a red seal. No notebook lines.
+- ALL ink is black: the player's trail, splats, shots and blasts, and the
+  horde. Ink has dry-brush edges, bristle streaks, and a soft grey bleed halo
+  where it soaked into the paper. Splats throw streaks and many droplets.
+- Enemies are ragged black brush shapes with a pooled shade underneath, told
+  apart only by a small glowing core colour. The player is a black drop with a
+  glowing cyan square seal.
+- Shots are black tapered brush flicks. Ordinary blasts (`Effects.ink_burst`)
+  are black strokes flung outward with a broken red ring. Red is the only
+  accent in normal play.
+- Glow is rare and earned (`Effects.big_moment`, and ink marked with
+  `InkGrid.set_glow`): pulse-filled ground shines blue, glyphs burst gold,
+  bosses burst in their core colour, Legendary cards shimmer.
+- UI takes every colour, font and panel style from `ui/common/sumi.gd`
+  (`Sumi`): paper panels, ink borders, seal red, Kaushan Script titles.
 
 - Kills splat your ink on the ground, sized by enemy. You also leave a thin trail.
 - Every enemy leaves a smudge trail that overwrites ink. Corruptor enemies smudge large areas.
@@ -93,7 +105,8 @@ Commit after each milestone and tell the user exactly what to test and report.
   `Hazards` (burn zones, black holes, mines), `EnemyShots`,
   `PickupManager` (temporary powers), `GlyphSystem`, `MilestoneSystem`,
   `GemManager`, `Effects`.
-- `ui/` HUD, touch controls, level-up cards, pause menu, run summary, debug overlay, safe area.
+- `assets/fonts/` Kaushan Script (SIL Open Font License; licence file alongside).
+- `ui/` `common/sumi.gd` (shared look), HUD, touch controls, level-up cards, pause menu, run summary, debug overlay, safe area.
 - `modes/` one root scene per game mode; the root script wires systems together.
 - `tools/` headless scripts: `setup_input_map.gd`, `smoke_test.gd`, `ink_test.gd`,
   `glyph_test.gd`, `restart_test.gd`.

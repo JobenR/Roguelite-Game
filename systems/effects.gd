@@ -65,6 +65,23 @@ func big_moment(pos: Vector2, radius: float, color: Color, duration: float = 0.5
 	ring(pos, radius, color, duration * 0.8)
 
 
+## An ordinary blast in the brush-ink style: black strokes flung outward, a
+## broken red ring, and a spray of droplets. No glow.
+func ink_burst(pos: Vector2, radius: float, duration: float = 0.5) -> void:
+	var ink := Color(0.08, 0.07, 0.06)
+	var count := clampi(int(radius / 5.5), 14, 34)
+	for i in count:
+		var angle := TAU * i / count + randf_range(-0.15, 0.15)
+		_strokes.append({
+			"pos": pos, "dir": Vector2.from_angle(angle), "from": radius * randf_range(0.14, 0.34),
+			"to": radius * randf_range(0.7, 1.3), "width": randf_range(3.0, 16.0), "color": ink,
+			"duration": duration * randf_range(0.8, 1.3), "age": 0.0,
+		})
+	var start := randf() * TAU
+	_rings.append({"pos": pos, "radius": radius * 0.58, "color": Color(0.76, 0.15, 0.18, 0.95), "duration": duration * 0.9, "age": 0.0, "start": start, "sweep": TAU - 0.9, "grow": 0.35})
+	burst(pos, Vector2.ZERO, ink, 12)
+
+
 func beam(from: Vector2, to: Vector2, color: Color, width: float, duration: float = 0.25) -> void:
 	_beams.append({"from": from, "to": to, "color": color, "width": width, "duration": duration, "age": 0.0})
 
@@ -130,10 +147,14 @@ func _draw() -> void:
 		var t: float = r["age"] / r["duration"]
 		var eased := 1.0 - (1.0 - t) * (1.0 - t)
 		var color: Color = r["color"]
-		var radius: float = maxf(4.0, float(r["radius"]) * eased)
+		var grow: float = float(r.get("grow", 1.0))
+		var radius: float = maxf(4.0, float(r["radius"]) * (1.0 - grow + grow * eased))
 		var pos: Vector2 = r["pos"]
-		draw_circle(pos, radius, Color(color, color.a * 0.12 * (1.0 - t)))
-		draw_arc(pos, radius, 0.0, TAU, 64, Color(color, color.a * (1.0 - t)), 10.0 * (1.0 - t * 0.6))
+		var start: float = float(r.get("start", 0.0))
+		var sweep: float = float(r.get("sweep", TAU))
+		if sweep >= TAU:
+			draw_circle(pos, radius, Color(color, color.a * 0.10 * (1.0 - t)))
+		draw_arc(pos, radius, start, start + sweep, 64, Color(color, color.a * (1.0 - t)), 10.0 * (1.0 - t * 0.6))
 	for d in _drops:
 		var t: float = d["age"] / d["duration"]
 		var color: Color = d["color"]

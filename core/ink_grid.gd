@@ -12,7 +12,7 @@ var cell_size: float
 var cols: int
 var rows: int
 var cells: PackedByteArray = PackedByteArray()
-var pixels: PackedByteArray = PackedByteArray()  # RGBA8: R = ink, G = smudge, B = locked
+var pixels: PackedByteArray = PackedByteArray()  # RGBA8: R = ink, G = smudge, B = locked, A = pulse glow
 var ink_count: int = 0
 var smudge_count: int = 0
 var dirty: bool = true
@@ -24,6 +24,12 @@ var smudged_ink: PackedInt32Array = PackedInt32Array()
 ## Wet Ink Wall: per-cell time until which the cell blocks enemies. Allocated
 ## only when the upgrade is first used.
 var wall_until: PackedFloat32Array = PackedFloat32Array()
+## Bleed: a quarter-resolution count of ink cells. Sampled with smooth
+## filtering it gives the soft grey halo where ink soaked into the paper.
+const BLEED_SCALE := 4
+var bleed_cols: int = 0
+var bleed_rows: int = 0
+var bleed: PackedByteArray = PackedByteArray()
 
 
 func _init(area_size: Vector2, p_cell_size: float) -> void:
@@ -33,6 +39,9 @@ func _init(area_size: Vector2, p_cell_size: float) -> void:
 	cells.resize(cols * rows)
 	mask.resize(cols * rows)
 	pixels.resize(cols * rows * 4)
+	bleed_cols = int(ceil(float(cols) / BLEED_SCALE))
+	bleed_rows = int(ceil(float(rows) / BLEED_SCALE))
+	bleed.resize(bleed_cols * bleed_rows)
 
 
 func total_cells() -> int:
@@ -59,6 +68,11 @@ func set_cell(index: int, state: int) -> void:
 	var old := cells[index]
 	if old == state or old == LOCKED:
 		return
+	var was_ink := old == INK
+	var now_ink := state == INK or state == LOCKED
+	if was_ink != now_ink:
+		var b := (index / cols / BLEED_SCALE) * bleed_cols + (index % cols) / BLEED_SCALE
+		bleed[b] = clampi(bleed[b] + (15 if now_ink else -15), 0, 255)
 	if old == INK:
 		ink_count -= 1
 		if track_smudged_ink and state == SMUDGE:
@@ -74,7 +88,15 @@ func set_cell(index: int, state: int) -> void:
 	pixels[p] = 255 if (state == INK or state == LOCKED) else 0
 	pixels[p + 1] = 255 if state == SMUDGE else 0
 	pixels[p + 2] = 255 if state == LOCKED else 0
+	pixels[p + 3] = 0  # any change clears the pulse glow
 	dirty = true
+
+
+## Marks an ink cell as pulse-filled: it is drawn glowing until it is smudged.
+func set_glow(index: int) -> void:
+	if cells[index] == INK or cells[index] == LOCKED:
+		pixels[index * 4 + 3] = 255
+		dirty = true
 
 
 func paint_point(pos: Vector2, state: int) -> void:

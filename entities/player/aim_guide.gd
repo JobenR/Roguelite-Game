@@ -14,7 +14,7 @@ func set_locked(locked: bool) -> void:
 
 
 func _draw() -> void:
-	var color := Color(0.88, 0.11, 0.28, 0.75) if _locked else Color(0.07, 0.14, 0.37, 0.4)
+	var color := Color(0.88, 0.11, 0.28, 0.75) if _locked else Color(0.08, 0.07, 0.06, 0.4)
 	var x := 34.0
 	while x < LENGTH:
 		draw_line(Vector2(x, 0.0), Vector2(x + 8.0, 0.0), color, 3.0)

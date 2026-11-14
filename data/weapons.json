@@ -9,11 +9,12 @@
     "range": 520,
     "visual": {
       "sides": 0,
-      "color": "#1f4fe0",
-      "outline": "#0a1d6b",
-      "glow": "#5b9bff",
-      "streak": 24,
-      "shadow": false
+      "color": "#141210",
+      "outline": "#141210",
+      "glow": "#141210",
+      "streak": 30,
+      "shadow": false,
+      "brush_shot": true
     },
     "scatter_damage_mult": 0.4,
     "scatter_angle_deg": 16,
@@ -39,9 +40,9 @@
     "bullet_radius": 10,
     "visual": {
       "sides": 0,
-      "color": "#1f4fe0",
-      "outline": "#0a1d6b",
-      "halo": "#3d8bff"
+      "color": "#141210",
+      "outline": "#141210",
+      "shadow": true
     },
     "ring_radius": 120,
     "ring_radius_per_level": 25,

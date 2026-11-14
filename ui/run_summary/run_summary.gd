@@ -1,5 +1,5 @@
 extends Control
-## Shown when the run ends: time survived, kills, and a restart button.
+## Shown when the run ends: time survived, level, kills, and a restart button.
 
 var _stats: Label
 
@@ -9,33 +9,36 @@ func _ready() -> void:
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 
 	var dim := ColorRect.new()
-	dim.color = Color(0, 0, 0, 0.65)
+	dim.color = Color(0.05, 0.04, 0.03, 0.65)
 	add_child(dim)
 	dim.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 
 	var center := CenterContainer.new()
 	add_child(center)
 	center.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-
+	var sheet := PanelContainer.new()
+	sheet.add_theme_stylebox_override("panel", Sumi.paper())
+	center.add_child(sheet)
 	var box := VBoxContainer.new()
-	box.add_theme_constant_override("separation", 18)
-	center.add_child(box)
+	box.add_theme_constant_override("separation", 16)
+	sheet.add_child(box)
 
-	var title := Label.new()
-	title.text = "THE INK RUNS DRY"
-	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	title.add_theme_font_size_override("font_size", 48)
-	box.add_child(title)
+	var heading := Label.new()
+	heading.text = "The ink runs dry"
+	heading.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	Sumi.title(heading, 56, Sumi.SEAL)
+	box.add_child(heading)
 
 	_stats = Label.new()
 	_stats.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_stats.add_theme_font_size_override("font_size", 28)
+	Sumi.title(_stats, 30)
 	box.add_child(_stats)
 
 	var restart := Button.new()
-	restart.text = "Restart"
-	restart.custom_minimum_size = Vector2(260.0, 72.0)
-	restart.add_theme_font_size_override("font_size", 28)
+	restart.text = "Begin again"
+	restart.custom_minimum_size = Vector2(280.0, 70.0)
+	restart.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	Sumi.ink_button(restart, 30)
 	restart.pressed.connect(_restart)
 	box.add_child(restart)
 

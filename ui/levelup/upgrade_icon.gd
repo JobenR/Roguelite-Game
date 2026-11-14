@@ -4,9 +4,9 @@ extends Control
 ## reading it. Icons are drawn in a 100x100 space centred on zero. To use art
 ## instead, replace this control with a TextureRect keyed by the same icon id.
 
-const INK := Color("#1d4ed8")
-const DARK := Color("#0b1b4d")
-const LIGHT := Color("#93b4ff")
+const INK := Color("#141210")
+const DARK := Color("#141210")
+const LIGHT := Color("#b8ad96")
 const WHITE := Color(1, 1, 1)
 const ENEMY := Color("#3fbf4f")
 const GOLD := Color("#fbbf24")
@@ -20,8 +20,10 @@ var badge: String = ""
 func _draw() -> void:
 	var s := minf(size.x, size.y) / 100.0
 	draw_set_transform(size * 0.5, 0.0, Vector2(s, s))
-	draw_circle(Vector2.ZERO, 48.0, Color(tint, 0.16))
-	draw_arc(Vector2.ZERO, 48.0, 0.0, TAU, 48, Color(tint, 0.7), 2.5)
+	# An ink-wash disc with a broken brush ring, in place of a frame.
+	draw_circle(Vector2.ZERO, 46.0, Color(0.08, 0.07, 0.06, 0.07))
+	draw_arc(Vector2.ZERO, 48.0, 0.5, TAU - 0.25, 48, Color(0.08, 0.07, 0.06, 0.85), 3.5)
+	draw_arc(Vector2.ZERO, 44.0, 2.4, 4.6, 24, Color(0.08, 0.07, 0.06, 0.35), 2.0)
 	match icon_id:
 		"rapid_fire":
 			for i in 3:
@@ -290,7 +292,7 @@ func _draw() -> void:
 	if badge != "":
 		var font := ThemeDB.fallback_font
 		draw_circle(Vector2(32, 32), 15.0, WHITE)
-		draw_arc(Vector2(32, 32), 15.0, 0.0, TAU, 20, tint, 3.0)
+		draw_arc(Vector2(32, 32), 15.0, 0.0, TAU, 20, Color("#c1272d"), 3.0)
 		var width := font.get_string_size(badge, HORIZONTAL_ALIGNMENT_LEFT, -1, 15).x
 		draw_string(font, Vector2(32.0 - width * 0.5, 37.5), badge, HORIZONTAL_ALIGNMENT_LEFT, -1, 15, DARK)
 

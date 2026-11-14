@@ -31,10 +31,10 @@ func _ready() -> void:
 	set_process_input(visible)
 	# offset is measured from the bottom-right (or top-right) corner.
 	_buttons = [
-		_button("fire", "FIRE", 70.0, Vector2(-110, -110), false),
-		_button("secondary", "BOMB", 46.0, Vector2(-260, -70), false),
-		_button("pulse", "PULSE", 46.0, Vector2(-80, -260), false),
-		_button("dash", "DASH", 40.0, Vector2(-235, -185), false),
+		_button("fire", "Fire", 70.0, Vector2(-110, -110), false),
+		_button("secondary", "Bomb", 46.0, Vector2(-260, -70), false),
+		_button("pulse", "Pulse", 46.0, Vector2(-80, -260), false),
+		_button("dash", "Dash", 40.0, Vector2(-235, -185), false),
 		_button("pause", "II", 24.0, Vector2(-30, 140), true),
 		_button("debug_toggle", "DBG", 24.0, Vector2(-30, 80), true),
 	]
@@ -169,13 +169,13 @@ func _release_all() -> void:
 
 
 func _draw() -> void:
-	var font := ThemeDB.fallback_font
+	var ink := Sumi.INK
 	# Move stick: shown where the thumb landed, or a faint hint at rest.
 	var base := _stick_origin if _stick_touch != -1 else Vector2(150.0, size.y - 150.0)
-	var alpha := 0.35 if _stick_touch != -1 else 0.15
-	draw_circle(base, STICK_RADIUS + 26.0, Color(0, 0, 0, alpha))
-	draw_arc(base, STICK_RADIUS + 26.0, 0.0, TAU, 48, Color(1, 1, 1, alpha + 0.2), 3.0)
-	draw_circle(base + _stick_vec * STICK_RADIUS, 30.0, Color(1, 1, 1, alpha + 0.25))
+	var alpha := 0.55 if _stick_touch != -1 else 0.3
+	draw_circle(base, STICK_RADIUS + 26.0, Color(Sumi.PAPER, alpha * 0.5))
+	draw_arc(base, STICK_RADIUS + 26.0, 0.4, TAU - 0.2, 48, Color(ink, alpha), 4.0)
+	draw_circle(base + _stick_vec * STICK_RADIUS, 28.0, Color(ink, alpha + 0.15))
 
 	for button in _buttons:
 		if _is_hidden(button):
@@ -183,17 +183,19 @@ func _draw() -> void:
 		var center := _button_center(button)
 		var radius: float = button["radius"]
 		var pressed: bool = button["touch"] != -1
-		var dim := 1.0 if button["ready"] else 0.4
-		draw_circle(center, radius, Color(0, 0, 0, (0.55 if pressed else 0.3) * dim))
-		draw_arc(center, radius, 0.0, TAU, 48, Color(1, 1, 1, 0.6 * dim), 3.0)
+		var dim := 1.0 if button["ready"] else 0.45
+		# A brushed ring on a patch of paper; it fills with ink while held.
+		draw_circle(center, radius, Color(ink, 0.6) if pressed else Color(Sumi.PAPER, 0.55 * dim))
+		draw_arc(center, radius, 0.5, TAU - 0.15, 48, Color(ink, 0.8 * dim), 4.5)
 		var charge: float = button["charge"]
 		if charge < 1.0:
-			draw_arc(center, radius - 6.0, -PI * 0.5, -PI * 0.5 + TAU * charge, 48, Color(0.35, 0.6, 1.0, 0.9), 6.0)
+			draw_arc(center, radius - 7.0, -PI * 0.5, -PI * 0.5 + TAU * charge, 48, Color(Sumi.SEAL, 0.9), 6.0)
 		if button["action"] == "fire" and pressed and _aim_vec.length() > AIM_DEADZONE:
 			# Aim knob: shows which way the drag is pointing.
-			draw_circle(center + _aim_vec * radius * 0.75, 20.0, Color(1, 1, 1, 0.75))
+			draw_circle(center + _aim_vec * radius * 0.75, 20.0, Color(Sumi.PAPER, 0.95))
 			continue
 		var text: String = button["label"]
-		var font_size := 22 if radius > 40.0 else 13
-		var text_size := font.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size)
-		draw_string(font, center + Vector2(-text_size.x * 0.5, font_size * 0.35), text, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size, Color(1, 1, 1, 0.9 * dim))
+		var font_size := 26 if radius > 40.0 else 15
+		var text_size := Sumi.TITLE_FONT.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size)
+		var text_color := Color(Sumi.PAPER, 0.95) if pressed else Color(ink, 0.9 * dim)
+		draw_string(Sumi.TITLE_FONT, center + Vector2(-text_size.x * 0.5, font_size * 0.35), text, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size, text_color)

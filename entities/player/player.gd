@@ -29,6 +29,7 @@ var _sniper_weapon: Dictionary = {}
 var _trail_radius: float = 6.0
 var _ink_speed_bonus: float = 0.0
 var _last_trail_pos: Vector2 = Vector2.INF
+var _trail_travel: float = 0.0
 var _base_max_hp: float = 100.0
 var _base_pickup: float = 90.0
 var _invuln_left: float = 0.0
@@ -87,7 +88,7 @@ func setup(enemies: EnemyManager, bullets: BulletManager, arena: Rect2, ink: Ink
 	Events.enemy_killed.connect(_on_enemy_killed)
 	visual.setup(stats.get("visual", {}), radius)
 	barrel.position = Vector2(radius + 7.0, 0.0)
-	barrel.setup({"sides": 3, "color": "#1f4fe0", "outline": "#0a1d6b", "shadow": false}, 8.0)
+	barrel.setup({"sides": 3, "color": "#141210", "outline": "#141210", "shadow": false}, 8.0)
 	Events.player_health_changed.emit(hp, max_hp)
 
 
@@ -173,6 +174,9 @@ func _paint_trail(move: Vector2) -> void:
 	if position.distance_squared_to(_last_trail_pos) <= 9.0:
 		return
 	var trail := Upgrades.value("trail_radius", _trail_radius)
+	# Brush pressure: the line swells and thins as it goes.
+	_trail_travel += position.distance_to(_last_trail_pos) if _last_trail_pos != Vector2.INF else 0.0
+	trail *= 0.75 + 0.55 * absf(sin(_trail_travel * 0.013)) + 0.2 * absf(sin(_trail_travel * 0.047))
 	if move.length() > 0.9:
 		trail *= 1.0 + Upgrades.bonus("trail_run")
 	if GameState.has_power("giant_brush"):
@@ -263,7 +267,7 @@ func _fire_volley(scale: float) -> void:
 	var parallel_scale := scale / (1.0 + float(weapon.get("parallel_damage_falloff", 0.0)) * (parallel - 1))
 	for i in parallel:
 		_bullets.fire(muzzle + side * (i - (parallel - 1) * 0.5) * spacing, aim_dir, weapon, parallel_scale)
-	_effects.muzzle(muzzle, aim_dir, Color("#38bdf8"))
+	_effects.muzzle(muzzle, aim_dir, Color(0.08, 0.07, 0.06))
 	var scatter := int(Upgrades.bonus("scatter"))
 	var angle := deg_to_rad(float(weapon.get("scatter_angle_deg", 16.0)))
 	var scatter_damage := float(weapon.get("scatter_damage_mult", 0.6)) * scale
@@ -312,7 +316,7 @@ func _update_dash(move: Vector2, delta: float) -> void:
 		_dash_left = float(_stats.get("dash_time", 0.18))
 		_dash_cooldown_left = cooldown
 		_invuln_left = maxf(_invuln_left, _dash_left + 0.15)
-		_effects.ring(position, 40.0, Color(0.22, 0.45, 0.95, 0.8), 0.25)
+		_effects.ring(position, 40.0, Color(0.08, 0.07, 0.06, 0.8), 0.25)
 		Events.dash_charge_changed.emit(0.0)
 
 
@@ -398,6 +402,6 @@ func _draw() -> void:
 	if Upgrades.bonus("paper_shield") > 0.0 and _paper_left <= 0.0:
 		draw_arc(Vector2.ZERO, radius + 9.0, 0.0, TAU, 28, Color(1.0, 0.85, 0.3, 0.9), 3.0)
 	if _shield > 0.5:
-		draw_arc(Vector2.ZERO, radius + 14.0, 0.0, TAU, 28, Color(0.3, 0.85, 1.0, 0.8), 3.0)
+		draw_arc(Vector2.ZERO, radius + 14.0, 0.0, TAU, 28, Color(0.08, 0.07, 0.06, 0.8), 3.0)
 	if GameState.has_power("invincible"):
 		draw_arc(Vector2.ZERO, radius + 19.0, 0.0, TAU, 28, Color(1, 1, 1, 0.9), 4.0)

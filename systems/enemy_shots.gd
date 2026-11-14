@@ -61,5 +61,5 @@ func _draw() -> void:
 		draw_circle(pos + back * radius * 1.6, radius * 0.75, Color(0.08, 0.07, 0.06, 0.4))
 		draw_circle(pos, radius * 1.5, Color(0.08, 0.07, 0.06, 0.18))
 		draw_circle(pos, radius, Color("#141210"))
-		draw_circle(pos, radius * 0.8, Color(0.65, 0.55, 0.98, 0.25))
+		draw_circle(pos, radius * 0.8, Color(0.08, 0.07, 0.06, 0.25))
 		draw_circle(pos, radius * 0.4, Color("#a78bfa"))

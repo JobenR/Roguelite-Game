@@ -1,16 +1,21 @@
 shader_type canvas_item;
-// Draws the ink grid in the Sumi-e look. The texture is one texel per cell
-// (R = the player's ink, G = smudge, B = permanent ink), sampled with linear
-// filtering, wobbled with noise, and thresholded so cells become brushed
-// shapes. The player's ink is luminous blue with a soft glow around it; the
-// horde's smudge is a thin grey wash. Swap this shader to restyle the ground.
+// Draws the ink grid in the Sumi-e look. The main texture is one texel per
+// cell: R = the player's ink, G = smudge, B = permanent ink, A = pulse-filled
+// ink. `bleed_tex` is a quarter-resolution blur of the ink.
+//
+//   Ink:    dense black with dry-brush edges and bristle streaks.
+//   Bleed:  a soft grey halo where the ink soaked into the paper.
+//   Smudge: the horde's thin grey wash.
+//   Glow:   ink filled by a pulse shines blue. This is the only glowing ink.
 
-uniform vec4 ink_color : source_color = vec4(0.10, 0.29, 0.90, 0.93);
-uniform vec4 ink_light : source_color = vec4(0.36, 0.62, 1.0, 1.0);
-uniform vec4 glow_color : source_color = vec4(0.16, 0.42, 1.0, 1.0);
-uniform vec4 locked_color : source_color = vec4(0.04, 0.09, 0.42, 0.97);
-uniform vec4 smudge_color : source_color = vec4(0.12, 0.11, 0.10, 0.40);
-uniform float glow_strength = 0.42;
+uniform sampler2D bleed_tex : filter_linear, repeat_disable;
+uniform vec2 bleed_scale = vec2(1.0, 1.0);
+uniform vec4 ink_color : source_color = vec4(0.078, 0.07, 0.063, 0.97);
+uniform vec4 glow_color : source_color = vec4(0.14, 0.38, 1.0, 0.82);
+uniform vec4 glow_light : source_color = vec4(0.45, 0.72, 1.0, 1.0);
+uniform vec4 locked_color : source_color = vec4(0.05, 0.14, 0.62, 0.95);
+uniform vec4 smudge_color : source_color = vec4(0.12, 0.11, 0.10, 0.36);
+uniform float bleed_strength = 0.34;
 uniform vec2 grid_size = vec2(480.0, 270.0);
 
 float hash(vec2 p) {
@@ -25,34 +30,52 @@ float noise(vec2 p) {
 			mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), f.x), f.y);
 }
 
+// Lays colour c2 with alpha a2 over the running colour and alpha.
+void over(inout vec3 c, inout float a, vec3 c2, float a2) {
+	float o = a2 + a * (1.0 - a2);
+	c = (c2 * a2 + c * a * (1.0 - a2)) / max(o, 0.0001);
+	a = o;
+}
+
 void fragment() {
 	vec2 cell = UV * grid_size;
 	vec2 wobble = vec2(noise(cell * 0.9), noise(cell * 0.9 + 37.0)) - 0.5;
 	vec2 uv = UV + wobble * 0.8 / grid_size;
 	vec4 t = texture(TEXTURE, uv);
-	// A wider average of the ink channel gives the glow its reach.
 	vec2 px = 1.7 / grid_size;
-	float wide = (t.r + texture(TEXTURE, uv + vec2(px.x, 0.0)).r + texture(TEXTURE, uv - vec2(px.x, 0.0)).r
-			+ texture(TEXTURE, uv + vec2(0.0, px.y)).r + texture(TEXTURE, uv - vec2(0.0, px.y)).r) * 0.2;
-	float grain = noise(cell * 3.0);
-	float brush = noise(cell * vec2(0.4, 2.4));  // long streaks, like bristles
+	vec4 east = texture(TEXTURE, uv + vec2(px.x, 0.0));
+	vec4 west = texture(TEXTURE, uv - vec2(px.x, 0.0));
+	vec4 south = texture(TEXTURE, uv + vec2(0.0, px.y));
+	vec4 north = texture(TEXTURE, uv - vec2(0.0, px.y));
+	float wide_smudge = (t.g + east.g + west.g + south.g + north.g) * 0.2;
+	float wide_glow = (t.a + east.a + west.a + south.a + north.a) * 0.2;
+	float soak = texture(bleed_tex, (UV + wobble * 3.0 / grid_size) * bleed_scale).r;
 
-	float ink = smoothstep(0.40, 0.47, t.r);
-	float core = smoothstep(0.60, 0.95, t.r);
-	float halo = smoothstep(0.03, 0.42, wide) * (1.0 - ink) * glow_strength;
-	// The smudge is a soft watery wash: wide blur, gentle edge, slow mottling.
+	float bristle = noise(cell * vec2(0.4, 2.6));   // long streaks along the stroke
+	float dry = noise(cell * vec2(2.2, 0.6));       // breaks up the edge
 	float wash = noise(cell * 0.35);
-	float wide_g = (t.g + texture(TEXTURE, uv + vec2(px.x, 0.0)).g + texture(TEXTURE, uv - vec2(px.x, 0.0)).g
-			+ texture(TEXTURE, uv + vec2(0.0, px.y)).g + texture(TEXTURE, uv - vec2(0.0, px.y)).g) * 0.2;
-	float smudge = smoothstep(0.12, 0.7, wide_g + (wash - 0.5) * 0.18) * (1.0 - ink);
 
-	vec3 ink_rgb = mix(ink_color.rgb, ink_light.rgb, core * 0.55) * (0.94 + 0.12 * brush);
-	float locked = smoothstep(0.4, 0.6, t.b) * core;
-	ink_rgb = mix(ink_rgb, locked_color.rgb * (0.9 + 0.2 * grain), locked);
+	float ink = smoothstep(0.37, 0.45, t.r + (dry - 0.5) * 0.2);
+	float core = smoothstep(0.6, 0.95, t.r);
+	float lit = smoothstep(0.35, 0.6, t.a) * ink;
 
-	float ink_a = max(ink * ink_color.a, halo);
-	vec3 rgb = mix(glow_color.rgb, ink_rgb, ink);
-	float smudge_a = smudge * smudge_color.a * (0.7 + 0.5 * wash);
-	rgb = mix(smudge_color.rgb, rgb, clamp(ink_a / (ink_a + smudge_a + 0.0001), 0.0, 1.0));
-	COLOR = vec4(rgb, max(ink_a, smudge_a));
+	// Bottom to top: smudge wash, bleed halo, glow halo, then the ink itself.
+	vec3 col = smudge_color.rgb;
+	float smudge = smoothstep(0.12, 0.7, wide_smudge + (wash - 0.5) * 0.18) * (1.0 - ink);
+	float a = smudge * smudge_color.a * (0.7 + 0.5 * wash);
+
+	float halo = smoothstep(0.03, 0.75, soak + (wash - 0.5) * 0.12) * (1.0 - ink) * bleed_strength;
+	over(col, a, ink_color.rgb, halo);
+
+	float shine = smoothstep(0.03, 0.42, wide_glow) * (1.0 - ink) * 0.5;
+	over(col, a, glow_color.rgb, shine);
+
+	vec3 black = ink_color.rgb * (0.8 + 0.5 * bristle);
+	vec3 blue = mix(glow_color.rgb, glow_light.rgb, core * 0.6) * (0.92 + 0.16 * bristle);
+	blue = mix(blue, locked_color.rgb, smoothstep(0.4, 0.6, t.b) * core);
+	vec3 ink_rgb = mix(black, blue, lit);
+	float ink_a = ink * mix(ink_color.a * (0.86 + 0.14 * bristle), glow_color.a, lit);
+	over(col, a, ink_rgb, ink_a);
+
+	COLOR = vec4(col, a);
 }

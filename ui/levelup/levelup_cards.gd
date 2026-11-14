@@ -6,7 +6,7 @@ extends Control
 const INPUT_GUARD := 0.55  # seconds before cards accept input, so a thumb
                            # already on the screen cannot pick by accident
 const CATEGORY_COLORS := {"weapon": Color("#f97316"), "stat": Color("#22c55e"), "ink": Color("#3b82f6")}
-const RARITY_COLORS := {"common": Color("#78716c"), "rare": Color("#2563eb"), "epic": Color("#9333ea"), "legendary": Color("#f59e0b")}
+const RARITY_COLORS := {"common": Color("#3b362f"), "rare": Color("#1e3a8a"), "epic": Color("#6b21a8"), "legendary": Color("#c9962a")}
 
 var is_open: bool = false
 
@@ -29,7 +29,7 @@ func _ready() -> void:
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 
 	var dim := ColorRect.new()
-	dim.color = Color(0, 0, 0, 0.65)
+	dim.color = Color(0.05, 0.04, 0.03, 0.7)
 	add_child(dim)
 	dim.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 
@@ -42,7 +42,7 @@ func _ready() -> void:
 
 	_title = Label.new()
 	_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_title.add_theme_font_size_override("font_size", 36)
+	Sumi.title(_title, 44, Sumi.PAPER)
 	box.add_child(_title)
 
 	_row = HBoxContainer.new()
@@ -69,7 +69,7 @@ func _ready() -> void:
 func _small_button(callback: Callable) -> Button:
 	var button := Button.new()
 	button.custom_minimum_size = Vector2(220.0, 52.0)
-	button.add_theme_font_size_override("font_size", 22)
+	Sumi.ink_button(button, 24)
 	button.pressed.connect(callback)
 	return button
 
@@ -160,10 +160,10 @@ func _make_card(id: String, width: float, order: int) -> Button:
 	var styles: Array[StyleBoxFlat] = []
 	for state in ["normal", "hover", "pressed", "focus", "disabled"]:
 		var style := StyleBoxFlat.new()
-		style.bg_color = Color("#f6f1e3") if state != "pressed" else Color("#e6dcc0")
-		style.border_color = rare_color if state != "focus" else Color.WHITE
+		style.bg_color = Sumi.PAPER if state != "pressed" else Sumi.PAPER_SHADE
+		style.border_color = rare_color if state != "focus" else Sumi.SEAL
 		style.set_border_width_all((9 if fancy else 6) + (3 if state in ["hover", "focus"] else 0))
-		style.set_corner_radius_all(18)
+		style.set_corner_radius_all(6)
 		if fancy:
 			style.shadow_color = Color(rare_color, 0.55)
 			style.shadow_size = 14
@@ -190,10 +190,10 @@ func _make_card(id: String, width: float, order: int) -> Button:
 	banner.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	banner.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	banner.add_theme_font_size_override("font_size", 15)
-	banner.add_theme_color_override("font_color", Color.WHITE)
+	banner.add_theme_color_override("font_color", Sumi.PAPER)
 	var banner_style := StyleBoxFlat.new()
 	banner_style.bg_color = rare_color
-	banner_style.set_corner_radius_all(8)
+	banner_style.set_corner_radius_all(3)
 	banner_style.content_margin_top = 3
 	banner_style.content_margin_bottom = 3
 	banner.add_theme_stylebox_override("normal", banner_style)
@@ -206,13 +206,15 @@ func _make_card(id: String, width: float, order: int) -> Button:
 	icon.custom_minimum_size = Vector2(0.0, 132.0)
 	icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	face.add_child(icon)
-	face.add_child(_card_label(String(def.get("name", id)), 23, Color("#1c1917")))
+	var name_label := _card_label(String(def.get("name", id)), 27, Sumi.INK)
+	name_label.add_theme_font_override("font", Sumi.TITLE_FONT)
+	face.add_child(name_label)
 	# Level pips: filled for owned levels, a ring for the one on offer.
 	var pips := ""
 	for i in max_level:
 		pips += "● " if i < level else ("◉ " if i == level else "○ ")
-	face.add_child(_card_label(pips.strip_edges(), 17, accent.darkened(0.2)))
-	face.add_child(_card_label(String(def.get("desc", "")), 15, Color("#44403c")))
+	face.add_child(_card_label(pips.strip_edges(), 17, Sumi.SEAL))
+	face.add_child(_card_label(String(def.get("desc", "")), 15, Sumi.INK))
 	if level == 0 and bool(def.get("first_level_double", false)):
 		face.add_child(_card_label("First level counts double", 14, Color("#15803d")))
 	# What this pick builds toward: a synergy it completes, a partner card to
@@ -223,7 +225,7 @@ func _make_card(id: String, width: float, order: int) -> Button:
 	else:
 		var partner := Upgrades.partner_hint(id)
 		if partner != "":
-			face.add_child(_card_label("Synergy: " + partner, 13, Color("#78716c")))
+			face.add_child(_card_label("Synergy: " + partner, 13, Sumi.FADED))
 	var set_text := Upgrades.set_hint(id)
 	if set_text != "":
 		face.add_child(_card_label(set_text, 13, Color("#0f766e")))
@@ -263,7 +265,7 @@ func _process(delta: float) -> void:
 	var time := Time.get_ticks_msec() * 0.004
 	for entry in _shimmer:
 		var base: Color = entry["color"]
-		var glow := base.lerp(Color.WHITE, 0.35 + 0.35 * sin(time + float(entry["phase"])))
+		var glow := base.lerp(Sumi.PAPER, 0.3 + 0.3 * sin(time + float(entry["phase"])))
 		for style: StyleBoxFlat in entry["styles"]:
 			style.border_color = glow
 	if _guard_left <= 0.0:

@@ -88,10 +88,11 @@ func _resolve_region(region: PackedInt32Array, area: float) -> void:
 				var dir := (corner - centroid).normalized()
 				_enemies.damage_segment(corner, corner + dir * length, width, spike_damage)
 				grid.paint_line(corner, corner + dir * length, 6.0, InkGrid.INK)
-				_effects.beam(corner, corner + dir * length, Color(0.25, 0.5, 1.0), width, 0.45)
+				_effects.beam(corner, corner + dir * length, Color(1.0, 0.78, 0.2), width, 0.45)
 		"square":
 			for index in region:
 				grid.set_cell(index, InkGrid.LOCKED)
+				grid.set_glow(index)
 			_zones.append({
 				"kind": kind, "center": centroid, "polygon": corners,
 				"left": float(cfg.get("duration", 5.0)) + float(cfg.get("duration_per_scale", 3.0)) * scale_factor,
@@ -156,7 +157,7 @@ func _update_maelstrom(zone: Dictionary, delta: float) -> void:
 
 
 func _draw() -> void:
-	var font := ThemeDB.fallback_font
+	var font: Font = Sumi.TITLE_FONT
 	var spin := Time.get_ticks_msec() * 0.006
 	for zone in _zones:
 		var center: Vector2 = zone["center"]

@@ -11,6 +11,8 @@ var cell_size: float = 8.0
 var _image: Image
 var _texture: ImageTexture
 var _sprite: Sprite2D
+var _bleed_image: Image
+var _bleed_texture: ImageTexture
 var _enemies: EnemyManager
 var _pending_blasts: Array[Vector3] = []  # x, y, radius
 var _tax_left: float = 10.0
@@ -31,6 +33,10 @@ func setup(arena: Rect2, enemies: EnemyManager, p_cell_size: float) -> void:
 	var material := ShaderMaterial.new()
 	material.shader = INK_SHADER
 	material.set_shader_parameter("grid_size", Vector2(grid.cols, grid.rows))
+	_bleed_image = Image.create_from_data(grid.bleed_cols, grid.bleed_rows, false, Image.FORMAT_L8, grid.bleed)
+	_bleed_texture = ImageTexture.create_from_image(_bleed_image)
+	material.set_shader_parameter("bleed_tex", _bleed_texture)
+	material.set_shader_parameter("bleed_scale", Vector2(float(grid.cols) / (grid.bleed_cols * InkGrid.BLEED_SCALE), float(grid.rows) / (grid.bleed_rows * InkGrid.BLEED_SCALE)))
 	_sprite.material = material
 	add_child(_sprite)
 	Events.enemy_killed.connect(_on_enemy_killed)
@@ -82,12 +88,12 @@ func splat(pos: Vector2, radius: float, dir: Vector2) -> void:
 			var p := pos + dir * reach * t + side * randf_range(-0.12, 0.12) * radius
 			grid.paint_circle(p, radius * 0.4 * (1.0 - t * 0.7), InkGrid.INK)
 	# Droplets: small flecks, mostly ahead of the hit.
-	for i in randi_range(5, 9):
+	for i in randi_range(8, 14):
 		var angle := randf() * TAU
 		if directed:
 			angle = dir.angle() + randfn(0.0, 0.7)
 		var dist := radius * randf_range(0.9, 2.6)
-		grid.paint_circle(pos + Vector2.from_angle(angle) * dist, randf_range(cell_size * 0.5, radius * 0.16), InkGrid.INK)
+		grid.paint_circle(pos + Vector2.from_angle(angle) * dist, randf_range(cell_size * 0.5, radius * 0.2), InkGrid.INK)
 
 
 func _jitter(amount: float) -> Vector2:
@@ -112,3 +118,5 @@ func _process(delta: float) -> void:
 		grid.dirty = false
 		_image.set_data(grid.cols, grid.rows, false, Image.FORMAT_RGBA8, grid.pixels)
 		_texture.update(_image)
+		_bleed_image.set_data(grid.bleed_cols, grid.bleed_rows, false, Image.FORMAT_L8, grid.bleed)
+		_bleed_texture.update(_bleed_image)
