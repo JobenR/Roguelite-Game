@@ -2,13 +2,13 @@
 
 importer="wav"
 type="AudioStreamWAV"
-uid="uid://cbhtraollh1wf"
-path="res://.godot/imported/splat.wav-da61577d74fee47c338c164db9bf2b11.sample"
+uid="uid://kyhoifr4x6n6"
+path="res://.godot/imported/gem3.wav-fa184a9381342ddd91726f84afad94cc.sample"
 
 [deps]
 
-source_file="res://assets/audio/splat.wav"
-dest_files=["res://.godot/imported/splat.wav-da61577d74fee47c338c164db9bf2b11.sample"]
+source_file="res://assets/audio/gem3.wav"
+dest_files=["res://.godot/imported/gem3.wav-fa184a9381342ddd91726f84afad94cc.sample"]
 
 [params]
 

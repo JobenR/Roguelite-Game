@@ -95,15 +95,29 @@ reward.** The user picked mock-up A plus E and rejected a first attempt that
    (`data/inks.json`): Blue, Crimson, Emerald, Violet, Gold. All are available
    now; unlocking them with currency belongs to the meta milestone. The user
    chose to keep ink-blending visual only, the 30% touch zoom, and 3-second mines.
-5. Burning Page mode: shrink, dead ground, flow field, strip payouts.
+5. Burning Page mode (done): `BurnSystem` burns the page inward a strip at a
+   time; the player's ink in a strip survives as `LOCKED`, the rest becomes
+   `DEAD` (impassable, unpaintable); each strip pays XP and healing by the share
+   owned, and a bonus card at 90%+. `FlowField` routes enemies round burnt paper.
+   Chosen on the title screen (`GameState.mode_id`); both modes share
+   `modes/survival.tscn`.
 6. Mobile: touch polish, iOS export, performance pass (60fps with 300+ enemies).
 7. Meta (done): title screen (`menus/title.tscn`, the main scene) with ink
    unlocks, permanent boosts and settings; Seals currency paid at run end; JSON
    save (`SaveData`, `user://blotline_save.json`); generated sound and music
    (`Audio`, `tools/gen_audio.py`); vibration; a final boss at 15:00 whose death
    wins the run, after which the player may keep going.
-   Sounds were generated in code and have NOT been heard by anyone but the
-   user: treat feedback on them as the first real review.
+   Sounds are generated in code and have NOT been heard by anyone but the
+   user. Their feedback so far: effects were too repetitive (now several
+   variants each, and gems climb a scale), and they want heavy metal riffs
+   when the larger enemies arrive. Music is therefore two synced tracks, a calm
+   koto line and a metal version of the same melody; `Audio` fades to metal
+   while any `heavy` enemy is alive (`Events.heavy_presence`).
+   The user also found Seals too fast: earnings were cut and prices raised.
+   Balance pass (done by simulation, not by play): `tools/balance_sim.gd` showed
+   the page filling to the enemy cap by minute two and levelling stalling, so
+   spawn pace, enemy health growth and the XP curve were eased. Treat balance
+   as provisional until the user reports from real runs.
 
 Commit after each milestone and tell the user exactly what to test and report.
 
@@ -122,7 +136,8 @@ explicitly. This includes end-of-update feedback questions: offer choices.
   `Events`, and a few systems call `Audio.play(id)` directly).
 - `menus/` the title screen. `assets/audio/` generated WAV files.
 - `core/` engine-agnostic helpers: `SpatialGrid`, `ObjectPool`, `InkGrid`,
-  `ShapeClassifier` (circle/triangle/square from a filled region).
+  `ShapeClassifier` (circle/triangle/square from a filled region), `FlowField`,
+  `Brush` (ragged blots and cores for anything drawn outside `ShapeVisual`).
 - `entities/` one folder per entity: state script + scene. `entities/visuals/` holds visual components.
 - `systems/` managers that own and update entities: `EnemyManager`, `BulletManager`, `SpawnDirector`,
   `InkSystem`, `PulseSystem`, `SecondarySystem`, `AuxWeapons` (laser, orbit,
@@ -135,7 +150,8 @@ explicitly. This includes end-of-update feedback questions: offer choices.
 - `modes/` one root scene per game mode; the root script wires systems together.
 - `tools/` headless scripts: `setup_input_map.gd`, `smoke_test.gd`, `ink_test.gd`,
   `glyph_test.gd`, `restart_test.gd`, `meta_test.gd` (final boss, victory,
-  payout, unlocks); and `gen_audio.py` (regenerates every sound; needs numpy).
+  payout, unlocks), `burn_test.gd` (Burning Page), `balance_sim.gd` (a bot run
+  that prints horde size and level per minute); and `gen_audio.py` (regenerates every sound; needs numpy).
 
 ## Conventions
 
@@ -260,7 +276,14 @@ godot --headless --path . --script res://tools/glyph_test.gd
 godot --headless --path . --fixed-fps 60 --script res://tools/smoke_test.gd
 godot --headless --path . --fixed-fps 60 --script res://tools/restart_test.gd
 godot --headless --path . --fixed-fps 60 --script res://tools/meta_test.gd
+godot --headless --path . --fixed-fps 60 --script res://tools/burn_test.gd
 ```
 
-The ink, glyph and meta tests must print ALL PASSED; the smoke test must print frame lines with
+Always run these under `timeout` and pipe through `grep`/`head`: a tool script
+that fails to compile never quits and prints the same error every frame. In a
+tool script run with `--script`, do not type a variable as a class that uses
+autoloads (`BurnSystem`, `Player`...): it is compiled before the autoloads
+exist. Use `Node` and `get`/`call`.
+
+The ink, glyph, meta and burn tests must print ALL PASSED; the smoke test must print frame lines with
 no script errors.

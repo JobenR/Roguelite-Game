@@ -13,6 +13,8 @@ var debug_visible: bool = false
 ## The ink chosen for the run: a play style and a colour (data/inks.json).
 ## Chosen on the title screen and remembered in the save.
 var ink_id: String = "blue"
+## Which game mode the next run uses (a key in modes.json and waves.json).
+var mode_id: String = "survival"
 var ink_color: Color = Color("#1a4df2")
 var ink_light: Color = Color("#4d8fff")
 ## Temporary powers: id -> seconds left.

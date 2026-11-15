@@ -33,7 +33,7 @@
  },
  "mines": {
   "cooldown": 3.0,
-  "damage": 30,
+  "damage": 45,
   "radius": 90,
   "trigger": 55,
   "max": 5,
@@ -166,7 +166,7 @@
   "damage_scale_per_level": 0.15
  },
  "rear_guard": {
-  "damage_scale": 1.0,
+  "damage_scale": 0.8,
   "spread_deg": 14
  },
  "split": {

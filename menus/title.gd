@@ -2,7 +2,7 @@ extends Control
 ## The title screen: start a run, choose and unlock inks, buy permanent
 ## boosts with Seals, and change settings. Built in code with the Sumi look.
 
-enum View { HOME, INKS, BOOSTS, SETTINGS }
+enum View { HOME, INKS, BOOSTS, SETTINGS, MODES }
 
 var _view: View = View.HOME
 var _body: VBoxContainer
@@ -14,6 +14,7 @@ func _ready() -> void:
 	get_tree().paused = false
 	Engine.time_scale = 1.0
 	Audio.refresh_music()
+	Audio.set_heavy(false, true)
 
 	var backdrop := Backdrop.new()
 	add_child(backdrop)
@@ -57,6 +58,8 @@ func _show(view: View) -> void:
 			_build_boosts()
 		View.SETTINGS:
 			_build_settings()
+		View.MODES:
+			_build_modes()
 
 
 func _heading(text: String, size: int, color: Color) -> Label:
@@ -86,12 +89,48 @@ func _build_home() -> void:
 		line += "   Best %s   Wins %d" % [GameState.format_time(record), int(SaveData.data.get("wins", 0))]
 	var sub := _heading(line, 24, Sumi.FADED)
 	_body.add_child(sub)
-	var play := _button("Begin", func() -> void: get_tree().change_scene_to_file("res://modes/survival.tscn"), 360.0, 80.0, 40)
+	var play := _button("Begin", _show.bind(View.MODES), 360.0, 80.0, 40)
 	_body.add_child(play)
 	_body.add_child(_button("Inks", _show.bind(View.INKS)))
 	_body.add_child(_button("Boosts", _show.bind(View.BOOSTS)))
 	_body.add_child(_button("Settings", _show.bind(View.SETTINGS)))
 	play.grab_focus()
+
+
+func _build_modes() -> void:
+	_body.add_child(_heading("Choose a page", 52, Sumi.INK))
+	var row := HBoxContainer.new()
+	row.alignment = BoxContainer.ALIGNMENT_CENTER
+	row.add_theme_constant_override("separation", 20)
+	_body.add_child(row)
+	for id: String in DataDB.modes:
+		var def: Dictionary = DataDB.modes[id]
+		var card := Button.new()
+		card.custom_minimum_size = Vector2(380.0, 300.0)
+		card.clip_contents = true
+		Sumi.ink_button(card)
+		card.pressed.connect(_start.bind(id))
+		var face := VBoxContainer.new()
+		face.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		face.alignment = BoxContainer.ALIGNMENT_CENTER
+		face.add_theme_constant_override("separation", 14)
+		card.add_child(face)
+		face.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		face.offset_left = 22.0
+		face.offset_right = -22.0
+		var name_label := _card_text(String(def.get("name", id)), 44, Sumi.SEAL if def.has("burn") else Sumi.INK)
+		name_label.add_theme_font_override("font", Sumi.TITLE_FONT)
+		face.add_child(name_label)
+		face.add_child(_card_text(String(def.get("desc", "")), 18, Sumi.INK))
+		row.add_child(card)
+		if id == GameState.mode_id:
+			card.grab_focus()
+	_body.add_child(_button("Back", _show.bind(View.HOME), 240.0, 56.0, 26))
+
+
+func _start(mode_id: String) -> void:
+	GameState.mode_id = mode_id
+	get_tree().change_scene_to_file("res://modes/survival.tscn")
 
 
 func _build_inks() -> void:

@@ -1,7 +1,6 @@
 extends Node2D
 ## Survival mode root. Wires the systems together and starts the run.
 
-const MODE_ID := "survival"
 
 @onready var arena: Arena = $Arena
 @onready var ink: InkSystem = $Ink
@@ -29,7 +28,8 @@ const MODE_ID := "survival"
 
 
 func _ready() -> void:
-	var mode: Dictionary = DataDB.modes.get(MODE_ID, {})
+	var mode_id := GameState.mode_id if DataDB.modes.has(GameState.mode_id) else "survival"
+	var mode: Dictionary = DataDB.modes.get(mode_id, {})
 	var rect := Rect2(0.0, 0.0, float(mode.get("arena_width", 3840.0)), float(mode.get("arena_height", 2160.0)))
 
 	arena.setup(rect)
@@ -49,7 +49,7 @@ func _ready() -> void:
 	aux.setup(player, enemies, ink, effects)
 	pickups.setup(player, effects)
 	pause_menu.setup(levelup)
-	director.setup(enemies, player, rect, MODE_ID)
+	director.setup(enemies, player, rect, mode_id)
 	debug_overlay.setup(enemies, bullets, director, ink)
 	hud.setup(ink, milestones)
 
@@ -64,5 +64,18 @@ func _ready() -> void:
 	camera.zoom = Vector2(zoom, zoom)
 	camera.reset_smoothing()
 	run_summary.setup(ink)
+
+	# Burning Page: add the fire and the routing it needs.
+	if mode.has("burn"):
+		var flow := FlowField.new(ink.grid)
+		var burn := BurnSystem.new()
+		burn.name = "BurnSystem"
+		add_child(burn)
+		move_child(burn, ink.get_index() + 1)
+		burn.setup(player, enemies, ink, effects, flow, mode["burn"])
+		enemies.flow = flow
+		director.burn = burn
+		director.ink = ink
+		debug_overlay.burn = burn
 
 	GameState.start_run()

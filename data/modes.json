@@ -4,6 +4,28 @@
     "arena_height": 2160,
     "ink_cell_size": 8,
     "camera_zoom": 1.0,
-    "camera_zoom_touch": 1.3
+    "camera_zoom_touch": 1.3,
+    "name": "Survival",
+    "desc": "An open page. Hold out to 15:00 and beat The Great Eraser."
+  },
+  "burning_page": {
+    "arena_width": 3840,
+    "arena_height": 2160,
+    "ink_cell_size": 8,
+    "camera_zoom": 1.0,
+    "camera_zoom_touch": 1.3,
+    "burn": {
+      "first": 45,
+      "interval": 40,
+      "warning": 8,
+      "strip_cells": 12,
+      "min_inner_cells": 70,
+      "xp_per_strip": 30,
+      "heal": 12,
+      "perfect_share": 0.9,
+      "burn_damage": 14
+    },
+    "name": "Burning Page",
+    "desc": "The page burns inward. Your ink survives as ground only you made; each strip pays out for the share you owned. Beat The Great Eraser at 10:00."
   }
 }

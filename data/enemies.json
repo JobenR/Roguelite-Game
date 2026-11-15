@@ -148,7 +148,7 @@
   },
   "eraser": {
     "name": "The Eraser",
-    "hp": 1400,
+    "hp": 1800,
     "speed": 38,
     "radius": 52,
     "damage": 30,

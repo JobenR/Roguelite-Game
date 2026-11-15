@@ -49,7 +49,8 @@ func setup(arena: Rect2, enemies: EnemyManager, p_cell_size: float) -> void:
 
 ## Share of the page covered by the player's ink, 0..1.
 func ownership() -> float:
-	return float(grid.ink_count) / float(grid.total_cells())
+	# Burnt paper is out of play, so the share is of what is left.
+	return float(grid.ink_count) / float(maxi(1, grid.total_cells() - grid.dead_count))
 
 
 ## The whole page as a small framed picture, drawn with the same ink shader.

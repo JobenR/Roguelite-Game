@@ -502,9 +502,10 @@ func _draw() -> void:
 		var pos: Vector2 = saw["pos"]
 		var teeth := PackedVector2Array()
 		for k in 16:
-			teeth.append(pos + Vector2.from_angle(spin + TAU * k / 16.0) * (30.0 if k % 2 == 0 else 20.0))
+			teeth.append(pos + Vector2.from_angle(spin + TAU * k / 16.0) * (31.0 if k % 2 == 0 else 19.0))
+		draw_circle(pos, 40.0, Color(GameState.ink_color, 0.12))
 		draw_colored_polygon(teeth, GameState.ink_color)
-		draw_circle(pos, 9.0, GameState.ink_light)
+		draw_circle(pos, 8.0, Color(Sumi.PAPER, 0.95))
 	for turret in _turrets:
 		var pos: Vector2 = turret["pos"]
 		var fade := clampf(float(turret["life"]) / 2.0, 0.25, 1.0)
@@ -514,8 +515,10 @@ func _draw() -> void:
 				draw_circle(pos + Vector2.from_angle(TAU * k / 5.0) * 9.0, 6.0, Color(0.23, 0.51, 0.96, fade))
 			draw_circle(pos, 5.0, Color(0.98, 0.75, 0.14, fade))
 		else:
-			draw_circle(pos + Vector2(2, 3), 13.0, Color(0, 0, 0, 0.25 * fade))
-			draw_circle(pos, 13.0, Color(0.07, 0.14, 0.37, fade) if live else Color(0.4, 0.4, 0.42, fade))
+			# A turret: a blot of ink with a brushed barrel; grey when it is
+			# off your ink and cannot fire.
+			var body := Color(GameState.ink_color, fade) if live else Color(0.45, 0.43, 0.4, fade)
 			var aim: Vector2 = turret["aim"]
-			draw_line(pos, pos + aim * 20.0, Color(0.02, 0.05, 0.17, fade), 6.0)
-			draw_circle(pos, 5.0, Color(0.58, 0.71, 1.0, fade))
+			draw_line(pos, pos + aim * 24.0, body, 8.0)
+			Brush.blot(self, pos, 14.0, body, pos.x * 0.01)
+			draw_circle(pos, 4.5, Color(1, 1, 1, 0.9 * fade))

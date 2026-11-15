@@ -1,8 +1,8 @@
 {
   "ink_pistol": {
     "name": "Ink Pistol",
-    "damage": 10,
-    "fire_interval": 0.28,
+    "damage": 12,
+    "fire_interval": 0.26,
     "bullet_speed": 720,
     "bullet_life": 0.9,
     "bullet_radius": 6,

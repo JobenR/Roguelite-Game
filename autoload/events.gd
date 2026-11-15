@@ -34,3 +34,7 @@ signal set_bonus(set_name: String, count: int, desc: String)
 signal player_hurt
 signal shield_changed(value: float, max_value: float)
 signal final_boss_defeated
+## Number of large enemies (Brutes and bosses) alive; drives the metal music.
+signal heavy_presence(count: int)
+## Burning Page: a strip has burnt. share is the part of it the player owned.
+signal strip_burned(index: int, share: float, xp: int, perfect: bool)

@@ -35,6 +35,36 @@ def lowpass(x, alpha):
     return y
 
 
+def fft_filter(x, lo=None, hi=None):
+    """Band-limits a whole buffer at once (much faster than lowpass())."""
+    spectrum = np.fft.rfft(x)
+    f = np.fft.rfftfreq(len(x), 1.0 / RATE)
+    if hi:
+        spectrum *= 1.0 / np.sqrt(1.0 + (f / hi) ** 8)
+    if lo:
+        ratio = (f / lo) ** 4
+        spectrum *= ratio / np.sqrt(1.0 + ratio ** 2)
+    return np.fft.irfft(spectrum, len(x))
+
+
+_string_cache = {}
+
+
+def string(freq, seconds, damp=0.997, bright=0.5, variant=0):
+    """A raw plucked string with no envelope, cached: the guitar's voice."""
+    key = (round(freq, 2), round(seconds, 3), damp, bright, variant)
+    if key not in _string_cache:
+        n = int(RATE * seconds)
+        period = max(2, int(RATE / freq))
+        buf = np.random.default_rng(1000 + variant * 77 + int(freq * 10)).uniform(-1.0, 1.0, period)
+        out = np.zeros(n)
+        for i in range(n):
+            out[i] = buf[i % period]
+            buf[i % period] = (bright * buf[i % period] + (1.0 - bright) * buf[(i + 1) % period]) * damp
+        _string_cache[key] = out
+    return _string_cache[key]
+
+
 def noise(seconds):
     return rng.uniform(-1.0, 1.0, int(RATE * seconds))
 
@@ -93,17 +123,24 @@ def save(name, data, peak=0.8):
 PENTA = [146.83, 174.61, 196.0, 220.0, 261.63, 293.66, 349.23, 392.0, 440.0, 523.25, 587.33]
 
 # --- one-shot effects -------------------------------------------------------
-x = t(0.07)
-save("shoot", lowpass(noise(0.07), 0.5) * np.exp(-55.0 * x) + 0.4 * np.sin(2 * np.pi * 520 * x) * np.exp(-70.0 * x), 0.5)
+# The sounds heard most often come in several variants, so they do not drone.
+for i, (colour, tone, decay) in enumerate([(0.5, 520, 55.0), (0.38, 470, 62.0), (0.62, 600, 50.0), (0.45, 430, 70.0), (0.55, 560, 58.0)]):
+    x = t(0.07)
+    save("shoot%d" % (i + 1), lowpass(noise(0.07), colour) * np.exp(-decay * x) + 0.35 * np.sin(2 * np.pi * tone * x) * np.exp(-70.0 * x), 0.5)
 
-x = t(0.06)
-save("hit", np.sin(2 * np.pi * (220 - 1400 * x) * x) * np.exp(-45.0 * x), 0.45)
+for i, (start, drop) in enumerate([(220, 1400), (260, 1700), (190, 1100), (240, 2000)]):
+    x = t(0.06)
+    save("hit%d" % (i + 1), np.sin(2 * np.pi * (start - drop * x) * x) * np.exp(-45.0 * x), 0.45)
 
-x = t(0.22)
-wet = lowpass(noise(0.22), 0.18) * np.exp(-14.0 * x)
-save("splat", wet + 0.5 * np.sin(2 * np.pi * (160 - 380 * x) * x) * np.exp(-18.0 * x), 0.7)
+for i, (colour, low, length) in enumerate([(0.18, 160, 0.22), (0.12, 130, 0.26), (0.25, 190, 0.18), (0.15, 110, 0.3), (0.22, 150, 0.2)]):
+    x = t(length)
+    wet = lowpass(noise(length), colour) * np.exp(-14.0 * x)
+    save("splat%d" % (i + 1), wet + 0.5 * np.sin(2 * np.pi * (low - 380 * x * 0.22 / length) * x) * np.exp(-18.0 * x), 0.7)
 
-save("gem", pluck(880.0, 0.16, 0.6), 0.35)
+# Gems climb the scale when picked up in a quick run.
+for i, note in enumerate([587.33, 698.46, 783.99, 880.0, 1046.5, 1174.66, 1396.91, 1567.98]):
+    save("gem%d" % (i + 1), pluck(note, 0.16, 0.6), 0.35)
+
 save("click", pluck(1320.0, 0.05, 0.3) + 0.3 * lowpass(noise(0.05), 0.6) * np.exp(-90.0 * t(0.05)), 0.4)
 
 card = np.zeros(int(RATE * 0.5))
@@ -161,28 +198,169 @@ for i, note in enumerate([PENTA[6], PENTA[4], PENTA[2], PENTA[0]]):
 place(death, taiko(1.0, 55.0), 0.95, 0.7)
 save("death", death, 0.8)
 
-# --- music: a sparse koto line over a soft drone, loopable -------------------
+# --- music -------------------------------------------------------------------
+# Two tracks of identical length that play in step, so the game can fade
+# between them: a calm koto line, and the same melody as heavy metal.
 BARS = 16
 BEAT = 0.75
-LENGTH = BARS * 4 * BEAT
-music = np.zeros(int(RATE * LENGTH))
+LENGTH = BARS * 4 * BEAT            # 48 seconds
 mrng = np.random.default_rng(11)
-x = t(LENGTH)
-# Drone: two detuned low sines with a slow swell, whole periods so it loops.
-for freq, amp in [(73.42, 0.22), (110.0, 0.14), (146.83, 0.08)]:
-    cycles = round(freq * LENGTH)
-    music += amp * np.sin(2 * np.pi * cycles * x / LENGTH) * (0.75 + 0.25 * np.sin(2 * np.pi * 2 * x / LENGTH))
-# Melody: a phrase per two bars, wandering stepwise around the scale.
+melody = []                         # (time, scale index): shared by both tracks
 idx = 5
 for bar in range(BARS):
     for step in range(8):
         if mrng.random() < (0.55 if step % 2 == 0 else 0.22):
             idx = int(np.clip(idx + mrng.choice([-2, -1, -1, 0, 1, 1, 2]), 2, 9))
             at = (bar * 8 + step) * BEAT / 2
-            if at < LENGTH - 2.0:  # leave the tail clear so the loop point is clean
-                place(music, pluck(PENTA[idx], 1.8, 0.45), at, 0.5)
-    if bar % 4 == 0:
-        place(music, taiko(0.9, 60.0, 0.6), bar * 4 * BEAT, 0.35)
-        place(music, pluck(PENTA[0], 2.2, 0.3), bar * 4 * BEAT, 0.45)
-save("music", music, 0.6)
+            if at < LENGTH - 2.0:   # leave the tail clear so the loop point is clean
+                melody.append((at, idx))
+
+calm = np.zeros(int(RATE * LENGTH))
+x = t(LENGTH)
+for freq, amp in [(73.42, 0.22), (110.0, 0.14), (146.83, 0.08)]:
+    cycles = round(freq * LENGTH)   # whole cycles, so the drone loops cleanly
+    calm += amp * np.sin(2 * np.pi * cycles * x / LENGTH) * (0.75 + 0.25 * np.sin(2 * np.pi * 2 * x / LENGTH))
+for at, i in melody:
+    place(calm, pluck(PENTA[i], 1.8, 0.45), at, 0.5)
+for bar in range(0, BARS, 4):
+    place(calm, taiko(0.9, 60.0, 0.6), bar * 4 * BEAT, 0.35)
+    place(calm, pluck(PENTA[0], 2.2, 0.3), bar * 4 * BEAT, 0.45)
+save("music", calm, 0.6)
+
+# Metal: 160 beats a minute (double the calm tempo), drop-D riffs.
+SIX = BEAT / 8.0                    # one sixteenth note
+STEPS = int(round(LENGTH / SIX))    # 512 sixteenths = 32 bars
+D2 = 73.42
+
+
+def semi(n):
+    return D2 * 2.0 ** (n / 12.0)
+
+
+def chord(root, seconds, take):
+    """A power chord: root, fifth and octave on three strings."""
+    return (string(root, seconds, 0.9975, 0.5, take) + 0.8 * string(root * 1.4983, seconds, 0.9975, 0.5, take + 3)
+            + 0.5 * string(root * 2.0, seconds, 0.9975, 0.5, take + 6))
+
+
+# Riffs: one bar of sixteen steps each. (semitones above D, palm-muted?) or None.
+M, O = True, False
+RIFF_A = [(0, M), (0, M), (0, M), (3, O), (0, M), (0, M), (5, O), (0, M), (0, M), (0, M), (3, O), (0, M), (6, O), (5, O), (3, O), (0, M)]
+RIFF_A2 = [(0, M), (0, M), (0, M), (3, O), (0, M), (0, M), (5, O), (0, M), (0, M), (0, M), (8, O), (7, O), (5, O), (3, O), (0, M), (0, M)]
+RIFF_B = [(0, O), None, (0, M), (0, M), (0, O), None, (0, M), (0, M), (3, O), None, (3, M), (3, M), (5, O), None, (6, O), None]
+RIFF_B2 = [(0, O), None, (0, M), (0, M), (0, O), None, (0, M), (0, M), (10, O), None, (8, O), None, (7, O), None, (5, O), (3, O)]
+RING = {0: [(0, 8), (0, 8)], 1: [(8, 8), (8, 8)], 2: [(10, 8), (10, 8)], 3: [(7, 8), (5, 4), (3, 4)]}
+
+
+def section(bar):
+    return "A" if bar < 8 else ("B" if bar < 16 else ("C" if bar < 24 else "A"))
+
+
+def guitar_take(take, detune):
+    g = np.zeros(int(RATE * LENGTH))
+    for bar in range(32):
+        kind = section(bar)
+        base = bar * 16 * SIX
+        if kind == "C":
+            step = 0
+            for root, length in RING[bar % 4]:
+                ring = chord(semi(root) * detune, length * SIX + 0.05, take)
+                place(g, ring * np.exp(-1.2 * t(length * SIX + 0.05)[: len(ring)]), base + step * SIX, 1.0)
+                step += length
+            continue
+        riff = (RIFF_A2 if bar % 4 == 3 else RIFF_A) if kind == "A" else (RIFF_B2 if bar % 4 == 3 else RIFF_B)
+        for step, note in enumerate(riff):
+            if note is None:
+                continue
+            root, muted = note
+            seconds = SIX * (0.95 if muted else 1.9)
+            hit = chord(semi(root) * detune, seconds, take)
+            fade = np.exp(-(26.0 if muted else 5.0) * t(seconds)[: len(hit)])
+            place(g, hit * fade, base + step * SIX, 0.9 if muted else 1.0)
+    return g
+
+
+def amp(x, drive):
+    """Guitar amp and speaker: hard clip, then a narrow band like a 4x12 cab."""
+    x = fft_filter(x, lo=80.0)
+    x = np.tanh(drive * x / max(1e-6, np.max(np.abs(x))))
+    x = np.tanh(2.5 * x)
+    return fft_filter(x, lo=95.0, hi=3600.0)
+
+
+rhythm = amp(guitar_take(0, 1.0), 9.0) + amp(guitar_take(1, 1.0045), 9.0)
+
+# Lead guitar: the koto melody, an octave up, through the same amp. It enters
+# for the chord section and the last riff.
+lead_clean = np.zeros(int(RATE * LENGTH))
+for at, i in melody:
+    bar = int(at / (16 * SIX))
+    if section(bar) == "C" or bar >= 24:
+        note = string(PENTA[i] * 2.0, 0.9, 0.9988, 0.55, 20)
+        place(lead_clean, note * np.exp(-1.5 * t(0.9)[: len(note)]), at, 1.0)
+lead = amp(lead_clean, 6.0) if np.max(np.abs(lead_clean)) > 0 else lead_clean
+
+# Bass follows the riff roots.
+bass = np.zeros(int(RATE * LENGTH))
+for bar in range(32):
+    kind = section(bar)
+    base = bar * 16 * SIX
+    if kind == "C":
+        step = 0
+        for root, length in RING[bar % 4]:
+            dur = length * SIX
+            xx = t(dur)
+            place(bass, np.sin(2 * np.pi * semi(root) * xx) * np.exp(-1.0 * xx), base + step * SIX, 1.0)
+            step += length
+    else:
+        riff = RIFF_A if kind == "A" else RIFF_B
+        for step, note in enumerate(riff):
+            if note is not None:
+                xx = t(SIX)
+                place(bass, np.sin(2 * np.pi * semi(note[0]) * xx) * np.exp(-9.0 * xx), base + step * SIX, 1.0)
+bass = np.tanh(2.0 * bass)
+
+# Drums.
+def kick():
+    xx = t(0.16)
+    freq = 45.0 + 110.0 * np.exp(-40.0 * xx)
+    return np.sin(2 * np.pi * np.cumsum(freq) / RATE) * np.exp(-16.0 * xx) + 0.5 * fft_filter(noise(0.16), lo=2500.0) * np.exp(-220.0 * xx)
+
+
+def snare():
+    xx = t(0.2)
+    return 0.9 * fft_filter(noise(0.2), lo=900.0, hi=7000.0) * np.exp(-22.0 * xx) + 0.6 * np.sin(2 * np.pi * 195.0 * xx) * np.exp(-30.0 * xx)
+
+
+def hat(seconds, decay):
+    xx = t(seconds)
+    return fft_filter(noise(seconds), lo=6000.0) * np.exp(-decay * xx)
+
+
+KICK, SNARE, HAT, CRASH = kick(), snare(), hat(0.05, 90.0), hat(1.2, 3.5)
+drums = np.zeros(int(RATE * LENGTH))
+for bar in range(32):
+    kind = section(bar)
+    base = bar * 16 * SIX
+    if bar % 8 == 0:
+        place(drums, CRASH, base, 0.5)
+    if kind == "A":
+        kicks, snares = range(0, 16, 2), [4, 12]            # driving double-time
+    elif kind == "B":
+        kicks, snares = [0, 2, 3, 4, 6, 7, 8, 10, 11, 12, 14], [4, 12]   # gallop
+    else:
+        kicks, snares = [0, 6, 8, 14], [8]                  # half-time under the chords
+    for step in kicks:
+        place(drums, KICK, base + step * SIX, 1.0)
+    for step in snares:
+        place(drums, SNARE, base + step * SIX, 0.9)
+    for step in range(0, 16, 2):
+        place(drums, HAT, base + step * SIX, 0.25)
+    if bar % 4 == 3:                                        # a fill into the next phrase
+        for step in [12, 13, 14, 15]:
+            place(drums, SNARE, base + step * SIX, 0.6 + 0.1 * (step - 12))
+
+metal = 0.5 * rhythm + 0.42 * lead + 0.55 * bass + 0.95 * drums
+metal = np.tanh(1.4 * metal / np.max(np.abs(metal)))
+save("music_metal", metal, 0.8)
 print("wrote", len(os.listdir(OUT)), "files to", os.path.normpath(OUT))

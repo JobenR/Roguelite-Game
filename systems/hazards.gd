@@ -114,7 +114,9 @@ func _draw() -> void:
 	for mine in _mines:
 		var pos: Vector2 = mine["pos"]
 		var armed: bool = mine["arm"] <= 0.0
-		draw_circle(pos + Vector2(2, 3), 11.0, Color(0, 0, 0, 0.25))
-		draw_circle(pos, 11.0, GameState.ink_color)
-		draw_arc(pos, 11.0, 0.0, TAU, 16, GameState.ink_color, 2.5)
-		draw_circle(pos, 4.0, Color("#ef4444") if armed and int(spin) % 2 == 0 else Color("#7f1d1d"))
+		# A blot of your ink with a core that blinks red once it is armed.
+		Brush.blot(self, pos, 12.0, GameState.ink_color, pos.x * 0.013 + pos.y * 0.007)
+		if armed and int(spin) % 2 == 0:
+			Brush.core(self, pos, 4.0, Color("#ef4444"))
+		else:
+			draw_circle(pos, 3.5, Color(1, 1, 1, 0.8))

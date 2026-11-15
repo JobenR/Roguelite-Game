@@ -719,7 +719,7 @@
   },
   "rear_guard": {
    "name": "Rear Guard",
-   "desc": "+1 shot fired straight behind you at full damage. Stacks",
+   "desc": "+1 shot fired straight behind you at 80% damage. Stacks",
    "max_level": 5,
    "category": "weapon",
    "set": "nib",

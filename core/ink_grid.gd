@@ -7,6 +7,7 @@ const NEUTRAL := 0
 const INK := 1      # the player's ink
 const SMUDGE := 2   # the horde's smudge
 const LOCKED := 3   # the player's ink made permanent; nothing overwrites it
+const DEAD := 4     # burnt paper: impassable, and nothing can ever paint it
 
 var cell_size: float
 var cols: int
@@ -15,6 +16,7 @@ var cells: PackedByteArray = PackedByteArray()
 var pixels: PackedByteArray = PackedByteArray()  # RGBA8: R = ink, G = smudge, B = locked, A = pulse glow
 var ink_count: int = 0
 var smudge_count: int = 0
+var dead_count: int = 0
 var dirty: bool = true
 ## Scratch mask written by find_enclosed(): 1 = enclosed, 2 = outside.
 var mask: PackedByteArray = PackedByteArray()
@@ -66,7 +68,7 @@ func is_ink(pos: Vector2) -> bool:
 
 func set_cell(index: int, state: int) -> void:
 	var old := cells[index]
-	if old == state or old == LOCKED:
+	if old == state or old == LOCKED or old == DEAD:
 		return
 	var was_ink := old == INK
 	var now_ink := state == INK or state == LOCKED
@@ -90,6 +92,34 @@ func set_cell(index: int, state: int) -> void:
 	pixels[p + 2] = 255 if state == LOCKED else 0
 	pixels[p + 3] = 0  # any change clears the pulse glow
 	dirty = true
+
+
+func is_dead(pos: Vector2) -> bool:
+	return dead_count > 0 and cells[cell_index(pos)] == DEAD
+
+
+## Burns one cell. The player's ink survives as permanent ink; anything else
+## becomes burnt paper. Returns true when the cell was the player's.
+func burn_cell(index: int) -> bool:
+	var old := cells[index]
+	if old == INK or old == LOCKED:
+		set_cell(index, LOCKED)
+		return true
+	if old == DEAD:
+		return false
+	if old == SMUDGE:
+		smudge_count -= 1
+	cells[index] = DEAD
+	dead_count += 1
+	# Burnt paper is stored as smudge and locked together, a pair no other
+	# state uses, so the shader can tell it apart without a second texture.
+	var p := index * 4
+	pixels[p] = 0
+	pixels[p + 1] = 255
+	pixels[p + 2] = 255
+	pixels[p + 3] = 0
+	dirty = true
+	return false
 
 
 ## Marks an ink cell as pulse-filled: it is drawn glowing until it is smudged.
@@ -279,9 +309,11 @@ func find_enclosed(center: Vector2, radius: float, gap_cells: int = 0) -> Packed
 	return enclosed
 
 
+## Open ground: not the player's ink and not burnt. Burnt paper walls in a
+## shape just as the page edge does.
 func _open(index: int) -> bool:
 	var state := cells[index]
-	return state != INK and state != LOCKED
+	return state != INK and state != LOCKED and state != DEAD
 
 
 func _seed(index: int, stack: PackedInt32Array) -> void:

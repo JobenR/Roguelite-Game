@@ -168,12 +168,23 @@ func _move(move: Vector2, delta: float) -> void:
 		_ghost_left -= delta
 		current_speed *= 1.0 + Upgrades.bonus("ghost_step")
 	_update_dash(move, delta)
+	var before := position
 	if _dash_left > 0.0:
 		position += _dash_dir * current_speed * float(_stats.get("dash_speed_mult", 4.0)) * delta
 	else:
 		position += move * current_speed * delta
 	position.x = clampf(position.x, _arena.position.x + radius, _arena.end.x - radius)
 	position.y = clampf(position.y, _arena.position.y + radius, _arena.end.y - radius)
+	# Burnt paper cannot be walked onto. (If the fire catches you standing on
+	# it, you may still walk off.)
+	var grid := _ink.grid
+	if grid.dead_count > 0 and grid.is_dead(position) and not grid.is_dead(before):
+		if not grid.is_dead(Vector2(position.x, before.y)):
+			position.y = before.y
+		elif not grid.is_dead(Vector2(before.x, position.y)):
+			position.x = before.x
+		else:
+			position = before
 
 
 ## Footsteps: a thin line of ink. Closing it into a loop sets up a pulse.

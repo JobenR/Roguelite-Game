@@ -20,6 +20,9 @@ var _boss_count: int = 0
 var _boss_warned: bool = false
 var _final_cfg: Dictionary = {}
 var _final_stage: int = 0  # 0 waiting, 1 warned, 2 spawned
+## Set by Burning Page mode, so nothing spawns on burnt paper.
+var burn: BurnSystem = null
+var ink: InkSystem = null
 
 
 func setup(enemies: EnemyManager, player: Player, arena: Rect2, mode_id: String) -> void:
@@ -169,4 +172,17 @@ func _spawn_point() -> Vector2:
 		# Clamping can pull the point back on screen when the player hugs a wall.
 		if point.distance_to(_player.position) >= d_min * 0.95:
 			break
+	if burn != null and ink != null and ink.grid.is_dead(point):
+		# Burnt paper: come in from the burning edge of what is left instead.
+		var inner := burn.inner_rect().grow(-20.0)
+		for attempt in 12:
+			var side := randi() % 4
+			var along := randf()
+			match side:
+				0: point = Vector2(inner.position.x + inner.size.x * along, inner.position.y)
+				1: point = Vector2(inner.position.x + inner.size.x * along, inner.end.y)
+				2: point = Vector2(inner.position.x, inner.position.y + inner.size.y * along)
+				_: point = Vector2(inner.end.x, inner.position.y + inner.size.y * along)
+			if point.distance_to(_player.position) > 320.0:
+				break
 	return point

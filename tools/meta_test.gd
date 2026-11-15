@@ -44,13 +44,17 @@ func _process(_delta: float) -> bool:
 		scene.player.take_damage(999999.0)
 	if _frames == 158:
 		var earned: int = save.seals() - _seals_before
-		_check("death pays Seals including the win bonus (got %d)" % earned, earned >= 50 + 60)
+		var win_bonus := int(root.get_node("DataDB").meta["earn"]["win_bonus"])
+		_check("death pays Seals including the win bonus (got %d)" % earned, earned > win_bonus and earned == gs.seals_earned())
 		_check("paying twice does nothing", gs.finish_run() == 0)
 		_check("a win and a run were recorded", int(save.data["wins"]) == 1 and int(save.data["runs"]) == 1)
-		save.data["seals"] = 100
+		# Prices come from data, so the test follows any rebalance.
+		var ink_price: int = save.ink_cost("crimson")
+		var boost_price: int = save.boost_cost("vitality")
+		save.data["seals"] = ink_price + boost_price + 5
 		_check("cannot buy an ink that costs more", not save.unlock_ink("gold"))
-		_check("can buy an affordable ink", save.unlock_ink("crimson") and save.seals() == 40)
-		_check("can buy a boost", save.buy_boost("vitality") and save.boost_level("vitality") == 1 and save.seals() == 20)
+		_check("can buy an affordable ink", save.unlock_ink("crimson") and save.seals() == boost_price + 5)
+		_check("can buy a boost", save.buy_boost("vitality") and save.boost_level("vitality") == 1 and save.seals() == 5)
 		gs.set_ink("crimson")
 		reload_current_scene()
 	if _frames == 170:

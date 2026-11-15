@@ -1,12 +1,81 @@
 {
   "currency_name": "Seals",
-  "earn": { "per_minute": 4, "kills_per_seal": 25, "per_level": 1, "per_milestone": 3, "win_bonus": 50 },
-  "ink_costs": { "blue": 0, "crimson": 60, "emerald": 60, "violet": 100, "gold": 150 },
+  "earn": {
+    "per_minute": 2.5,
+    "kills_per_seal": 50,
+    "per_level": 0.5,
+    "per_milestone": 2,
+    "win_bonus": 40
+  },
+  "ink_costs": {
+    "blue": 0,
+    "crimson": 150,
+    "emerald": 150,
+    "violet": 260,
+    "gold": 400
+  },
   "boosts": {
-    "vitality":  { "name": "Thicker Paper", "desc": "+6 max health per level",       "stat": "max_hp",        "add": 6,     "costs": [20, 40, 70, 110, 160] },
-    "potency":   { "name": "Richer Ink",    "desc": "+3% damage per level",          "stat": "damage",        "mult": 0.03, "costs": [25, 50, 80, 120, 170] },
-    "swiftness": { "name": "Lighter Brush", "desc": "+2% move speed per level",      "stat": "move_speed",    "mult": 0.02, "costs": [20, 40, 70, 110, 160] },
-    "reach":     { "name": "Wider Sleeve",  "desc": "+8% pickup radius per level",   "stat": "pickup_radius", "mult": 0.08, "costs": [15, 30, 50, 80, 120] },
-    "insight":   { "name": "Second Glance", "desc": "+1 reroll at every level-up",   "stat": "reroll",        "add": 1,     "costs": [120, 260] }
+    "vitality": {
+      "name": "Thicker Paper",
+      "desc": "+6 max health per level",
+      "stat": "max_hp",
+      "add": 6,
+      "costs": [
+        45,
+        90,
+        155,
+        240,
+        350
+      ]
+    },
+    "potency": {
+      "name": "Richer Ink",
+      "desc": "+3% damage per level",
+      "stat": "damage",
+      "mult": 0.03,
+      "costs": [
+        55,
+        110,
+        175,
+        265,
+        375
+      ]
+    },
+    "swiftness": {
+      "name": "Lighter Brush",
+      "desc": "+2% move speed per level",
+      "stat": "move_speed",
+      "mult": 0.02,
+      "costs": [
+        45,
+        90,
+        155,
+        240,
+        350
+      ]
+    },
+    "reach": {
+      "name": "Wider Sleeve",
+      "desc": "+8% pickup radius per level",
+      "stat": "pickup_radius",
+      "mult": 0.08,
+      "costs": [
+        35,
+        65,
+        110,
+        175,
+        265
+      ]
+    },
+    "insight": {
+      "name": "Second Glance",
+      "desc": "+1 reroll at every level-up",
+      "stat": "reroll",
+      "add": 1,
+      "costs": [
+        265,
+        570
+      ]
+    }
   }
 }

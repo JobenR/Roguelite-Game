@@ -84,5 +84,12 @@ void fragment() {
 	float ink_a = ink * mix(ink_color.a * (0.86 + 0.14 * bristle), glow_color.a, lit);
 	over(col, a, ink_rgb, ink_a);
 
+	// Burnt paper (Burning Page mode): charred black with a glowing ember edge.
+	float burnt_raw = min(t.g, t.b);
+	float burnt = smoothstep(0.62, 0.82, burnt_raw + (dry - 0.5) * 0.25);
+	float ember = smoothstep(0.25, 0.6, burnt_raw) * (1.0 - burnt);
+	over(col, a, mix(vec3(1.0, 0.45, 0.08), vec3(1.0, 0.85, 0.4), wash), ember * 0.9);
+	over(col, a, vec3(0.07, 0.05, 0.045) * (0.7 + 0.6 * wash), burnt * 0.98);
+
 	COLOR = vec4(col, a);
 }

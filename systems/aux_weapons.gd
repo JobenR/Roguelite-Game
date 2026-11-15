@@ -124,13 +124,10 @@ func _draw() -> void:
 		# Target marker, ground shadow, then the shell arcing above it.
 		draw_arc(to, 26.0, 0.0, TAU, 24, Color(0.85, 0.15, 0.2, 0.5), 3.0)
 		draw_circle(ground, 9.0, Color(0, 0, 0, 0.2))
-		draw_circle(ground - Vector2(0.0, height), 11.0 + height * 0.04, GameState.ink_color)
-		draw_circle(ground - Vector2(3.0, height + 3.0), 4.0, GameState.ink_light)
+		Brush.blot(self, ground - Vector2(0.0, height), 11.0 + height * 0.04, GameState.ink_color, 1.0)
 	var balls := int(Upgrades.bonus("orbit"))
 	var ball_radius := float(_orbit.get("ball_radius", 12.0))
 	for i in balls:
 		var pos := _ball_pos(i, balls)
-		draw_circle(pos + Vector2(2.0, 4.0), ball_radius, Color(0, 0, 0, 0.25))
-		draw_circle(pos, ball_radius, GameState.ink_color)
-		draw_circle(pos - Vector2(ball_radius, ball_radius) * 0.28, ball_radius * 0.4, GameState.ink_light)
-		draw_arc(pos, ball_radius, 0.0, TAU, 20, GameState.ink_color, 2.5)
+		Brush.blot(self, pos, ball_radius, GameState.ink_color, float(i) * 2.3)
+		draw_circle(pos - Vector2(ball_radius, ball_radius) * 0.28, ball_radius * 0.32, Color(GameState.ink_light, 0.8))

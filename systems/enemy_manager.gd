@@ -17,6 +17,9 @@ var active: Array[Enemy] = []
 var grid: SpatialGrid
 var max_radius: float = 0.0
 var boss: Enemy = null
+var heavy_count: int = 0
+## Set by Burning Page mode: routes enemies around burnt paper.
+var flow: FlowField = null
 
 var _pool: ObjectPool
 var _player: Player
@@ -40,6 +43,7 @@ func setup(player: Player, arena: Rect2, ink: InkSystem, effects: Effects, shots
 	_arena = arena
 	grid = SpatialGrid.new(arena.size, GRID_CELL)
 	_pool = ObjectPool.new(ENEMY_SCENE, self, 64)
+	Events.heavy_presence.emit(0)
 
 
 func spawn(type_id: String, pos: Vector2, hp_mult: float = 1.0) -> Enemy:
@@ -51,6 +55,9 @@ func spawn(type_id: String, pos: Vector2, hp_mult: float = 1.0) -> Enemy:
 	enemy.spawn(type_id, data, pos, hp_mult)
 	active.append(enemy)
 	max_radius = maxf(max_radius, enemy.radius)
+	if enemy.heavy:
+		heavy_count += 1
+		Events.heavy_presence.emit(heavy_count)
 	if enemy.is_boss:
 		boss = enemy
 		Events.boss_spawned.emit(enemy.display_name)
@@ -200,6 +207,9 @@ func _kill(enemy: Enemy) -> void:
 	active.erase(enemy)
 	_pool.release(enemy)
 	_effects.burst(enemy.position, enemy.last_hit_dir, enemy.color, 14 if enemy.heavy else 7)
+	if enemy.heavy:
+		heavy_count = maxi(0, heavy_count - 1)
+		Events.heavy_presence.emit(heavy_count)
 	if enemy.is_boss:
 		boss = null
 		_effects.big_moment(enemy.position, enemy.splat_radius * 1.5, Color(String(enemy.data.get("visual", {}).get("core", "#ffffff"))), 0.9)
@@ -249,12 +259,19 @@ func _process(delta: float) -> void:
 	var weave_time := GameState.run_time * 1.7
 	var walls := Upgrades.bonus("ink_wall") > 0.0
 	var now := GameState.run_time
+	var burnt := ink_grid.dead_count > 0
+	var use_flow := burnt and flow != null and flow.ready
 
 	for enemy in active:
 		var pos := enemy.position
 		var to_player := player_pos - pos
 		var dist := to_player.length()
 		var toward := to_player / dist if dist > 0.001 else Vector2.ZERO
+		if use_flow and dist > 110.0:
+			# Follow the route round burnt paper until the player is close.
+			var route := flow.direction(pos)
+			if route != Vector2.ZERO:
+				toward = route
 		var pace := enemy.speed
 		if slow > 0.0 and not enemy.heavy and ink_grid.is_ink(pos):
 			pace *= 1.0 - slow
@@ -294,18 +311,20 @@ func _process(delta: float) -> void:
 			push *= 0.15
 
 		var move := step + push * push_factor
-		if walls and not enemy.heavy and move != Vector2.ZERO:
-			# Wet Ink Wall: a blocked enemy slides along the wall instead.
+		var check_walls := walls and not enemy.heavy
+		if (check_walls or burnt) and move != Vector2.ZERO:
+			# Wet Ink Wall and burnt paper: a blocked enemy slides along the
+			# obstacle instead of pushing through it.
 			var feeler := move.normalized() * enemy.radius * 0.7
-			if ink_grid.is_wall(pos + move + feeler, now):
-				if not ink_grid.is_wall(pos + Vector2(move.x, 0.0) + Vector2(feeler.x, 0.0), now) and absf(move.x) > 0.01:
+			if _blocked(ink_grid, pos + move + feeler, check_walls, now):
+				if absf(move.x) > 0.01 and not _blocked(ink_grid, pos + Vector2(move.x + feeler.x, 0.0), check_walls, now):
 					move = Vector2(signf(move.x) * move.length(), 0.0)
-				elif not ink_grid.is_wall(pos + Vector2(0.0, move.y) + Vector2(0.0, feeler.y), now) and absf(move.y) > 0.01:
+				elif absf(move.y) > 0.01 and not _blocked(ink_grid, pos + Vector2(0.0, move.y + feeler.y), check_walls, now):
 					move = Vector2(0.0, signf(move.y) * move.length())
 				else:
 					# Fully blocked: shuffle sideways to find a way around.
 					move = toward.orthogonal() * (1.0 if enemy.flank >= 0.0 else -1.0) * move.length()
-					if ink_grid.is_wall(pos + move + move.normalized() * enemy.radius * 0.7, now):
+					if _blocked(ink_grid, pos + move + move.normalized() * enemy.radius * 0.7, check_walls, now):
 						move = Vector2.ZERO
 		pos += move
 		pos.x = clampf(pos.x, min_x, max_x)
@@ -353,6 +372,10 @@ func _process(delta: float) -> void:
 	_stepped.clear()
 	if boss != null:
 		queue_redraw()
+
+
+func _blocked(ink_grid: InkGrid, at: Vector2, check_walls: bool, now: float) -> bool:
+	return ink_grid.is_dead(at) or (check_walls and ink_grid.is_wall(at, now))
 
 
 ## Brute: walk in, stop and shake, then lunge in a straight line.
