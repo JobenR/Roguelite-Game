@@ -24,6 +24,8 @@ var powers: Dictionary = {}
 var damage_bonus: float = 0.0
 var _xp_fraction: float = 0.0
 var milestones: int = 0
+## Extra Seals earned inside a run (Burning Page strips).
+var bonus_seals: float = 0.0
 var won: bool = false
 var _rewarded: bool = false
 
@@ -56,6 +58,7 @@ func start_run() -> void:
 	damage_bonus = 0.0
 	_xp_fraction = 0.0
 	milestones = 0
+	bonus_seals = 0.0
 	won = false
 	_rewarded = false
 	Events.run_started.emit()
@@ -69,6 +72,7 @@ func seals_earned() -> int:
 	total += kills / maxf(1.0, float(earn.get("kills_per_seal", 25.0)))
 	total += level * float(earn.get("per_level", 1.0))
 	total += milestones * float(earn.get("per_milestone", 3.0))
+	total += bonus_seals
 	if won:
 		total += float(earn.get("win_bonus", 50.0))
 	return int(total)

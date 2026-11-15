@@ -47,6 +47,17 @@ def fft_filter(x, lo=None, hi=None):
     return np.fft.irfft(spectrum, len(x))
 
 
+def fft_eq(x, bands):
+    """Boosts or cuts frequency bands. bands: (low Hz, high Hz, gain in dB)."""
+    spectrum = np.fft.rfft(x)
+    f = np.fft.rfftfreq(len(x), 1.0 / RATE)
+    for lo, hi, db in bands:
+        centre = np.sqrt(lo * hi)
+        width = np.log2(hi / lo)
+        spectrum *= 10.0 ** (db / 20.0 * np.exp(-0.5 * (np.log2(np.maximum(f, 1.0) / centre) / (width * 0.6)) ** 2))
+    return np.fft.irfft(spectrum, len(x))
+
+
 _string_cache = {}
 
 
@@ -281,14 +292,19 @@ def guitar_take(take, detune):
 
 
 def amp(x, drive):
-    """Guitar amp and speaker: hard clip, then a narrow band like a 4x12 cab."""
-    x = fft_filter(x, lo=80.0)
+    """A high-gain amp and 4x12 cabinet: tighten the lows, clip hard twice,
+    then the scooped-mid voicing of a metal rhythm tone."""
+    x = fft_filter(x, lo=120.0)
     x = np.tanh(drive * x / max(1e-6, np.max(np.abs(x))))
-    x = np.tanh(2.5 * x)
-    return fft_filter(x, lo=95.0, hi=3600.0)
+    x = fft_eq(x, [(600.0, 1400.0, 5.0)])
+    x = np.tanh(4.0 * x)
+    x = fft_filter(x, lo=85.0, hi=4200.0)
+    return fft_eq(x, [(90.0, 220.0, 5.0), (380.0, 850.0, -6.0), (1900.0, 3600.0, 5.0)])
 
 
-rhythm = amp(guitar_take(0, 1.0), 9.0) + amp(guitar_take(1, 1.0045), 9.0)
+# Four rhythm guitars: three slightly detuned takes and one an octave down.
+rhythm = (amp(guitar_take(0, 1.0), 16.0) + amp(guitar_take(1, 1.0045), 16.0) + amp(guitar_take(2, 0.9958), 16.0)
+          + 0.8 * amp(guitar_take(3, 0.5), 12.0))
 
 # Lead guitar: the koto melody, an octave up, through the same amp. It enters
 # for the chord section and the last riff.
@@ -318,18 +334,20 @@ for bar in range(32):
             if note is not None:
                 xx = t(SIX)
                 place(bass, np.sin(2 * np.pi * semi(note[0]) * xx) * np.exp(-9.0 * xx), base + step * SIX, 1.0)
-bass = np.tanh(2.0 * bass)
+bass = fft_eq(np.tanh(5.0 * bass), [(60.0, 140.0, 4.0)])
 
 # Drums.
 def kick():
     xx = t(0.16)
     freq = 45.0 + 110.0 * np.exp(-40.0 * xx)
-    return np.sin(2 * np.pi * np.cumsum(freq) / RATE) * np.exp(-16.0 * xx) + 0.5 * fft_filter(noise(0.16), lo=2500.0) * np.exp(-220.0 * xx)
+    body = np.tanh(2.2 * np.sin(2 * np.pi * np.cumsum(freq) / RATE)) * np.exp(-14.0 * xx)
+    return body + 0.9 * fft_filter(noise(0.16), lo=2500.0, hi=7000.0) * np.exp(-180.0 * xx)
 
 
 def snare():
     xx = t(0.2)
-    return 0.9 * fft_filter(noise(0.2), lo=900.0, hi=7000.0) * np.exp(-22.0 * xx) + 0.6 * np.sin(2 * np.pi * 195.0 * xx) * np.exp(-30.0 * xx)
+    crack = fft_filter(noise(0.2), lo=700.0, hi=8000.0) * np.exp(-18.0 * xx)
+    return np.tanh(1.6 * (1.1 * crack + 0.9 * np.sin(2 * np.pi * 190.0 * xx) * np.exp(-24.0 * xx)))
 
 
 def hat(seconds, decay):
@@ -343,9 +361,9 @@ for bar in range(32):
     kind = section(bar)
     base = bar * 16 * SIX
     if bar % 8 == 0:
-        place(drums, CRASH, base, 0.5)
+        place(drums, CRASH, base, 0.7)
     if kind == "A":
-        kicks, snares = range(0, 16, 2), [4, 12]            # driving double-time
+        kicks, snares = range(16), [4, 12]                  # double kick on every sixteenth
     elif kind == "B":
         kicks, snares = [0, 2, 3, 4, 6, 7, 8, 10, 11, 12, 14], [4, 12]   # gallop
     else:
@@ -360,7 +378,10 @@ for bar in range(32):
         for step in [12, 13, 14, 15]:
             place(drums, SNARE, base + step * SIX, 0.6 + 0.1 * (step - 12))
 
-metal = 0.5 * rhythm + 0.42 * lead + 0.55 * bass + 0.95 * drums
-metal = np.tanh(1.4 * metal / np.max(np.abs(metal)))
+rhythm /= np.max(np.abs(rhythm))
+drums /= np.max(np.abs(drums))
+metal = 0.85 * rhythm + 0.3 * lead / max(1e-6, np.max(np.abs(lead))) + 0.5 * bass / np.max(np.abs(bass)) + 1.0 * drums
+# Master: push into a limiter so it is loud and dense like a finished mix.
+metal = np.tanh(2.6 * metal / np.max(np.abs(metal)))
 save("music_metal", metal, 0.8)
 print("wrote", len(os.listdir(OUT)), "files to", os.path.normpath(OUT))

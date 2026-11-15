@@ -20,10 +20,12 @@
       "warning": 8,
       "strip_cells": 12,
       "min_inner_cells": 70,
-      "xp_per_strip": 30,
-      "heal": 12,
-      "perfect_share": 0.9,
-      "burn_damage": 14
+      "xp_per_strip": 60,
+      "heal": 30,
+      "perfect_share": 0.7,
+      "burn_damage": 14,
+      "pulse_share": 0.35,
+      "seals_per_strip": 4
     },
     "name": "Burning Page",
     "desc": "The page burns inward. Your ink survives as ground only you made; each strip pays out for the share you owned. Beat The Great Eraser at 10:00."

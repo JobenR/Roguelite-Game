@@ -28,6 +28,10 @@ func setup(player: Player, enemies: EnemyManager, ink: InkSystem, effects: Effec
 	Events.enemy_killed.connect(_on_enemy_killed)
 	Events.xp_collected.connect(func(amount: int) -> void: _add_charge(amount * float(_cfg.get("charge_per_xp", 0.0)) / 100.0))
 	Events.pulse_charge_changed.emit(charge)
+	# Burning Page: saving a good share of a strip charges the pulse.
+	Events.strip_burned.connect(func(_i: int, share: float, _x: int, _p: bool) -> void:
+		if share >= float(DataDB.modes.get(GameState.mode_id, {}).get("burn", {}).get("pulse_share", 0.35)):
+			fill_charge())
 
 
 func _on_enemy_killed(_type_id: String, _pos: Vector2, _splat_radius: float, _xp: int, _dir: Vector2) -> void:

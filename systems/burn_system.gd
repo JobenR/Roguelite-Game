@@ -135,9 +135,11 @@ func _finish_strip() -> void:
 	var xp := int(round(float(_cfg.get("xp_per_strip", 30.0)) * strips_burned * share))
 	GameState.add_xp(xp)
 	_player.heal(float(_cfg.get("heal", 12.0)) * share)
-	var perfect := share >= float(_cfg.get("perfect_share", 0.9))
+	var perfect := share >= float(_cfg.get("perfect_share", 0.7))
 	if perfect:
 		Events.bonus_card.emit("STRIP SAVED: BONUS UPGRADE")
+	# Seals for the save file too, so holding ground pays beyond this run.
+	GameState.bonus_seals += float(_cfg.get("seals_per_strip", 4.0)) * share
 	Events.strip_burned.emit(strips_burned, share, xp, perfect)
 
 

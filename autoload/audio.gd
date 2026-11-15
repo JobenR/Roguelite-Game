@@ -18,7 +18,7 @@ const VOLUME := {"shoot": -19.0, "hit": -21.0, "splat": -11.0, "gem": -15.0, "cl
 const PITCH_SPREAD := {"shoot": 0.16, "hit": 0.2, "splat": 0.18, "gem": 0.0}
 const VOICES := 12
 const CALM_DB := -15.0
-const METAL_DB := -11.0
+const METAL_DB := -8.0
 const SILENT_DB := -60.0
 const COOL_DOWN := 6.0   # seconds of metal after the last large enemy is gone
 

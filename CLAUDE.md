@@ -101,7 +101,14 @@ reward.** The user picked mock-up A plus E and rejected a first attempt that
    owned, and a bonus card at 90%+. `FlowField` routes enemies round burnt paper.
    Chosen on the title screen (`GameState.mode_id`); both modes share
    `modes/survival.tscn`.
-6. Mobile: touch polish, iOS export, performance pass (60fps with 300+ enemies).
+6. Mobile (in progress): the iOS preset exports a clean Xcode project once an
+   App Store Team ID is set (verified by exporting on Linux with a placeholder
+   ID; the build itself has not been run on a device). The user has a Mac and
+   is being walked through Xcode. Still open: speed on a real phone.
+   Later feedback: the metal was "too thin" (now four rhythm guitars, harder
+   clipping, double kick, louder master); Burning Page payouts were too weak
+   (doubled, card at 70%, pulse charge at 35%, Seals per strip); difficulty
+   after the balance pass felt about right.
 7. Meta (done): title screen (`menus/title.tscn`, the main scene) with ink
    unlocks, permanent boosts and settings; Seals currency paid at run end; JSON
    save (`SaveData`, `user://blotline_save.json`); generated sound and music
