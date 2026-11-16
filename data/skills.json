@@ -1,0 +1,29 @@
+{
+  "xp": { "per_minute": 20, "per_kill": 0.2, "per_level": 8, "win_bonus": 150, "base": 120, "growth": 1.25 },
+  "branches": {
+    "force": { "name": "Force", "tagline": "Brute strength", "color": "#c1272d", "nodes": [
+      { "name": "Heavy Hand",   "short": "+8% damage",              "effects": [ { "stat": "damage", "mult": 0.08 } ] },
+      { "name": "Thick Skin",   "short": "+20 health",              "effects": [ { "stat": "max_hp", "add": 20 } ] },
+      { "name": "Weighted Nib", "short": "Start with Heavy Rounds", "effects": [ { "stat": "heavy", "add": 1 } ] },
+      { "name": "Powder Ink",   "short": "Shots explode",           "effects": [ { "stat": "explosive", "add": 30 } ] },
+      { "name": "Juggernaut",   "short": "+15% damage, +30 health", "effects": [ { "stat": "damage", "mult": 0.15 }, { "stat": "max_hp", "add": 30 } ] } ] },
+    "range": { "name": "Range", "tagline": "Strike from afar", "color": "#1e3a8a", "nodes": [
+      { "name": "Long Sight", "short": "+15% shot range",        "effects": [ { "stat": "reach", "mult": 0.15 } ] },
+      { "name": "Keen Edge",  "short": "Shots pierce +1",        "effects": [ { "stat": "pierce", "add": 1 } ] },
+      { "name": "Sharp Eye",  "short": "+6% triple damage",      "effects": [ { "stat": "crit", "add": 0.06 } ] },
+      { "name": "Marksman",   "short": "Start with Sniper Nib",  "effects": [ { "stat": "sniper", "add": 1 } ] },
+      { "name": "Deadeye",    "short": "+50% vs full health",    "effects": [ { "stat": "first_strike", "add": 0.5 } ] } ] },
+    "speed": { "name": "Speed", "tagline": "Never stand still", "color": "#0f766e", "nodes": [
+      { "name": "Fleet",     "short": "+6% speed",                "effects": [ { "stat": "move_speed", "mult": 0.06 } ] },
+      { "name": "Quickstep", "short": "Start with Dash",          "effects": [ { "stat": "dash", "add": 1 } ] },
+      { "name": "Tailwind",  "short": "Faster in straight lines", "effects": [ { "stat": "slipstream", "add": 0.1 } ] },
+      { "name": "Rush",      "short": "+10% fire rate moving",    "effects": [ { "stat": "run_gun", "add": 0.1 } ] },
+      { "name": "Blur",      "short": "+10% speed and fire rate", "effects": [ { "stat": "move_speed", "mult": 0.1 }, { "stat": "fire_rate", "mult": 0.1 } ] } ] },
+    "ink": { "name": "Ink", "tagline": "Own the page", "color": "#6b21a8", "nodes": [
+      { "name": "Wet Brush",   "short": "+15% splat size",          "effects": [ { "stat": "splat_size", "mult": 0.15 } ] },
+      { "name": "Wide Stroke", "short": "+20% trail width",         "effects": [ { "stat": "trail_radius", "mult": 0.2 } ] },
+      { "name": "Mending Ink", "short": "Heal on your ink",         "effects": [ { "stat": "ink_regen", "add": 1.0 } ] },
+      { "name": "Bitter Ink",  "short": "Your ink burns foes",      "effects": [ { "stat": "ink_burn", "add": 4 } ] },
+      { "name": "Tidecaller",  "short": "Deluge charges +20%",      "effects": [ { "stat": "pulse_charge", "mult": 0.2 }, { "stat": "living", "add": 1 } ] } ] }
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "currency": "Gold Leaf",
+  "packs": [
+    { "id": "pack_pouch",    "name": "Pouch",    "gold": 100,  "price": "$0.99" },
+    { "id": "pack_chest",    "name": "Chest",    "gold": 550,  "price": "$4.99" },
+    { "id": "pack_vault",    "name": "Vault",    "gold": 1200, "price": "$9.99" },
+    { "id": "pack_treasury", "name": "Treasury", "gold": 2600, "price": "$19.99" }
+  ],
+  "vip": { "name": "VIP Seal", "price": "$9.99", "daily_gold": 20, "reroll": 1, "ink": "aurora", "look": "star",
+           "perks": "Daily 20 Gold Leaf. +1 card reroll every level-up. Aurora ink. Star seal." },
+  "items": {
+    "page_wipe":  { "name": "Page Wipe",   "short": "Clear the screen once",     "gold": 40, "seals": 220 },
+    "revive":     { "name": "Second Life", "short": "Come back from death once", "gold": 60, "seals": 320 },
+    "head_start": { "name": "Head Start",  "short": "3 free cards at the start", "gold": 30, "seals": 160 },
+    "lasso":      { "name": "Lasso",       "short": "Rope a crowd together",     "gold": 25, "seals": 140 }
+  },
+  "boosters": {
+    "double_xp":    { "name": "Double XP",    "short": "x2 character XP for 5 runs", "runs": 5, "gold": 50, "seals": 300 },
+    "double_seals": { "name": "Double Seals", "short": "x2 Seals for 5 runs",        "runs": 5, "gold": 50 }
+  },
+  "exchange": { "gold": 50, "seals": 150 },
+  "looks": {
+    "square":  { "name": "Seal",    "gold": 0 },
+    "circle":  { "name": "Pearl",   "gold": 60 },
+    "diamond": { "name": "Diamond", "gold": 60 },
+    "cross":   { "name": "Cross",   "gold": 120 },
+    "star":    { "name": "Star",    "vip": true }
+  },
+  "earn": { "gold_per_boss": 2, "gold_per_win": 10 }
+}

@@ -98,6 +98,9 @@ func _ready() -> void:
 	Events.ultimate_ready.connect(func() -> void:
 		_show_banner("DELUGE READY")
 		Audio.play("milestone"))
+	Events.seal_collected.connect(func(amount: int) -> void:
+		_show_banner("+%d SEALS" % amount)
+		Audio.play("milestone"))
 	Events.wave_warning.connect(_on_wave_warning)
 	Events.wave_started.connect(_on_wave_started)
 	Events.player_health_changed.connect(_on_health_changed)
@@ -163,7 +166,7 @@ func _process(delta: float) -> void:
 		if _milestones != null and _milestones.next_percent() > 0:
 			ink_text += " > %d%%" % _milestones.next_percent()
 	_time_label.text = "%s   Lv %d%s" % [GameState.format_time(GameState.run_time), GameState.level, ink_text]
-	_kills_label.text = "Kills %d" % GameState.kills
+	_kills_label.text = "Kills %d\nSeals %d" % [GameState.kills, GameState.seals_earned()]
 
 
 func _on_health_changed(hp: float, max_hp: float) -> void:

@@ -16,7 +16,9 @@ extends Node2D
 ##
 ## Data keys: color, outline, outline_width, sides (0 = circle), rotation_deg,
 ## brush_shot (bool: draw as a flicked brush stroke; needs streak),
-## core (glowing core colour), core_shape ("square" for the player's seal), ring (bool: a ring round the core, for bosses),
+## core (glowing core colour), core_shape (the player's seal: square, circle,
+## diamond, cross or star), tier and marks (how the player's drop shows its
+## growth; see _draw_growth), ring (bool: a ring round the core, for bosses),
 ## aura (colour of a haze behind the shape), halo (glow colour behind a plain
 ## shape), seal (colour of a square mark), streak (motion trail length),
 ## glow (streak colour), shadow (bool).
@@ -35,7 +37,9 @@ var _radius: float = 10.0
 var _brush: bool = false
 var _core: Color = Color.WHITE
 var _ring: bool = false
-var _core_square: bool = false
+var _core_shape: String = ""
+var _tier: int = 0
+var _marks: Dictionary = {}
 var _brush_shot: bool = false
 var _blot: PackedVector2Array = PackedVector2Array()
 var _aura: Color = Color(0, 0, 0, 0)
@@ -59,7 +63,9 @@ func setup(data: Dictionary, radius: float) -> void:
 	_brush = data.has("core")
 	_core = Color(String(data.get("core", "#ffffff")))
 	_ring = bool(data.get("ring", false))
-	_core_square = String(data.get("core_shape", "")) == "square"
+	_core_shape = String(data.get("core_shape", ""))
+	_tier = int(data.get("tier", 0))
+	_marks = data.get("marks", {})
 	_brush_shot = bool(data.get("brush_shot", false))
 	_aura = Color(String(data["aura"])) if data.has("aura") else Color(0, 0, 0, 0)
 	_halo = Color(String(data["halo"])) if data.has("halo") else Color(0, 0, 0, 0)
@@ -147,6 +153,7 @@ func _draw_brush() -> void:
 	if _aura.a > 0.0:
 		draw_circle(Vector2.ZERO, _radius * 2.2, Color(_aura, 0.2))
 		draw_circle(Vector2.ZERO, _radius * 1.6, Color(_aura, 0.24))
+	_draw_growth()
 	# The shade pooled under the shape, then the wet halo where the ink bled
 	# into the paper, then a thin paper-coloured rim (so the body still shows
 	# against black ink), then the body.
@@ -163,17 +170,70 @@ func _draw_brush() -> void:
 	var core_radius := _radius * 0.24
 	for i in 4:
 		draw_circle(c, core_radius * (3.0 - i * 0.55), Color(_core, 0.10 + 0.07 * i))
-	if _core_square:
-		# The player's seal: a glowing square.
-		var half := core_radius * 1.15
-		draw_rect(Rect2(c.x - half, c.y - half, half * 2.0, half * 2.0), _core)
-		draw_rect(Rect2(c.x - half * 0.4, c.y - half * 0.4, half * 0.8, half * 0.8), Color.WHITE)
-	else:
-		draw_circle(c, core_radius, _core)
-		draw_circle(c, core_radius * 0.42, Color.WHITE)
+	match _core_shape:
+		"square":
+			var half := core_radius * 1.15
+			draw_rect(Rect2(c.x - half, c.y - half, half * 2.0, half * 2.0), _core)
+			draw_rect(Rect2(c.x - half * 0.4, c.y - half * 0.4, half * 0.8, half * 0.8), Color.WHITE)
+		"diamond":
+			_draw_star(c, core_radius * 1.5, core_radius * 1.5, 2, _core)
+			_draw_star(c, core_radius * 0.6, core_radius * 0.6, 2, Color.WHITE)
+		"cross":
+			var arm := core_radius * 1.5
+			draw_rect(Rect2(c.x - arm, c.y - arm * 0.36, arm * 2.0, arm * 0.72), _core)
+			draw_rect(Rect2(c.x - arm * 0.36, c.y - arm, arm * 0.72, arm * 2.0), _core)
+		"star":
+			_draw_star(c, core_radius * 1.9, core_radius * 0.8, 5, _core)
+			draw_circle(c, core_radius * 0.4, Color.WHITE)
+		_:
+			draw_circle(c, core_radius, _core)
+			draw_circle(c, core_radius * 0.42, Color.WHITE)
 	if _ring:
 		draw_arc(c, _radius * 0.62, 0.0, TAU, 40, Color(_core, 0.9), maxf(3.0, _radius * 0.07))
 		draw_arc(c, _radius * 0.62, 0.0, TAU, 40, Color(_core, 0.25), maxf(8.0, _radius * 0.2))
+
+
+## A star (or, with two points, a diamond) centred on c.
+func _draw_star(c: Vector2, outer: float, inner: float, points: int, color: Color) -> void:
+	var shape := PackedVector2Array()
+	for i in points * 2:
+		shape.append(c + Vector2.from_angle(-PI * 0.5 + PI * i / points) * (outer if i % 2 == 0 else inner))
+	draw_colored_polygon(shape, color)
+
+
+## How the player's drop shows its growth. `tier` (from character level) adds
+## glowing rings; each skill branch adds its own mark, one per node bought:
+## Force spikes, Range sight ticks, Speed wind lines, Ink orbiting droplets.
+func _draw_growth() -> void:
+	if _tier <= 0 and _marks.is_empty():
+		return
+	var light := _color.lightened(0.45)
+	for i in _tier:
+		var ring := _radius * (1.55 + 0.3 * i)
+		draw_arc(Vector2.ZERO, ring, 0.0, TAU, 40, Color(light, 0.5 - 0.07 * i), 2.5)
+		draw_arc(Vector2.ZERO, ring, 0.0, TAU, 40, Color(light, 0.12), 7.0)
+	var force := int(_marks.get("force", 0))
+	for i in force * 2:
+		var angle := TAU * i / (force * 2.0) + 0.3
+		var base := Vector2.from_angle(angle) * _radius * 0.95
+		var side := Vector2.from_angle(angle).orthogonal() * _radius * 0.28
+		draw_colored_polygon(PackedVector2Array([base - side, Vector2.from_angle(angle) * _radius * (1.45 + 0.06 * force), base + side]), _color)
+	var sight := int(_marks.get("range", 0))
+	if sight > 0:
+		var reach := _radius * (1.7 + 0.22 * sight)
+		for dir: Vector2 in [Vector2.RIGHT, Vector2.LEFT, Vector2.UP, Vector2.DOWN]:
+			draw_line(dir * _radius * 1.25, dir * reach, Color(light, 0.9), 2.5)
+		if sight >= 3:
+			draw_arc(Vector2.ZERO, reach, 0.0, TAU, 40, Color(light, 0.55), 1.5)
+	var wind := int(_marks.get("speed", 0))
+	for i in wind:
+		var start := PI * 0.62 + i * 0.36
+		draw_arc(Vector2.ZERO, _radius * (1.3 + 0.16 * i), start, start + 1.0, 12, Color(light, 0.85), 3.0)
+	var drops := int(_marks.get("ink", 0))
+	for i in drops:
+		var at := Vector2.from_angle(TAU * i / maxf(1.0, float(drops)) - PI * 0.5) * _radius * 1.75
+		draw_circle(at, _radius * 0.22, _color)
+		draw_circle(at - Vector2(1.5, 1.5), _radius * 0.08, Color(1, 1, 1, 0.7))
 
 
 func _draw_plain() -> void:

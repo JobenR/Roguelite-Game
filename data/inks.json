@@ -86,5 +86,27 @@
         "mult": -0.15
       }
     ]
+  },
+  "aurora": {
+    "name": "Aurora",
+    "tagline": "VIP",
+    "vip": true,
+    "desc": "+5% damage, +5% speed and +10% XP. No weakness.",
+    "color": "#12b5c9",
+    "light": "#7df3ff",
+    "effects": [
+      {
+        "stat": "damage",
+        "mult": 0.05
+      },
+      {
+        "stat": "move_speed",
+        "mult": 0.05
+      },
+      {
+        "stat": "xp_gain",
+        "mult": 0.1
+      }
+    ]
   }
 }

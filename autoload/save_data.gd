@@ -30,6 +30,16 @@ func _defaults() -> Dictionary:
 		"boosts": {},
 		"settings": {"sound": true, "music": true, "vibration": true},
 		"items": {},
+		"gold": 0,
+		"char_xp": 0,
+		"char_level": 1,
+		"skills": {},
+		"boosters": {},
+		"looks": ["square"],
+		"look": "square",
+		"vip": false,
+		"vip_claimed": "",
+		"use_head_start": true,
 		"best_time": 0.0,
 		"runs": 0,
 		"wins": 0,
@@ -62,6 +72,8 @@ func set_setting(key: String, value: bool) -> void:
 
 
 func has_ink(id: String) -> bool:
+	if bool(DataDB.inks.get(id, {}).get("vip", false)):
+		return is_vip()
 	return (data.get("inks", []) as Array).has(id)
 
 
@@ -118,3 +130,115 @@ func buy_boost(id: String) -> bool:
 	(data["boosts"] as Dictionary)[id] = boost_level(id) + 1
 	save()
 	return true
+
+
+# --- Gold Leaf (the premium currency) ---------------------------------------
+
+func gold() -> int:
+	return int(data.get("gold", 0))
+
+
+func add_gold(amount: int) -> void:
+	data["gold"] = gold() + amount
+
+
+## Pays for something in whichever currency is named. Returns false if short.
+func spend(currency: String, amount: int) -> bool:
+	if currency == "gold":
+		if gold() < amount:
+			return false
+		add_gold(-amount)
+	else:
+		if seals() < amount:
+			return false
+		add_seals(-amount)
+	save()
+	return true
+
+
+# --- Character level and skills ----------------------------------------------
+
+func char_level() -> int:
+	return int(data.get("char_level", 1))
+
+
+## Character XP needed to go from `level` to the next.
+func char_xp_needed(level: int) -> int:
+	var cfg: Dictionary = DataDB.skills.get("xp", {})
+	return int(round(float(cfg.get("base", 120.0)) * pow(float(cfg.get("growth", 1.25)), level - 1)))
+
+
+## Adds character XP. Returns how many levels were gained.
+func add_char_xp(amount: int) -> int:
+	var gained := 0
+	data["char_xp"] = int(data.get("char_xp", 0)) + amount
+	while int(data["char_xp"]) >= char_xp_needed(char_level()):
+		data["char_xp"] = int(data["char_xp"]) - char_xp_needed(char_level())
+		data["char_level"] = char_level() + 1
+		gained += 1
+	return gained
+
+
+func skill_rank(branch: String) -> int:
+	return int((data.get("skills", {}) as Dictionary).get(branch, 0))
+
+
+## One point per character level above the first, less what is spent.
+func skill_points_free() -> int:
+	var spent := 0
+	for branch: String in data.get("skills", {}):
+		spent += skill_rank(branch)
+	return char_level() - 1 - spent
+
+
+func buy_skill(branch: String) -> bool:
+	var nodes: Array = DataDB.skills.get("branches", {}).get(branch, {}).get("nodes", [])
+	if skill_points_free() <= 0 or skill_rank(branch) >= nodes.size():
+		return false
+	(data["skills"] as Dictionary)[branch] = skill_rank(branch) + 1
+	save()
+	return true
+
+
+func reset_skills() -> void:
+	data["skills"] = {}
+	save()
+
+
+# --- Boosters, looks and VIP ---------------------------------------------------
+
+func booster_runs(id: String) -> int:
+	return int((data.get("boosters", {}) as Dictionary).get(id, 0))
+
+
+func add_booster(id: String, runs: int) -> void:
+	(data["boosters"] as Dictionary)[id] = booster_runs(id) + runs
+	save()
+
+
+## Uses up one run of every active booster.
+func tick_boosters() -> void:
+	for id: String in (data["boosters"] as Dictionary).keys():
+		(data["boosters"] as Dictionary)[id] = maxi(0, booster_runs(id) - 1)
+
+
+func has_look(id: String) -> bool:
+	return (data.get("looks", []) as Array).has(id)
+
+
+func is_vip() -> bool:
+	return bool(data.get("vip", false))
+
+
+## The VIP daily gift. Returns the Gold Leaf granted (0 if none today).
+func claim_daily() -> int:
+	if not is_vip():
+		return 0
+	var today := Time.get_date_string_from_system()
+	if String(data.get("vip_claimed", "")) == today:
+		return 0
+	data["vip_claimed"] = today
+	var gift := int(DataDB.store.get("vip", {}).get("daily_gold", 20))
+	add_gold(gift)
+	save()
+	return gift

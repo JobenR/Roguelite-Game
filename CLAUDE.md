@@ -33,12 +33,15 @@ reward.** The user picked mock-up A plus E and rejected a first attempt that
 
 - Kills splat your ink on the ground, sized by enemy. You also leave a thin trail.
 - Every enemy leaves a smudge trail that overwrites ink. Corruptor enemies smudge large areas.
-- A charged pulse fills any shape fully enclosed by your ink inside its radius.
-  A loop cut by an enemy trail does not fill.
+- The third button is the Deluge, an Ultimate that charges slowly from kills
+  and XP: a wave that damages and throws back everything near the player and
+  floods the ground with glowing ink. (`PulseSystem`; the action is still
+  named `pulse`.) It replaced the loop-filling pulse and the glyphs, which the
+  user barely used under pressure. Loops, glyphs and their code are gone.
+- Saved items (`ItemSystem`, the `item` action): the Lasso ropes up to 45
+  enemies into a knot for six seconds; Page Wipe clears the screen. Found as
+  pickups or bought in the store.
 - Own-ink gives a small base speed bonus; upgrade cards add the real ground effects.
-- Glyphs: a pulse reads each shape it fills. Circle = Maelstrom (pull and grind),
-  triangle = Spike Burst (beam from each corner), square = Fortress (permanent
-  ink that shelters the player). Strength scales with the shape's area.
 - Ink milestones: the first time the player's share reaches each threshold
   (5%, 10%, 15%...) a one-time reward is paid: heal, pulse charge, or bonus card.
 - Controls: left stick moves. Right thumb: hold FIRE for the main weapon and drag
@@ -101,10 +104,18 @@ reward.** The user picked mock-up A plus E and rejected a first attempt that
    owned, and a bonus card at 90%+. `FlowField` routes enemies round burnt paper.
    Chosen on the title screen (`GameState.mode_id`); both modes share
    `modes/survival.tscn`.
+   On-device feedback pass (done): the user now tests on a real iPhone. They
+   disliked the generated metal (music is now calm plus three faster "pressure"
+   versions of the same plucked theme, one tier per boss met); found the first
+   boss far too tanky (boss and tough-enemy health cut hard); found cards too
+   wordy (each has a `short` line of a few bold words; keep new cards to that)
+   and wanted richer card art (rarity splash, rays, sparks, shine).
 6. Mobile (in progress): the iOS preset exports a clean Xcode project once an
    App Store Team ID is set (verified by exporting on Linux with a placeholder
    ID; the build itself has not been run on a device). The user has a Mac and
-   is being walked through Xcode. Still open: speed on a real phone.
+   has it running on their iPhone through Xcode with a free Apple ID. To see an
+   update on the phone they must download the project again, re-export from
+   Godot and press Play in Xcode. Still open: frame rate on the phone.
    Later feedback: the metal was "too thin" (now four rhythm guitars, harder
    clipping, double kick, louder master); Burning Page payouts were too weak
    (doubled, card at 70%, pulse charge at 35%, Seals per strip); difficulty
@@ -135,29 +146,30 @@ explicitly. This includes end-of-update feedback questions: offer choices.
 ## Layout
 
 - `data/` JSON content: enemies, weapons, player, modes, waves, pulses, upgrades,
-  progression, pickups, glyphs, milestones, inks, arsenal (numbers for upgrade
+  progression, pickups, milestones, inks, skills, store, meta, arsenal (numbers for upgrade
   effects, read with `DataDB.arsenal_num(id, key, default)`). Loaded by `DataDB`.
 - `autoload/` `Events` (signal bus), `DataDB`, `SaveData` (persistent save),
   `GameState` (run clock, XP, level, chosen ink, Seals earned), `Upgrades`
   (run-scoped stat modifiers), `Audio` (sound, music, vibration; listens to
   `Events`, and a few systems call `Audio.play(id)` directly).
 - `menus/` the title screen. `assets/audio/` generated WAV files.
-- `core/` engine-agnostic helpers: `SpatialGrid`, `ObjectPool`, `InkGrid`,
-  `ShapeClassifier` (circle/triangle/square from a filled region), `FlowField`,
+- `core/` engine-agnostic helpers: `SpatialGrid`, `ObjectPool`, `InkGrid`, `FlowField`,
   `Brush` (ragged blots and cores for anything drawn outside `ShapeVisual`).
 - `entities/` one folder per entity: state script + scene. `entities/visuals/` holds visual components.
 - `systems/` managers that own and update entities: `EnemyManager`, `BulletManager`, `SpawnDirector`,
   `InkSystem`, `PulseSystem`, `SecondarySystem`, `AuxWeapons` (laser, orbit,
   mortar), `Arsenal` (every other extra weapon and passive ink effect),
   `Hazards` (burn zones, black holes, mines), `EnemyShots`,
-  `PickupManager` (temporary powers), `GlyphSystem`, `MilestoneSystem`,
+  `PickupManager` (temporary powers and item pickups), `ItemSystem`,
+  `MilestoneSystem`,
   `GemManager`, `Effects`.
 - `assets/fonts/` Kaushan Script (SIL Open Font License; licence file alongside).
 - `ui/` `common/sumi.gd` (shared look), HUD, touch controls, level-up cards, pause menu, run summary, debug overlay, safe area.
 - `modes/` one root scene per game mode; the root script wires systems together.
 - `tools/` headless scripts: `setup_input_map.gd`, `smoke_test.gd`, `ink_test.gd`,
-  `glyph_test.gd`, `restart_test.gd`, `meta_test.gd` (final boss, victory,
-  payout, unlocks), `burn_test.gd` (Burning Page), `balance_sim.gd` (a bot run
+  `restart_test.gd`, `meta_test.gd` (final boss, victory, payout, unlocks),
+  `burn_test.gd` (Burning Page), `progress_test.gd` (skills, store items,
+  Lasso, Deluge), `balance_sim.gd` (a bot run
   that prints horde size and level per minute); and `gen_audio.py` (regenerates every sound; needs numpy).
 
 ## Conventions
@@ -262,28 +274,39 @@ explicitly. This includes end-of-update feedback questions: offer choices.
   finds nothing fizzles and keeps its charge (unless Shockwave is owned).
   `gap_cells` (Forgiving Pulse) thickens walls before the flood to plug small gaps.
 
-## Glyph recognition (as implemented)
+## Character growth and the store
 
-- `PulseSystem.fire` passes the filled cells to `GlyphSystem.resolve`, which
-  splits them into connected regions and classifies each one above `min_area`.
-- `ShapeClassifier`: convex hull of the region; hull roundness
-  (4*pi*area/perimeter^2) >= 0.88 is a circle. Otherwise delete insignificant
-  hull corners (triangle with neighbours under `corner_threshold` of hull area),
-  merge corners closer than 0.45 of the radius (a thick trail blunts sharp
-  corners), then 3 corners = triangle, 4 = square, 5+ = circle. A region filling
-  under `min_fill_ratio` of its hull is no glyph.
-- When changing the classifier, add the failing shape to `tools/glyph_test.gd`.
+- Between runs the character has a level (`SaveData.char_level`, from
+  character XP paid at run end) and one skill point per level, spent in
+  `data/skills.json`: four branches (Force, Range, Speed, Ink) of five nodes
+  bought in order. Node effects are ordinary stat effects, applied in
+  `Upgrades.reset` along with the ink, boosts and VIP perk.
+- The player's drop shows its growth (`ShapeVisual._draw_growth`): rings from
+  level, and a mark per skill branch. Keep any new growth visible there.
+- Two currencies. Seals are earned by playing (run payout, plus red seal
+  stamps dropped by bosses and some tough enemies) and buy inks, boosts and
+  most store items. Gold Leaf is the paid currency; a little is also earned
+  from bosses and wins. The user chose "pay to speed up": everything that
+  affects power must be earnable by play. Do not add paid-only power.
+- `data/store.json`: Gold Leaf packs, a one-time VIP unlock, run items (Page
+  Wipe, Second Life, Head Start, Lasso), boosters (double XP, double Seals),
+  and looks (the seal shape on the drop).
+- **Purchases are stand-ins.** `menus/title.gd` `_buy_pack` and `_buy_vip`
+  grant the goods and charge nothing, and the store says so on screen. Real
+  payments need Apple's StoreKit, a paid developer account and products set up
+  in App Store Connect; none of that exists yet. Never present the store as
+  taking real money until it does.
 
 ## Checking work
 
 ```bash
 godot --headless --path . --import
 godot --headless --path . --script res://tools/ink_test.gd
-godot --headless --path . --script res://tools/glyph_test.gd
 godot --headless --path . --fixed-fps 60 --script res://tools/smoke_test.gd
 godot --headless --path . --fixed-fps 60 --script res://tools/restart_test.gd
 godot --headless --path . --fixed-fps 60 --script res://tools/meta_test.gd
 godot --headless --path . --fixed-fps 60 --script res://tools/burn_test.gd
+godot --headless --path . --fixed-fps 60 --script res://tools/progress_test.gd
 ```
 
 Always run these under `timeout` and pipe through `grep`/`head`: a tool script
@@ -292,5 +315,5 @@ tool script run with `--script`, do not type a variable as a class that uses
 autoloads (`BurnSystem`, `Player`...): it is compiled before the autoloads
 exist. Use `Node` and `get`/`call`.
 
-The ink, glyph, meta and burn tests must print ALL PASSED; the smoke test must print frame lines with
+The ink, meta, burn and progress tests must print ALL PASSED; the smoke test must print frame lines with
 no script errors.

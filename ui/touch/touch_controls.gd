@@ -35,9 +35,9 @@ func _ready() -> void:
 		_button("secondary", "Bomb", 46.0, Vector2(-260, -70), false),
 		_button("pulse", "Deluge", 50.0, Vector2(-80, -260), false),
 		_button("dash", "Dash", 40.0, Vector2(-235, -185), false),
-		_button("item", "Item", 40.0, Vector2(-205, -300), false),
-		_button("pause", "II", 24.0, Vector2(-30, 140), true),
-		_button("debug_toggle", "DBG", 24.0, Vector2(-30, 80), true),
+		_button("item", "Item", 40.0, Vector2(-350, -170), false),
+		_button("pause", "II", 24.0, Vector2(-30, 176), true),
+		_button("debug_toggle", "DBG", 24.0, Vector2(-30, 118), true),
 	]
 	Events.secondary_charge_changed.connect(_set_charge.bind("secondary"))
 	Events.pulse_charge_changed.connect(_set_charge.bind("pulse"))

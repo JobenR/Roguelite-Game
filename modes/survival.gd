@@ -79,3 +79,7 @@ func _ready() -> void:
 		debug_overlay.burn = burn
 
 	GameState.start_run()
+	# Head Start (a store item): three free cards as the run begins.
+	if bool(SaveData.data.get("use_head_start", true)) and SaveData.use_item("head_start"):
+		for i in 3:
+			Events.bonus_card.emit.call_deferred("HEAD START: CARD %d OF 3" % (i + 1))

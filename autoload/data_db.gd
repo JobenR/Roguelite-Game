@@ -14,6 +14,8 @@ var milestones: Dictionary = {}
 var arsenal: Dictionary = {}
 var inks: Dictionary = {}
 var meta: Dictionary = {}
+var skills: Dictionary = {}
+var store: Dictionary = {}
 
 
 func _ready() -> void:
@@ -30,6 +32,8 @@ func _ready() -> void:
 	arsenal = _load("res://data/arsenal.json")
 	inks = _load("res://data/inks.json")
 	meta = _load("res://data/meta.json")
+	skills = _load("res://data/skills.json")
+	store = _load("res://data/store.json")
 
 
 func _load(path: String) -> Dictionary:

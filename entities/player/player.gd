@@ -49,6 +49,7 @@ var _last_move_dir: Vector2 = Vector2.ZERO
 var _ghost_left: float = 0.0
 var _paper_left: float = 0.0      # seconds until the Paper Shield is back
 var _second_wind_used: bool = false
+var _revived: bool = false
 var _shield: float = 0.0          # Ink Reserve points
 var _shield_delay: float = 0.0
 
@@ -94,6 +95,10 @@ func setup(enemies: EnemyManager, bullets: BulletManager, arena: Rect2, ink: Ink
 	Events.enemy_killed.connect(_on_enemy_killed)
 	var look: Dictionary = (stats.get("visual", {}) as Dictionary).duplicate()
 	look["color"] = GameState.ink_color.to_html()
+	# The drop grows with the character: tier from level, marks from skills.
+	look["tier"] = clampi((SaveData.char_level() - 1) / 4, 0, 5)
+	look["marks"] = (SaveData.data.get("skills", {}) as Dictionary).duplicate()
+	look["core_shape"] = String(SaveData.data.get("look", "square"))
 	visual.setup(look, radius)
 	barrel.position = Vector2(radius + 7.0, 0.0)
 	barrel.setup({"sides": 3, "color": GameState.ink_color.to_html(), "outline": GameState.ink_color.to_html(), "shadow": false}, 8.0)
@@ -376,6 +381,15 @@ func take_damage(amount: float) -> bool:
 		_invuln_left = 2.0
 		_effects.ring(position, 220.0, Color(1.0, 0.8, 0.2, 0.95), 0.6)
 		_enemies.knockback(position, 220.0, 120.0)
+	if hp <= 0.0 and not _revived and SaveData.use_item("revive"):
+		# Second Life (a store item): come back once per run.
+		_revived = true
+		hp = max_hp * 0.5
+		_invuln_left = 2.5
+		_effects.big_moment(position, 260.0, Color(1.0, 0.85, 0.3), 0.9)
+		_enemies.knockback(position, 260.0, 160.0)
+		Events.alert.emit("SECOND LIFE", 1.8)
+		Events.items_changed.emit()
 	visual.flash()
 	Events.screen_shake.emit(8.0)
 	Events.player_health_changed.emit(hp, max_hp)

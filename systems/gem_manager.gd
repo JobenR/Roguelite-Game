@@ -24,6 +24,13 @@ func setup(player: Player) -> void:
 
 
 func _on_enemy_killed(_type_id: String, pos: Vector2, _splat_radius: float, xp: int, _dir: Vector2) -> void:
+	# Bosses and some tough enemies drop Seals you can see and pick up.
+	var def: Dictionary = DataDB.enemies.get(_type_id, {})
+	var seal_drop := int(def.get("seals", 0))
+	if seal_drop > 0 and randf() < float(def.get("seal_chance", 1.0)):
+		var stamp: Gem = _pool.acquire()
+		stamp.drop(pos + Vector2(randf_range(-18, 18), randf_range(-18, 18)), 0, seal_drop)
+		active.append(stamp)
 	if xp <= 0:
 		return
 	if active.size() >= _max_gems:
@@ -58,7 +65,11 @@ func _process(delta: float) -> void:
 			active[i] = active[active.size() - 1]
 			active.pop_back()
 			_pool.release(gem)
-			GameState.add_xp(gem.xp)
+			if gem.seals > 0:
+				GameState.bonus_seals += gem.seals
+				Events.seal_collected.emit(gem.seals)
+			else:
+				GameState.add_xp(gem.xp)
 		elif gem.magnet or d_sq <= pickup_sq:
 			gem.magnet = true
 			gem.position = gem.position.move_toward(player_pos, step)

@@ -91,8 +91,8 @@ func _on_player_died() -> void:
 	_heading.text = "The ink runs dry"
 	_primary.text = "Begin again"
 	_secondary.text = "Menu"
-	var earned := GameState.finish_run()
-	_seals.text = "+%d Seals   (you have %d)" % [earned, SaveData.seals()]
+	GameState.finish_run()
+	_seals.text = _reward_text()
 	_show()
 
 
@@ -124,6 +124,19 @@ func _show() -> void:
 	_stats.text = "Survived %s\nLevel %d\nKills %d" % [GameState.format_time(GameState.run_time), GameState.level, GameState.kills]
 	visible = true
 	_primary.grab_focus()
+
+
+## What the run paid: Seals, Gold Leaf, character XP and any levels gained.
+func _reward_text() -> String:
+	var reward: Dictionary = GameState.last_reward
+	var text := "+%d Seals" % int(reward.get("seals", 0))
+	if int(reward.get("gold", 0)) > 0:
+		text += "   +%d Gold Leaf" % int(reward["gold"])
+	text += "\n+%d character XP" % int(reward.get("char_xp", 0))
+	var levels := int(reward.get("levels", 0))
+	if levels > 0:
+		text += "\nLEVEL UP: now level %d, +%d skill point%s" % [SaveData.char_level(), levels, "" if levels == 1 else "s"]
+	return text
 
 
 ## A name for the painting, from how the page was shared.

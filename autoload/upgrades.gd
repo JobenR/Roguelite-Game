@@ -32,6 +32,14 @@ func reset() -> void:
 		var owned := SaveData.boost_level(id)
 		if owned > 0:
 			_apply_effects([boosts[id]], float(owned))
+	# The skill tree: every node bought in each branch.
+	var branches: Dictionary = DataDB.skills.get("branches", {})
+	for branch: String in branches:
+		var nodes: Array = branches[branch].get("nodes", [])
+		for i in mini(SaveData.skill_rank(branch), nodes.size()):
+			_apply_effects(nodes[i].get("effects", []))
+	if SaveData.is_vip():
+		_add["reroll"] = float(_add.get("reroll", 0.0)) + float(DataDB.store.get("vip", {}).get("reroll", 1))
 	Events.upgrade_applied.emit("")
 
 

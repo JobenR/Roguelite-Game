@@ -28,6 +28,9 @@ var milestones: int = 0
 var items: Dictionary = {}
 ## Extra Seals earned inside a run (Burning Page strips).
 var bonus_seals: float = 0.0
+var bonus_gold: int = 0
+## What the last finished run paid out, for the end screen.
+var last_reward: Dictionary = {}
 var won: bool = false
 var _rewarded: bool = false
 
@@ -37,6 +40,7 @@ func _ready() -> void:
 	Events.player_died.connect(_on_player_died)
 	Events.milestone_reached.connect(func(_p: int, _t: String) -> void: milestones += 1)
 	Events.final_boss_defeated.connect(func() -> void: won = true)
+	Events.boss_defeated.connect(func(_n: String) -> void: bonus_gold += int(DataDB.store.get("earn", {}).get("gold_per_boss", 2)))
 	set_ink(String(SaveData.data.get("ink", "blue")))
 
 
@@ -67,6 +71,7 @@ func start_run() -> void:
 	milestones = 0
 	items.clear()
 	bonus_seals = 0.0
+	bonus_gold = 0
 	won = false
 	_rewarded = false
 	Events.run_started.emit()
@@ -86,18 +91,35 @@ func seals_earned() -> int:
 	return int(total)
 
 
-## Banks the run: pays out Seals and updates records. Safe to call twice.
+## Character XP this run is worth so far.
+func char_xp_earned() -> int:
+	var cfg: Dictionary = DataDB.skills.get("xp", {})
+	var total := run_time / 60.0 * float(cfg.get("per_minute", 20.0)) + kills * float(cfg.get("per_kill", 0.2)) + level * float(cfg.get("per_level", 8.0))
+	if won:
+		total += float(cfg.get("win_bonus", 150.0))
+	return int(total)
+
+
+## Banks the run: pays out Seals, Gold Leaf and character XP, and updates
+## records. Safe to call twice; the second call pays nothing.
 func finish_run() -> int:
 	if _rewarded:
 		return 0
 	_rewarded = true
-	var earned := seals_earned()
+	var earned := seals_earned() * (2 if SaveData.booster_runs("double_seals") > 0 else 1)
+	var char_xp := char_xp_earned() * (2 if SaveData.booster_runs("double_xp") > 0 else 1)
+	var gold := bonus_gold + (int(DataDB.store.get("earn", {}).get("gold_per_win", 10)) if won else 0)
+	var level_before := SaveData.char_level()
 	SaveData.add_seals(earned)
+	SaveData.add_gold(gold)
+	var levels := SaveData.add_char_xp(char_xp)
+	SaveData.tick_boosters()
 	SaveData.data["runs"] = int(SaveData.data.get("runs", 0)) + 1
 	SaveData.data["best_time"] = maxf(float(SaveData.data.get("best_time", 0.0)), run_time)
 	if won:
 		SaveData.data["wins"] = int(SaveData.data.get("wins", 0)) + 1
 	SaveData.save()
+	last_reward = {"seals": earned, "gold": gold, "char_xp": char_xp, "levels": levels, "level_before": level_before}
 	return earned
 
 
