@@ -152,7 +152,7 @@ func _make_card(id: String, width: float, order: int) -> Button:
 	var fancy := rarity == "epic" or rarity == "legendary"
 
 	var card := Button.new()
-	card.custom_minimum_size = Vector2(width, 430.0)
+	card.custom_minimum_size = Vector2(width, 440.0)
 	card.disabled = true
 	card.clip_contents = true
 	card.pressed.connect(_choose.bind(id))
@@ -199,36 +199,39 @@ func _make_card(id: String, width: float, order: int) -> Button:
 	banner.add_theme_stylebox_override("normal", banner_style)
 	face.add_child(banner)
 
+	# The art: a splash of the rarity colour with the picture on it.
 	var icon := UpgradeIcon.new()
 	icon.icon_id = String(def.get("icon", id))
 	icon.badge = String(def.get("badge", ""))
 	icon.tint = accent
-	icon.custom_minimum_size = Vector2(0.0, 132.0)
+	icon.splash = rare_color.lerp(GameState.ink_color, 0.35) if rarity == "common" else rare_color
+	icon.fancy = 2 if rarity == "legendary" else (1 if rarity == "epic" else 0)
+	icon.custom_minimum_size = Vector2(0.0, 216.0)
+	icon.clip_contents = true
 	icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	face.add_child(icon)
-	var name_label := _card_label(String(def.get("name", id)), 27, Sumi.INK)
+	var name_label := _card_label(String(def.get("name", id)), 28, Sumi.INK)
 	name_label.add_theme_font_override("font", Sumi.TITLE_FONT)
 	face.add_child(name_label)
+	# What it does, in a few bold words.
+	var what := _card_label(String(def.get("short", def.get("desc", ""))), 21, Sumi.INK)
+	what.add_theme_font_override("font", Sumi.bold_font())
+	face.add_child(what)
 	# Level pips: filled for owned levels, a ring for the one on offer.
 	var pips := ""
 	for i in max_level:
 		pips += "● " if i < level else ("◉ " if i == level else "○ ")
-	face.add_child(_card_label(pips.strip_edges(), 17, Sumi.SEAL))
-	face.add_child(_card_label(String(def.get("desc", "")), 15, Sumi.INK))
-	if level == 0 and bool(def.get("first_level_double", false)):
-		face.add_child(_card_label("First level counts double", 14, Color("#15803d")))
-	# What this pick builds toward: a synergy it completes, a partner card to
-	# look for, and progress on its set bonus.
+	face.add_child(_card_label(pips.strip_edges(), 16, Sumi.SEAL))
+	# One line on what the pick builds toward, at most.
 	var ready_synergy := Upgrades.synergy_hint(id)
-	if ready_synergy != "":
-		face.add_child(_card_label("COMPLETES SYNERGY: " + ready_synergy, 15, Color("#b45309")))
-	else:
-		var partner := Upgrades.partner_hint(id)
-		if partner != "":
-			face.add_child(_card_label("Synergy: " + partner, 13, Sumi.FADED))
 	var set_text := Upgrades.set_hint(id)
-	if set_text != "":
-		face.add_child(_card_label(set_text, 13, Color("#0f766e")))
+	if ready_synergy != "":
+		face.add_child(_card_label("SYNERGY: " + ready_synergy, 14, Color("#b45309")))
+	elif set_text != "":
+		face.add_child(_card_label(set_text.get_slice(":", 0), 13, Color("#0f766e")))
+
+	if fancy:
+		card.add_child(_make_shine(order))
 
 	# Reveal: cards fade and slide in one after another.
 	card.modulate.a = 0.0
@@ -245,6 +248,21 @@ func _make_card(id: String, width: float, order: int) -> Button:
 	slide.tween_property(face, "offset_top", 12.0, 0.28).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT).set_delay(0.09 * order)
 	slide.tween_property(face, "offset_bottom", -12.0, 0.28).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT).set_delay(0.09 * order)
 	return card
+
+
+## A band of light that sweeps across rare cards.
+func _make_shine(order: int) -> Control:
+	var shine := ColorRect.new()
+	shine.color = Color(1, 1, 1, 0.22)
+	shine.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	shine.size = Vector2(46.0, 700.0)
+	shine.rotation = 0.35
+	shine.position = Vector2(-160.0, -120.0)
+	var sweep := shine.create_tween().set_pause_mode(Tween.TWEEN_PAUSE_PROCESS).set_loops()
+	sweep.tween_interval(0.5 + 0.2 * order)
+	sweep.tween_property(shine, "position:x", 460.0, 0.9).from(-160.0)
+	sweep.tween_interval(1.6)
+	return shine
 
 
 func _card_label(text: String, font_size: int, color: Color) -> Label:

@@ -14,7 +14,8 @@
    "icon": "rapid_fire",
    "first_level_double": true,
    "set": "nib",
-   "rarity": "common"
+   "rarity": "common",
+   "short": "+8% fire rate"
   },
   "damage": {
    "name": "Dense Ink",
@@ -30,7 +31,8 @@
    "icon": "damage",
    "first_level_double": true,
    "set": "nib",
-   "rarity": "common"
+   "rarity": "common",
+   "short": "+10% damage"
   },
   "move_speed": {
    "name": "Light Feet",
@@ -46,7 +48,8 @@
    "icon": "move_speed",
    "first_level_double": true,
    "set": "stride",
-   "rarity": "common"
+   "rarity": "common",
+   "short": "+5% speed"
   },
   "max_hp": {
    "name": "Deep Well",
@@ -62,7 +65,8 @@
    "icon": "max_hp",
    "first_level_double": true,
    "set": "guard",
-   "rarity": "common"
+   "rarity": "common",
+   "short": "+10 health"
   },
   "pickup_radius": {
    "name": "Blotting Paper",
@@ -78,7 +82,8 @@
    "icon": "pickup_radius",
    "first_level_double": true,
    "set": "mind",
-   "rarity": "common"
+   "rarity": "common",
+   "short": "+20% pickup range"
   },
   "pierce": {
    "name": "Sharp Nib",
@@ -93,7 +98,8 @@
    "category": "weapon",
    "icon": "pierce",
    "set": "nib",
-   "rarity": "rare"
+   "rarity": "rare",
+   "short": "Shots pierce +1"
   },
   "multishot": {
    "name": "Twin Nib",
@@ -108,7 +114,8 @@
    "category": "weapon",
    "icon": "multishot",
    "set": "nib",
-   "rarity": "epic"
+   "rarity": "epic",
+   "short": "+1 parallel shot"
   },
   "ricochet": {
    "name": "Skipping Stone",
@@ -123,7 +130,8 @@
    "category": "weapon",
    "icon": "ricochet",
    "set": "nib",
-   "rarity": "rare"
+   "rarity": "rare",
+   "short": "Shots bounce +1"
   },
   "explosive": {
    "name": "Burst Cartridge",
@@ -138,7 +146,8 @@
    "category": "weapon",
    "icon": "explosive",
    "set": "nib",
-   "rarity": "rare"
+   "rarity": "rare",
+   "short": "Shots explode"
   },
   "healing_ink": {
    "name": "Healing Ink",
@@ -154,7 +163,8 @@
    "icon": "healing_ink",
    "first_level_double": true,
    "set": "guard",
-   "rarity": "common"
+   "rarity": "common",
+   "short": "Heal on your ink"
   },
   "caustic_ink": {
    "name": "Caustic Ink",
@@ -170,7 +180,8 @@
    "icon": "caustic_ink",
    "first_level_double": true,
    "set": "ink",
-   "rarity": "common"
+   "rarity": "common",
+   "short": "Your ink burns foes"
   },
   "broad_stroke": {
    "name": "Broad Stroke",
@@ -186,7 +197,8 @@
    "icon": "broad_stroke",
    "first_level_double": true,
    "set": "ink",
-   "rarity": "common"
+   "rarity": "common",
+   "short": "+15% trail width"
   },
   "wide_ripple": {
    "name": "Wide Ripple",
@@ -202,7 +214,8 @@
    "icon": "wide_ripple",
    "first_level_double": true,
    "set": "pulse",
-   "rarity": "common"
+   "rarity": "common",
+   "short": "+12% Deluge size"
   },
   "heavy_blots": {
    "name": "Heavy Blots",
@@ -218,7 +231,8 @@
    "icon": "heavy_blots",
    "first_level_double": true,
    "set": "ink",
-   "rarity": "common"
+   "rarity": "common",
+   "short": "+12% splat size"
   },
   "slick_page": {
    "name": "Slick Page",
@@ -234,7 +248,8 @@
    "icon": "slick_page",
    "first_level_double": true,
    "set": "stride",
-   "rarity": "common"
+   "rarity": "common",
+   "short": "+5% speed on ink"
   },
   "scatter": {
    "name": "Scatter",
@@ -249,7 +264,8 @@
     }
    ],
    "set": "nib",
-   "rarity": "rare"
+   "rarity": "rare",
+   "short": "+2 side shots"
   },
   "laser": {
    "name": "Ink Jet",
@@ -264,7 +280,8 @@
     }
    ],
    "set": "arsenal",
-   "rarity": "rare"
+   "rarity": "rare",
+   "short": "Piercing ink beam"
   },
   "orbit": {
    "name": "Orbiting Blots",
@@ -279,7 +296,8 @@
     }
    ],
    "set": "arsenal",
-   "rarity": "rare"
+   "rarity": "rare",
+   "short": "+1 orbiting blade"
   },
   "steady_hand": {
    "name": "Steady Hand",
@@ -294,7 +312,8 @@
     }
    ],
    "set": "mind",
-   "rarity": "common"
+   "rarity": "common",
+   "short": "Auto-Aim +2s"
   },
   "ring_bomb": {
    "name": "Ring Bomb",
@@ -309,7 +328,8 @@
     }
    ],
    "set": "bomb",
-   "rarity": "epic"
+   "rarity": "epic",
+   "short": "Bomb paints a ring"
   },
   "forgiving_pulse": {
    "name": "Forgiving Pulse",
@@ -340,7 +360,8 @@
     }
    ],
    "set": "pulse",
-   "rarity": "legendary"
+   "rarity": "legendary",
+   "short": "Deluge ink is permanent"
   },
   "painter": {
    "name": "Painter's Shots",
@@ -355,7 +376,8 @@
     }
    ],
    "set": "ink",
-   "rarity": "rare"
+   "rarity": "rare",
+   "short": "Shots leave ink"
   },
   "quicksand": {
    "name": "Quicksand Ink",
@@ -370,7 +392,8 @@
     }
    ],
    "set": "ink",
-   "rarity": "rare"
+   "rarity": "rare",
+   "short": "Your ink slows foes"
   },
   "territory_tax": {
    "name": "Territory Tax",
@@ -385,7 +408,8 @@
     }
    ],
    "set": "mind",
-   "rarity": "rare"
+   "rarity": "rare",
+   "short": "XP for ink owned"
   },
   "shockwave": {
    "name": "Shockwave",
@@ -400,7 +424,8 @@
     }
    ],
    "set": "pulse",
-   "rarity": "rare"
+   "rarity": "rare",
+   "short": "+12 Deluge damage"
   },
   "homing": {
    "name": "Homing Ink",
@@ -415,7 +440,8 @@
     }
    ],
    "set": "nib",
-   "rarity": "rare"
+   "rarity": "rare",
+   "short": "Shots home in"
   },
   "dash": {
    "name": "Dash",
@@ -430,7 +456,8 @@
     }
    ],
    "set": "stride",
-   "rarity": "rare"
+   "rarity": "rare",
+   "short": "Unlock Dash"
   },
   "mortar": {
    "name": "Ink Mortar",
@@ -445,7 +472,8 @@
     }
    ],
    "set": "arsenal",
-   "rarity": "rare"
+   "rarity": "rare",
+   "short": "Auto mortar shells"
   },
   "reroll": {
    "name": "Reroll",
@@ -460,7 +488,8 @@
     }
    ],
    "set": "mind",
-   "rarity": "rare"
+   "rarity": "rare",
+   "short": "+1 card reroll"
   },
   "fountain": {
    "name": "Fountain",
@@ -476,7 +505,8 @@
      "stat": "fountain",
      "add": 1
     }
-   ]
+   ],
+   "short": "Ring of shots"
   },
   "quill_volley": {
    "name": "Quill Volley",
@@ -492,7 +522,8 @@
      "stat": "quill_volley",
      "add": 1
     }
-   ]
+   ],
+   "short": "Homing quills"
   },
   "boomerang": {
    "name": "Boomerang Nib",
@@ -508,7 +539,8 @@
      "stat": "boomerang",
      "add": 1
     }
-   ]
+   ],
+   "short": "Returning blade"
   },
   "sprinkler": {
    "name": "Sprinkler",
@@ -524,7 +556,8 @@
      "stat": "sprinkler",
      "add": 1
     }
-   ]
+   ],
+   "short": "Spiral spray"
   },
   "chain_blot": {
    "name": "Chain Blot",
@@ -540,7 +573,8 @@
      "stat": "chain_blot",
      "add": 1
     }
-   ]
+   ],
+   "short": "Chain lightning"
   },
   "mines": {
    "name": "Ink Mines",
@@ -556,7 +590,8 @@
      "stat": "mines",
      "add": 1
     }
-   ]
+   ],
+   "short": "Stand still: plant mine"
   },
   "whip": {
    "name": "Whip Stroke",
@@ -572,7 +607,8 @@
      "stat": "whip",
      "add": 1
     }
-   ]
+   ],
+   "short": "Melee slash"
   },
   "stamp": {
    "name": "Stamp",
@@ -588,7 +624,8 @@
      "stat": "stamp",
      "add": 1
     }
-   ]
+   ],
+   "short": "Stamp slams a foe"
   },
   "turret": {
    "name": "Ink Turret",
@@ -604,7 +641,8 @@
      "stat": "turret",
      "add": 1
     }
-   ]
+   ],
+   "short": "Place a turret"
   },
   "planes": {
    "name": "Paper Planes",
@@ -620,7 +658,8 @@
      "stat": "planes",
      "add": 1
     }
-   ]
+   ],
+   "short": "Homing paper planes"
   },
   "tidal_wave": {
    "name": "Tidal Wave",
@@ -636,7 +675,8 @@
      "stat": "tidal_wave",
      "add": 1
     }
-   ]
+   ],
+   "short": "Rolling ink wave"
   },
   "ink_rain": {
    "name": "Ink Rain",
@@ -652,7 +692,8 @@
      "stat": "ink_rain",
      "add": 1
     }
-   ]
+   ],
+   "short": "Raining ink blasts"
   },
   "flamethrower": {
    "name": "Spray Nozzle",
@@ -668,7 +709,8 @@
      "stat": "flamethrower",
      "add": 1
     }
-   ]
+   ],
+   "short": "Close-range spray"
   },
   "saw": {
    "name": "Saw Blot",
@@ -684,7 +726,8 @@
      "stat": "saw",
      "add": 1
     }
-   ]
+   ],
+   "short": "Bouncing saw"
   },
   "black_hole": {
    "name": "Black Hole Blot",
@@ -700,7 +743,8 @@
      "stat": "black_hole",
      "add": 1
     }
-   ]
+   ],
+   "short": "Black hole, then burst"
   },
   "guardian": {
    "name": "Guardian Blot",
@@ -716,7 +760,8 @@
      "stat": "guardian",
      "add": 1
     }
-   ]
+   ],
+   "short": "Strikes close foes"
   },
   "rear_guard": {
    "name": "Rear Guard",
@@ -732,7 +777,8 @@
      "stat": "rear_guard",
      "add": 1
     }
-   ]
+   ],
+   "short": "+1 rear shot"
   },
   "side_guns": {
    "name": "Side Guns",
@@ -748,7 +794,8 @@
      "stat": "side_guns",
      "add": 1
     }
-   ]
+   ],
+   "short": "Side shots"
   },
   "sniper_nib": {
    "name": "Sniper Nib",
@@ -764,7 +811,8 @@
      "stat": "sniper",
      "add": 1
     }
-   ]
+   ],
+   "short": "10th shot: sniper round"
   },
   "echo_shot": {
    "name": "Echo Shot",
@@ -780,7 +828,8 @@
      "stat": "echo",
      "add": 1
     }
-   ]
+   ],
+   "short": "Volleys repeat"
   },
   "splitting": {
    "name": "Splitting Shots",
@@ -796,7 +845,8 @@
      "stat": "split",
      "add": 1
     }
-   ]
+   ],
+   "short": "Shots split on hit"
   },
   "heavy_rounds": {
    "name": "Heavy Rounds",
@@ -812,7 +862,8 @@
      "stat": "heavy",
      "add": 1
     }
-   ]
+   ],
+   "short": "Bigger, harder shots"
   },
   "long_reach": {
    "name": "Long Reach",
@@ -828,7 +879,8 @@
      "stat": "reach",
      "mult": 0.15
     }
-   ]
+   ],
+   "short": "+15% shot range"
   },
   "critical": {
    "name": "Critical Blot",
@@ -844,7 +896,8 @@
      "stat": "crit",
      "add": 0.05
     }
-   ]
+   ],
+   "short": "+5% triple damage"
   },
   "frost_ink": {
    "name": "Frost Ink",
@@ -860,7 +913,8 @@
      "stat": "frost",
      "add": 1
     }
-   ]
+   ],
+   "short": "Shots slow foes"
   },
   "staining": {
    "name": "Staining Shots",
@@ -876,7 +930,8 @@
      "stat": "stain",
      "add": 0.1
     }
-   ]
+   ],
+   "short": "Hit foes take +10%"
   },
   "bleeding_ink": {
    "name": "Bleeding Ink",
@@ -892,7 +947,8 @@
      "stat": "bleed",
      "add": 4
     }
-   ]
+   ],
+   "short": "Shots cause bleeding"
   },
   "executioner": {
    "name": "Executioner",
@@ -908,7 +964,8 @@
      "stat": "execute",
      "add": 0.05
     }
-   ]
+   ],
+   "short": "Finish weak foes"
   },
   "overcharge": {
    "name": "Overcharge",
@@ -924,7 +981,8 @@
      "stat": "overcharge",
      "add": 0.1
     }
-   ]
+   ],
+   "short": "Stand still: fire faster"
   },
   "run_and_gun": {
    "name": "Run and Gun",
@@ -940,7 +998,8 @@
      "stat": "run_gun",
      "add": 0.06
     }
-   ]
+   ],
+   "short": "+6% fire rate moving"
   },
   "first_strike": {
    "name": "First Strike",
@@ -956,7 +1015,8 @@
      "stat": "first_strike",
      "add": 0.25
     }
-   ]
+   ],
+   "short": "+25% vs full health"
   },
   "wall_bounce": {
    "name": "Wall Bounce",
@@ -972,7 +1032,8 @@
      "stat": "wall_bounce",
      "add": 1
     }
-   ]
+   ],
+   "short": "Shots bounce off edges"
   },
   "giant_slayer": {
    "name": "Giant Slayer",
@@ -988,7 +1049,8 @@
      "stat": "giant",
      "add": 0.15
     }
-   ]
+   ],
+   "short": "+15% vs big foes"
   },
   "thick_ink": {
    "name": "Thick Ink",
@@ -1004,7 +1066,8 @@
      "stat": "ink_tough",
      "add": 0.2
     }
-   ]
+   ],
+   "short": "Ink resists smudge"
   },
   "living_ink": {
    "name": "Living Ink",
@@ -1020,7 +1083,8 @@
      "stat": "living",
      "add": 1
     }
-   ]
+   ],
+   "short": "Ink spreads itself"
   },
   "electric_ink": {
    "name": "Electric Ink",
@@ -1036,7 +1100,8 @@
      "stat": "electric",
      "add": 1
     }
-   ]
+   ],
+   "short": "Lightning on your ink"
   },
   "thorn_ink": {
    "name": "Thorn Ink",
@@ -1052,7 +1117,8 @@
      "stat": "thorn_ink",
      "add": 8
     }
-   ]
+   ],
+   "short": "Ink stings on entry"
   },
   "home_turf": {
    "name": "Home Turf",
@@ -1068,7 +1134,8 @@
      "stat": "home_turf",
      "add": 0.05
     }
-   ]
+   ],
+   "short": "+5% damage on ink"
   },
   "ink_armor": {
    "name": "Ink Armor",
@@ -1084,7 +1151,8 @@
      "stat": "ink_armor",
      "add": 0.07
     }
-   ]
+   ],
+   "short": "-7% damage on ink"
   },
   "eraser_steps": {
    "name": "Clean Steps",
@@ -1100,7 +1168,8 @@
      "stat": "eraser",
      "add": 16
     }
-   ]
+   ],
+   "short": "Steps clean smudge"
   },
   "ink_reserve": {
    "name": "Ink Reserve",
@@ -1116,7 +1185,8 @@
      "stat": "reserve",
      "add": 2
     }
-   ]
+   ],
+   "short": "Shield from ink owned"
   },
   "double_trail": {
    "name": "Double Trail",
@@ -1132,7 +1202,8 @@
      "stat": "double_trail",
      "add": 1
     }
-   ]
+   ],
+   "short": "Two trails"
   },
   "full_stride": {
    "name": "Full Stride",
@@ -1148,7 +1219,8 @@
      "stat": "trail_run",
      "add": 0.2
     }
-   ]
+   ],
+   "short": "Wider trail at speed"
   },
   "ink_sprouts": {
    "name": "Ink Sprouts",
@@ -1164,7 +1236,8 @@
      "stat": "sprouts",
      "add": 1
     }
-   ]
+   ],
+   "short": "Ink grows turrets"
   },
   "sticky_splats": {
    "name": "Sticky Splats",
@@ -1180,7 +1253,8 @@
      "stat": "sticky",
      "add": 0.15
     }
-   ]
+   ],
+   "short": "Splats slow foes"
   },
   "chain_splat": {
    "name": "Chain Splat",
@@ -1196,7 +1270,8 @@
      "stat": "chain_splat",
      "add": 0.2
     }
-   ]
+   ],
+   "short": "Bigger splats on ink"
   },
   "reclaim": {
    "name": "Reclaim",
@@ -1212,7 +1287,8 @@
      "stat": "reclaim",
      "add": 0.5
     }
-   ]
+   ],
+   "short": "Kills clean smudge"
   },
   "ink_bridges": {
    "name": "Ink Bridges",
@@ -1245,7 +1321,8 @@
      "stat": "watermark",
      "add": 1
     }
-   ]
+   ],
+   "short": "Smudged ink returns"
   },
   "ink_tide": {
    "name": "Ink Tide",
@@ -1261,7 +1338,8 @@
      "stat": "tide",
      "add": 1
     }
-   ]
+   ],
+   "short": "Ink edges grow"
   },
   "quick_charge": {
    "name": "Quick Charge",
@@ -1277,7 +1355,8 @@
      "stat": "pulse_charge",
      "mult": 0.1
     }
-   ]
+   ],
+   "short": "Deluge charges +10%"
   },
   "double_pulse": {
    "name": "Double Pulse",
@@ -1293,7 +1372,8 @@
      "stat": "pulse_store",
      "add": 1
     }
-   ]
+   ],
+   "short": "Store 2 Deluges"
   },
   "harvest_pulse": {
    "name": "Harvest Pulse",
@@ -1309,7 +1389,8 @@
      "stat": "harvest",
      "add": 1
     }
-   ]
+   ],
+   "short": "Deluge pays XP"
   },
   "mending_pulse": {
    "name": "Mending Pulse",
@@ -1342,7 +1423,8 @@
      "stat": "aftershock",
      "add": 8
     }
-   ]
+   ],
+   "short": "Deluge ground burns"
   },
   "pulse_shield": {
    "name": "Pulse Shield",
@@ -1358,7 +1440,8 @@
      "stat": "pulse_shield",
      "add": 0.8
     }
-   ]
+   ],
+   "short": "Deluge shields you"
   },
   "big_loop": {
    "name": "Big Loop Bonus",
@@ -1374,7 +1457,8 @@
      "stat": "loop_fury",
      "add": 0.1
     }
-   ]
+   ],
+   "short": "Deluge: +10% damage"
   },
   "chain_pulse": {
    "name": "Chain Pulse",
@@ -1390,7 +1474,8 @@
      "stat": "pulse_refund",
      "add": 0.1
     }
-   ]
+   ],
+   "short": "Deluge refunds 10%"
   },
   "quick_fuse": {
    "name": "Quick Fuse",
@@ -1406,7 +1491,8 @@
      "stat": "bomb_rate",
      "mult": 0.1
     }
-   ]
+   ],
+   "short": "Bomb recharges +10%"
   },
   "cluster_bomb": {
    "name": "Cluster Bomb",
@@ -1422,7 +1508,8 @@
      "stat": "cluster",
      "add": 1
     }
-   ]
+   ],
+   "short": "Bomb splits"
   },
   "twin_bombs": {
    "name": "Twin Bombs",
@@ -1438,7 +1525,8 @@
      "stat": "bomb_store",
      "add": 1
     }
-   ]
+   ],
+   "short": "Store 2 bombs"
   },
   "sticky_bomb": {
    "name": "Sticky Bomb",
@@ -1454,7 +1542,8 @@
      "stat": "bomb_slow",
      "add": 0.15
     }
-   ]
+   ],
+   "short": "Bomb slows foes"
   },
   "big_bang": {
    "name": "Big Bang",
@@ -1470,7 +1559,8 @@
      "stat": "bomb_size",
      "mult": 0.12
     }
-   ]
+   ],
+   "short": "+12% bomb size"
   },
   "vacuum_bomb": {
    "name": "Vacuum Bomb",
@@ -1486,7 +1576,8 @@
      "stat": "vacuum",
      "add": 1
     }
-   ]
+   ],
+   "short": "Bomb pulls foes in"
   },
   "napalm": {
    "name": "Burning Blot",
@@ -1502,7 +1593,8 @@
      "stat": "napalm",
      "add": 6
     }
-   ]
+   ],
+   "short": "Bomb leaves fire"
   },
   "paper_shield": {
    "name": "Paper Shield",
@@ -1518,7 +1610,8 @@
      "stat": "paper_shield",
      "add": 1
     }
-   ]
+   ],
+   "short": "Blocks one hit"
   },
   "second_wind": {
    "name": "Second Wind",
@@ -1534,7 +1627,8 @@
      "stat": "second_wind",
      "add": 1
     }
-   ]
+   ],
+   "short": "Survive death once"
   },
   "vampiric": {
    "name": "Vampiric Ink",
@@ -1550,7 +1644,8 @@
      "stat": "vampiric",
      "add": 0.02
     }
-   ]
+   ],
+   "short": "Kills may heal"
   },
   "thorns": {
    "name": "Thorns",
@@ -1566,7 +1661,8 @@
      "stat": "thorns",
      "add": 6
     }
-   ]
+   ],
+   "short": "Hurt those who hit you"
   },
   "dodge": {
    "name": "Dodge",
@@ -1582,7 +1678,8 @@
      "stat": "dodge",
      "add": 0.04
     }
-   ]
+   ],
+   "short": "+4% dodge"
   },
   "longer_mercy": {
    "name": "Longer Mercy",
@@ -1598,7 +1695,8 @@
      "stat": "mercy",
      "add": 0.15
     }
-   ]
+   ],
+   "short": "Longer hit immunity"
   },
   "retaliation": {
    "name": "Retaliation",
@@ -1614,7 +1712,8 @@
      "stat": "retaliation",
      "add": 1
     }
-   ]
+   ],
+   "short": "Hit: free shot ring"
   },
   "regeneration": {
    "name": "Regeneration",
@@ -1630,7 +1729,8 @@
      "stat": "regen",
      "add": 0.2
     }
-   ]
+   ],
+   "short": "+0.2 health/sec"
   },
   "last_stand": {
    "name": "Last Stand",
@@ -1646,7 +1746,8 @@
      "stat": "last_stand",
      "add": 0.12
     }
-   ]
+   ],
+   "short": "Stronger when low"
   },
   "ink_skate": {
    "name": "Ink Skate",
@@ -1662,7 +1763,8 @@
      "stat": "ink_speed",
      "add": 0.1
     }
-   ]
+   ],
+   "short": "Double ink speed"
   },
   "slipstream": {
    "name": "Slipstream",
@@ -1678,7 +1780,8 @@
      "stat": "slipstream",
      "add": 0.08
     }
-   ]
+   ],
+   "short": "Faster in straight lines"
   },
   "ghost_step": {
    "name": "Ghost Step",
@@ -1694,7 +1797,8 @@
      "stat": "ghost_step",
      "add": 0.2
     }
-   ]
+   ],
+   "short": "Speed burst when hit"
   },
   "trailblazer": {
    "name": "Trailblazer",
@@ -1710,7 +1814,8 @@
      "stat": "trailblazer",
      "add": 6
     }
-   ]
+   ],
+   "short": "Trail burns foes"
   },
   "momentum": {
    "name": "Momentum Shots",
@@ -1726,7 +1831,8 @@
      "stat": "momentum",
      "add": 0.08
     }
-   ]
+   ],
+   "short": "+8% damage moving"
   },
   "scholar": {
    "name": "Scholar",
@@ -1742,7 +1848,8 @@
      "stat": "xp_gain",
      "mult": 0.06
     }
-   ]
+   ],
+   "short": "+6% XP"
   },
   "lucky_draw": {
    "name": "Lucky Draw",
@@ -1758,7 +1865,8 @@
      "stat": "extra_cards",
      "add": 1
     }
-   ]
+   ],
+   "short": "+1 card choice"
   },
   "banish": {
    "name": "Banish",
@@ -1774,7 +1882,8 @@
      "stat": "banish",
      "add": 1
     }
-   ]
+   ],
+   "short": "+1 card banish"
   },
   "spotter": {
    "name": "Spotter",
@@ -1790,7 +1899,8 @@
      "stat": "bomb_aim",
      "add": 1
     }
-   ]
+   ],
+   "short": "Aim the bomb"
   },
   "piercing_core": {
    "name": "Piercing Core",
@@ -1806,7 +1916,8 @@
      "stat": "bomb_core",
      "add": 1
     }
-   ]
+   ],
+   "short": "Bomb core pierces on"
   },
   "ink_wall": {
    "name": "Wet Ink Wall",
@@ -1822,7 +1933,8 @@
      "stat": "ink_wall",
      "add": 1
     }
-   ]
+   ],
+   "short": "Trail blocks foes"
   }
  },
  "synergies": {

@@ -15,15 +15,61 @@ var icon_id: String = ""
 var tint: Color = INK
 ## One or two letters shown in a corner disc, to tell apart cards that share a picture.
 var badge: String = ""
+## Card art: a splash of the rarity colour behind the picture. Epic and
+## Legendary cards also get slow-turning rays and drifting sparks.
+var splash: Color = Color(0, 0, 0, 0)
+var fancy: int = 0  # 0 plain, 1 epic, 2 legendary
+
+
+func _ready() -> void:
+	set_process(fancy > 0)
+
+
+func _process(_delta: float) -> void:
+	queue_redraw()
 
 
 func _draw() -> void:
 	var s := minf(size.x, size.y) / 100.0
+	if splash.a > 0.0:
+		s *= 0.6  # leave room for the splash round the picture
 	draw_set_transform(size * 0.5, 0.0, Vector2(s, s))
-	# An ink-wash disc with a broken brush ring, in place of a frame.
-	draw_circle(Vector2.ZERO, 46.0, Color(0.08, 0.07, 0.06, 0.07))
-	draw_arc(Vector2.ZERO, 48.0, 0.5, TAU - 0.25, 48, Color(0.08, 0.07, 0.06, 0.85), 3.5)
-	draw_arc(Vector2.ZERO, 44.0, 2.4, 4.6, 24, Color(0.08, 0.07, 0.06, 0.35), 2.0)
+	var time := Time.get_ticks_msec() * 0.001
+	if splash.a > 0.0:
+		# Rays behind rare cards, turning slowly.
+		if fancy > 0:
+			for i in 12:
+				var angle := TAU * i / 12.0 + time * 0.25
+				var reach := 78.0 if i % 2 == 0 else 62.0
+				draw_colored_polygon(PackedVector2Array([Vector2.from_angle(angle - 0.07) * 30.0, Vector2.from_angle(angle) * reach, Vector2.from_angle(angle + 0.07) * 30.0]), Color(splash, 0.22 + 0.1 * fancy))
+		# The splash: a bleed halo, a lumpy pool, a streak and flung droplets.
+		var rng := RandomNumberGenerator.new()
+		rng.seed = hash(icon_id)
+		for i in 4:
+			draw_circle(Vector2.ZERO, 66.0 - i * 6.0, Color(splash, 0.05 + 0.03 * i))
+		for i in 8:
+			draw_circle(Vector2(rng.randf_range(-16, 16), rng.randf_range(-14, 14)), rng.randf_range(30.0, 42.0), Color(splash, 0.9))
+		var dir := Vector2.from_angle(rng.randf() * TAU)
+		for i in 5:
+			draw_circle(dir * (44.0 + i * 13.0), 13.0 - i * 2.2, Color(splash, 0.9))
+		for i in 16:
+			draw_circle(Vector2.from_angle(rng.randf() * TAU) * rng.randf_range(54.0, 92.0), rng.randf_range(1.5, 6.0), Color(splash, 0.85))
+		# A pale pool for the picture to sit on, with a wet highlight.
+		draw_circle(Vector2.ZERO, 40.0, Color(0.96, 0.93, 0.85, 0.94))
+		draw_arc(Vector2.ZERO, 40.0, 0.0, TAU, 48, Color(0.08, 0.07, 0.06, 0.9), 3.0)
+		draw_arc(Vector2.ZERO, 34.0, 3.6, 4.9, 16, Color(1, 1, 1, 0.8), 3.0)
+		if fancy > 0:
+			for i in 5 + fancy * 3:
+				var orbit := time * (0.5 + 0.13 * i) + i * 1.9
+				var at := Vector2.from_angle(orbit) * (56.0 + 14.0 * sin(time * 1.3 + i))
+				var size_now := 2.5 + 2.0 * absf(sin(time * 2.0 + i))
+				draw_colored_polygon(PackedVector2Array([at + Vector2(0, -size_now * 2.0), at + Vector2(size_now, 0), at + Vector2(0, size_now * 2.0), at + Vector2(-size_now, 0)]), Color(1.0, 0.95, 0.7, 0.9))
+		draw_set_transform(size * 0.5, 0.0, Vector2(s, s) * 0.72)
+	else:
+		# An ink-wash disc with a broken brush ring, in place of a frame.
+		draw_circle(Vector2.ZERO, 46.0, Color(0.08, 0.07, 0.06, 0.07))
+		draw_arc(Vector2.ZERO, 48.0, 0.5, TAU - 0.25, 48, Color(0.08, 0.07, 0.06, 0.85), 3.5)
+		draw_arc(Vector2.ZERO, 44.0, 2.4, 4.6, 24, Color(0.08, 0.07, 0.06, 0.35), 2.0)
 	match icon_id:
 		"rapid_fire":
 			for i in 3:

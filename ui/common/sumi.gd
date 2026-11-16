@@ -14,6 +14,14 @@ const GLOW := Color("#2f6bff")
 const TITLE_FONT := preload("res://assets/fonts/KaushanScript-Regular.ttf")
 
 
+## A heavier cut of the plain font, for the few words that must be read at a glance.
+static func bold_font() -> Font:
+	var font := FontVariation.new()
+	font.base_font = ThemeDB.fallback_font
+	font.variation_embolden = 0.9
+	return font
+
+
 ## A sheet of rice paper with a brushed ink border.
 static func paper(border: int = 5, radius: int = 6) -> StyleBoxFlat:
 	var style := StyleBoxFlat.new()
