@@ -67,7 +67,7 @@ func roll_choices(count: int) -> Array[String]:
 	var pool_weights: Array[float] = []
 	var all := defs()
 	for id: String in all:
-		if banished.has(id) or level_of(id) >= int(all[id].get("max_level", 1)):
+		if banished.has(id) or bool(all[id].get("retired", false)) or level_of(id) >= int(all[id].get("max_level", 1)):
 			continue
 		var weight := float(weights.get(String(all[id].get("rarity", "common")), 100.0))
 		if level_of(id) > 0:

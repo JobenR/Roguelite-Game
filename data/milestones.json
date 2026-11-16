@@ -1,15 +1,61 @@
 {
   "milestones": [
-    { "percent": 5,  "reward": "heal",  "amount": 25, "text": "Healed 25" },
-    { "percent": 10, "reward": "card",  "text": "Bonus upgrade" },
-    { "percent": 15, "reward": "pulse", "text": "Pulse fully charged" },
-    { "percent": 20, "reward": "card",  "text": "Bonus upgrade" },
-    { "percent": 25, "reward": "heal",  "amount": 40, "text": "Healed 40" },
-    { "percent": 30, "reward": "card",  "text": "Bonus upgrade" },
-    { "percent": 40, "reward": "card",  "text": "Bonus upgrade" },
-    { "percent": 50, "reward": "card",  "text": "Bonus upgrade" },
-    { "percent": 60, "reward": "card",  "text": "Bonus upgrade" },
-    { "percent": 75, "reward": "card",  "text": "Bonus upgrade" },
-    { "percent": 90, "reward": "card",  "text": "Bonus upgrade" }
+    {
+      "percent": 5,
+      "reward": "heal",
+      "amount": 25,
+      "text": "Healed 25"
+    },
+    {
+      "percent": 10,
+      "reward": "card",
+      "text": "Bonus upgrade"
+    },
+    {
+      "percent": 15,
+      "reward": "pulse",
+      "text": "Deluge fully charged"
+    },
+    {
+      "percent": 20,
+      "reward": "card",
+      "text": "Bonus upgrade"
+    },
+    {
+      "percent": 25,
+      "reward": "heal",
+      "amount": 40,
+      "text": "Healed 40"
+    },
+    {
+      "percent": 30,
+      "reward": "card",
+      "text": "Bonus upgrade"
+    },
+    {
+      "percent": 40,
+      "reward": "card",
+      "text": "Bonus upgrade"
+    },
+    {
+      "percent": 50,
+      "reward": "card",
+      "text": "Bonus upgrade"
+    },
+    {
+      "percent": 60,
+      "reward": "card",
+      "text": "Bonus upgrade"
+    },
+    {
+      "percent": 75,
+      "reward": "card",
+      "text": "Bonus upgrade"
+    },
+    {
+      "percent": 90,
+      "reward": "card",
+      "text": "Bonus upgrade"
+    }
   ]
 }

@@ -129,6 +129,28 @@ func set_glow(index: int) -> void:
 		dirty = true
 
 
+## Floods a disc with ink (or permanent ink) and makes it glow. The edge is
+## uneven, like a wave breaking. Returns the number of cells that changed.
+func flood_disc(center: Vector2, radius: float, state: int) -> int:
+	var x0 := clampi(int((center.x - radius) / cell_size), 0, cols - 1)
+	var x1 := clampi(int((center.x + radius) / cell_size), 0, cols - 1)
+	var y0 := clampi(int((center.y - radius) / cell_size), 0, rows - 1)
+	var y1 := clampi(int((center.y + radius) / cell_size), 0, rows - 1)
+	var changed := 0
+	for y in range(y0, y1 + 1):
+		var dy := (y + 0.5) * cell_size - center.y
+		for x in range(x0, x1 + 1):
+			var dx := (x + 0.5) * cell_size - center.x
+			var edge := radius * (0.9 + 0.1 * sin(atan2(dy, dx) * 9.0) * cos(atan2(dy, dx) * 4.0))
+			if dx * dx + dy * dy <= edge * edge:
+				var index := y * cols + x
+				if cells[index] != state and cells[index] != LOCKED and cells[index] != DEAD:
+					changed += 1
+				set_cell(index, state)
+				set_glow(index)
+	return changed
+
+
 func paint_point(pos: Vector2, state: int) -> void:
 	set_cell(cell_index(pos), state)
 

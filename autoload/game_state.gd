@@ -24,6 +24,8 @@ var powers: Dictionary = {}
 var damage_bonus: float = 0.0
 var _xp_fraction: float = 0.0
 var milestones: int = 0
+## Saved items found during this run (id -> count), such as the Lasso.
+var items: Dictionary = {}
 ## Extra Seals earned inside a run (Burning Page strips).
 var bonus_seals: float = 0.0
 var won: bool = false
@@ -36,6 +38,11 @@ func _ready() -> void:
 	Events.milestone_reached.connect(func(_p: int, _t: String) -> void: milestones += 1)
 	Events.final_boss_defeated.connect(func() -> void: won = true)
 	set_ink(String(SaveData.data.get("ink", "blue")))
+
+
+func add_item(id: String, amount: int = 1) -> void:
+	items[id] = int(items.get(id, 0)) + amount
+	Events.items_changed.emit()
 
 
 func set_ink(id: String) -> void:
@@ -58,6 +65,7 @@ func start_run() -> void:
 	damage_bonus = 0.0
 	_xp_fraction = 0.0
 	milestones = 0
+	items.clear()
 	bonus_seals = 0.0
 	won = false
 	_rewarded = false

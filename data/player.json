@@ -12,7 +12,7 @@
       "core_shape": "square"
     },
     "secondary": "ink_bomb",
-    "pulse": "ripple",
+    "pulse": "deluge",
     "trail_radius": 6,
     "ink_speed_bonus": 0.1,
     "pickup_radius": 90,

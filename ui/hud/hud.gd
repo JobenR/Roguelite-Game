@@ -95,6 +95,9 @@ func _ready() -> void:
 		_alert_left = seconds)
 	Events.strip_burned.connect(func(index: int, share: float, xp: int, perfect: bool) -> void:
 		_show_banner("STRIP %d BURNT: %d%% SAVED\n+%d XP%s" % [index, int(round(share * 100.0)), xp, "  PERFECT" if perfect else ""]))
+	Events.ultimate_ready.connect(func() -> void:
+		_show_banner("DELUGE READY")
+		Audio.play("milestone"))
 	Events.wave_warning.connect(_on_wave_warning)
 	Events.wave_started.connect(_on_wave_started)
 	Events.player_health_changed.connect(_on_health_changed)

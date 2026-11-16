@@ -68,7 +68,12 @@ func _process(delta: float) -> void:
 		if pos.distance_squared_to(_player.position) <= reach * reach:
 			var id: String = pickup["id"]
 			var def: Dictionary = DataDB.pickups.get("types", {}).get(id, {})
-			GameState.grant_power(id, float(def.get("duration", 8.0)) + Upgrades.bonus(id + "_duration"))
+			if bool(def.get("item", false)):
+				# A saved item: kept until the player chooses to use it.
+				GameState.add_item(id)
+				Audio.play("milestone")
+			else:
+				GameState.grant_power(id, float(def.get("duration", 8.0)) + Upgrades.bonus(id + "_duration"))
 			_effects.ring(pos, 90.0, pickup["color"], 0.4)
 			active.remove_at(i)
 		elif pickup["life"] <= 0.0:

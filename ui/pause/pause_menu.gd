@@ -29,13 +29,8 @@ func _ready() -> void:
 	Sumi.title(heading, 54, Sumi.SEAL)
 	box.add_child(heading)
 
-	var glyph_title := Label.new()
-	glyph_title.text = "Glyphs"
-	glyph_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	Sumi.title(glyph_title, 28)
-	box.add_child(glyph_title)
 	var help := Label.new()
-	help.text = "Close a shape with your trail, then PULSE it.\nCircle: Maelstrom pulls enemies in and grinds them.\nTriangle: Spike Burst fires a beam from each corner.\nSquare: Fortress turns it to permanent ink and shelters you.\nThe bigger the shape, the stronger the effect."
+	help.text = "FIRE: hold to shoot, drag to aim.\nBOMB: a lobbed blast that recharges.\nDELUGE: your Ultimate. Charges slowly from kills; floods the ground and blasts everything back.\nITEM: uses a saved item such as a Lasso."
 	help.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	Sumi.body(help, 19, Sumi.FADED)
 	box.add_child(help)

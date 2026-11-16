@@ -9,9 +9,9 @@
     "warning_seconds": 5,
     "miniboss": {
       "enemy": "eraser",
-      "first": 150,
+      "first": 180,
       "every": 180,
-      "hp_mult_per_spawn": 0.6,
+      "hp_mult_per_spawn": 0.9,
       "alert": "THE ERASER APPROACHES"
     },
     "waves": [
@@ -137,9 +137,9 @@
     "warning_seconds": 5,
     "miniboss": {
       "enemy": "eraser",
-      "first": 150,
-      "every": 150,
-      "hp_mult_per_spawn": 0.6,
+      "first": 170,
+      "every": 160,
+      "hp_mult_per_spawn": 0.9,
       "alert": "THE ERASER APPROACHES"
     },
     "waves": [

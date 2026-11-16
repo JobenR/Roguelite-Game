@@ -40,6 +40,10 @@ var stain_amount: float = 0.0
 var bleed_left: float = 0.0
 var bleed_dps: float = 0.0
 var was_on_ink: bool = false
+# Lasso: while bound, the enemy is dragged to a knot and cannot act.
+var bound_left: float = 0.0
+var bound_center: Vector2 = Vector2.ZERO
+var bound_radius: float = 0.0
 # Approach style: each enemy curves in from its own side and weaves a little,
 # so a horde spreads out instead of forming one line.
 var flank: float = 0.0
@@ -84,6 +88,7 @@ func spawn(p_type_id: String, p_data: Dictionary, pos: Vector2, hp_mult: float) 
 	var spread := float(data.get("flank", 0.0))
 	flank = randf_range(-spread, spread)
 	weave_phase = randf() * TAU
+	bound_left = 0.0
 	slow_left = 0.0
 	stain_left = 0.0
 	bleed_left = 0.0

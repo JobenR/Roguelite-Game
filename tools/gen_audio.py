@@ -80,8 +80,18 @@ def noise(seconds):
     return rng.uniform(-1.0, 1.0, int(RATE * seconds))
 
 
+_pluck_cache = {}
+
+
 def pluck(freq, seconds, bright=0.5):
-    """Karplus-Strong plucked string: the koto."""
+    """Karplus-Strong plucked string: the koto. Cached, since tunes repeat notes."""
+    key = (round(freq, 2), round(seconds, 3), bright)
+    if key not in _pluck_cache:
+        _pluck_cache[key] = _pluck(freq, seconds, bright)
+    return _pluck_cache[key]
+
+
+def _pluck(freq, seconds, bright=0.5):
     n = int(RATE * seconds)
     period = max(2, int(RATE / freq))
     buf = rng.uniform(-1.0, 1.0, period)
@@ -238,150 +248,57 @@ for bar in range(0, BARS, 4):
     place(calm, pluck(PENTA[0], 2.2, 0.3), bar * 4 * BEAT, 0.45)
 save("music", calm, 0.6)
 
-# Metal: 160 beats a minute (double the calm tempo), drop-D riffs.
-SIX = BEAT / 8.0                    # one sixteenth note
-STEPS = int(round(LENGTH / SIX))    # 512 sixteenths = 32 bars
-D2 = 73.42
+# Pressure: the same plucked melody, faster and busier, for boss fights. Three
+# tiers, one per boss met in a run, each quicker and more insistent than the last.
+def pressure(tier):
+    beat = [0.625, 0.555, 0.5][tier - 1]            # 96, 108, 120 beats a minute
+    length = BARS * 4 * beat
+    scale = beat / BEAT
+    out = np.zeros(int(RATE * length))
+    xx = t(length)
+    # Drone with a tremolo that quickens with the tier.
+    for freq, amp_ in [(73.42, 0.2), (110.0, 0.16), (146.83, 0.1)]:
+        cycles = round(freq * length)
+        wobble = 0.7 + 0.3 * np.sin(2 * np.pi * round(length / beat / (4 - tier)) * xx / length)
+        out += amp_ * np.sin(2 * np.pi * cycles * xx / length) * wobble
+    # The melody, brighter, doubled an octave up from tier two.
+    for at, i in melody:
+        when = at * scale
+        if when < length - 1.5:
+            place(out, pluck(PENTA[i], 1.2, 0.5 + 0.06 * tier), when, 0.55)
+            if tier >= 2:
+                place(out, pluck(PENTA[i] * 2.0, 0.7, 0.6), when + beat / 4, 0.22)
+    # A low plucked ostinato: eighths, then sixteenths at the top tier.
+    step = beat / (4 if tier == 3 else 2)
+    pattern = [0, 0, 2, 0, 4, 0, 2, 3] if tier < 3 else [0, 0, 4, 0, 2, 0, 4, 0, 0, 0, 5, 0, 4, 2, 3, 2]
+    count = int(length / step)
+    for k in range(count):
+        if k * step < length - 0.3:
+            accent = 1.0 if k % (len(pattern)) == 0 else 0.6
+            place(out, pluck(PENTA[pattern[k % len(pattern)]], 0.22, 0.7), k * step, 0.38 * accent)
+    # Taiko: a pulse that fills in as the tier rises.
+    beats = int(length / beat)
+    for k in range(beats):
+        at = k * beat
+        if at > length - 0.7:
+            break
+        if k % 4 == 0:
+            place(out, taiko(0.6, 62.0, 1.0), at, 0.6)
+        elif k % 2 == 0:
+            place(out, taiko(0.45, 78.0, 0.9), at, 0.42)
+        elif tier >= 2:
+            place(out, taiko(0.3, 104.0, 0.8), at, 0.3)
+        if tier == 3:
+            place(out, taiko(0.2, 140.0, 0.7), at + beat / 2, 0.24)
+    # Rim clicks keep time between drum hits.
+    click_step = beat / 2
+    for k in range(int(length / click_step)):
+        if k % 2 == 1 and k * click_step < length - 0.2:
+            cx = t(0.03)
+            place(out, np.sin(2 * np.pi * 1800 * cx) * np.exp(-140.0 * cx), k * click_step, 0.1 + 0.04 * tier)
+    return out
 
 
-def semi(n):
-    return D2 * 2.0 ** (n / 12.0)
-
-
-def chord(root, seconds, take):
-    """A power chord: root, fifth and octave on three strings."""
-    return (string(root, seconds, 0.9975, 0.5, take) + 0.8 * string(root * 1.4983, seconds, 0.9975, 0.5, take + 3)
-            + 0.5 * string(root * 2.0, seconds, 0.9975, 0.5, take + 6))
-
-
-# Riffs: one bar of sixteen steps each. (semitones above D, palm-muted?) or None.
-M, O = True, False
-RIFF_A = [(0, M), (0, M), (0, M), (3, O), (0, M), (0, M), (5, O), (0, M), (0, M), (0, M), (3, O), (0, M), (6, O), (5, O), (3, O), (0, M)]
-RIFF_A2 = [(0, M), (0, M), (0, M), (3, O), (0, M), (0, M), (5, O), (0, M), (0, M), (0, M), (8, O), (7, O), (5, O), (3, O), (0, M), (0, M)]
-RIFF_B = [(0, O), None, (0, M), (0, M), (0, O), None, (0, M), (0, M), (3, O), None, (3, M), (3, M), (5, O), None, (6, O), None]
-RIFF_B2 = [(0, O), None, (0, M), (0, M), (0, O), None, (0, M), (0, M), (10, O), None, (8, O), None, (7, O), None, (5, O), (3, O)]
-RING = {0: [(0, 8), (0, 8)], 1: [(8, 8), (8, 8)], 2: [(10, 8), (10, 8)], 3: [(7, 8), (5, 4), (3, 4)]}
-
-
-def section(bar):
-    return "A" if bar < 8 else ("B" if bar < 16 else ("C" if bar < 24 else "A"))
-
-
-def guitar_take(take, detune):
-    g = np.zeros(int(RATE * LENGTH))
-    for bar in range(32):
-        kind = section(bar)
-        base = bar * 16 * SIX
-        if kind == "C":
-            step = 0
-            for root, length in RING[bar % 4]:
-                ring = chord(semi(root) * detune, length * SIX + 0.05, take)
-                place(g, ring * np.exp(-1.2 * t(length * SIX + 0.05)[: len(ring)]), base + step * SIX, 1.0)
-                step += length
-            continue
-        riff = (RIFF_A2 if bar % 4 == 3 else RIFF_A) if kind == "A" else (RIFF_B2 if bar % 4 == 3 else RIFF_B)
-        for step, note in enumerate(riff):
-            if note is None:
-                continue
-            root, muted = note
-            seconds = SIX * (0.95 if muted else 1.9)
-            hit = chord(semi(root) * detune, seconds, take)
-            fade = np.exp(-(26.0 if muted else 5.0) * t(seconds)[: len(hit)])
-            place(g, hit * fade, base + step * SIX, 0.9 if muted else 1.0)
-    return g
-
-
-def amp(x, drive):
-    """A high-gain amp and 4x12 cabinet: tighten the lows, clip hard twice,
-    then the scooped-mid voicing of a metal rhythm tone."""
-    x = fft_filter(x, lo=120.0)
-    x = np.tanh(drive * x / max(1e-6, np.max(np.abs(x))))
-    x = fft_eq(x, [(600.0, 1400.0, 5.0)])
-    x = np.tanh(4.0 * x)
-    x = fft_filter(x, lo=85.0, hi=4200.0)
-    return fft_eq(x, [(90.0, 220.0, 5.0), (380.0, 850.0, -6.0), (1900.0, 3600.0, 5.0)])
-
-
-# Four rhythm guitars: three slightly detuned takes and one an octave down.
-rhythm = (amp(guitar_take(0, 1.0), 16.0) + amp(guitar_take(1, 1.0045), 16.0) + amp(guitar_take(2, 0.9958), 16.0)
-          + 0.8 * amp(guitar_take(3, 0.5), 12.0))
-
-# Lead guitar: the koto melody, an octave up, through the same amp. It enters
-# for the chord section and the last riff.
-lead_clean = np.zeros(int(RATE * LENGTH))
-for at, i in melody:
-    bar = int(at / (16 * SIX))
-    if section(bar) == "C" or bar >= 24:
-        note = string(PENTA[i] * 2.0, 0.9, 0.9988, 0.55, 20)
-        place(lead_clean, note * np.exp(-1.5 * t(0.9)[: len(note)]), at, 1.0)
-lead = amp(lead_clean, 6.0) if np.max(np.abs(lead_clean)) > 0 else lead_clean
-
-# Bass follows the riff roots.
-bass = np.zeros(int(RATE * LENGTH))
-for bar in range(32):
-    kind = section(bar)
-    base = bar * 16 * SIX
-    if kind == "C":
-        step = 0
-        for root, length in RING[bar % 4]:
-            dur = length * SIX
-            xx = t(dur)
-            place(bass, np.sin(2 * np.pi * semi(root) * xx) * np.exp(-1.0 * xx), base + step * SIX, 1.0)
-            step += length
-    else:
-        riff = RIFF_A if kind == "A" else RIFF_B
-        for step, note in enumerate(riff):
-            if note is not None:
-                xx = t(SIX)
-                place(bass, np.sin(2 * np.pi * semi(note[0]) * xx) * np.exp(-9.0 * xx), base + step * SIX, 1.0)
-bass = fft_eq(np.tanh(5.0 * bass), [(60.0, 140.0, 4.0)])
-
-# Drums.
-def kick():
-    xx = t(0.16)
-    freq = 45.0 + 110.0 * np.exp(-40.0 * xx)
-    body = np.tanh(2.2 * np.sin(2 * np.pi * np.cumsum(freq) / RATE)) * np.exp(-14.0 * xx)
-    return body + 0.9 * fft_filter(noise(0.16), lo=2500.0, hi=7000.0) * np.exp(-180.0 * xx)
-
-
-def snare():
-    xx = t(0.2)
-    crack = fft_filter(noise(0.2), lo=700.0, hi=8000.0) * np.exp(-18.0 * xx)
-    return np.tanh(1.6 * (1.1 * crack + 0.9 * np.sin(2 * np.pi * 190.0 * xx) * np.exp(-24.0 * xx)))
-
-
-def hat(seconds, decay):
-    xx = t(seconds)
-    return fft_filter(noise(seconds), lo=6000.0) * np.exp(-decay * xx)
-
-
-KICK, SNARE, HAT, CRASH = kick(), snare(), hat(0.05, 90.0), hat(1.2, 3.5)
-drums = np.zeros(int(RATE * LENGTH))
-for bar in range(32):
-    kind = section(bar)
-    base = bar * 16 * SIX
-    if bar % 8 == 0:
-        place(drums, CRASH, base, 0.7)
-    if kind == "A":
-        kicks, snares = range(16), [4, 12]                  # double kick on every sixteenth
-    elif kind == "B":
-        kicks, snares = [0, 2, 3, 4, 6, 7, 8, 10, 11, 12, 14], [4, 12]   # gallop
-    else:
-        kicks, snares = [0, 6, 8, 14], [8]                  # half-time under the chords
-    for step in kicks:
-        place(drums, KICK, base + step * SIX, 1.0)
-    for step in snares:
-        place(drums, SNARE, base + step * SIX, 0.9)
-    for step in range(0, 16, 2):
-        place(drums, HAT, base + step * SIX, 0.25)
-    if bar % 4 == 3:                                        # a fill into the next phrase
-        for step in [12, 13, 14, 15]:
-            place(drums, SNARE, base + step * SIX, 0.6 + 0.1 * (step - 12))
-
-rhythm /= np.max(np.abs(rhythm))
-drums /= np.max(np.abs(drums))
-metal = 0.85 * rhythm + 0.3 * lead / max(1e-6, np.max(np.abs(lead))) + 0.5 * bass / np.max(np.abs(bass)) + 1.0 * drums
-# Master: push into a limiter so it is loud and dense like a finished mix.
-metal = np.tanh(2.6 * metal / np.max(np.abs(metal)))
-save("music_metal", metal, 0.8)
+for tier in (1, 2, 3):
+    save("music_pressure%d" % tier, pressure(tier), 0.66)
 print("wrote", len(os.listdir(OUT)), "files to", os.path.normpath(OUT))

@@ -17,6 +17,7 @@ func _init() -> void:
 	_action("secondary", [_key(KEY_E), _button(JOY_BUTTON_X)])
 	_action("pulse", [_key(KEY_Q), _button(JOY_BUTTON_Y)])
 	_action("dash", [_key(KEY_SHIFT), _button(JOY_BUTTON_B)])
+	_action("item", [_key(KEY_F), _button(JOY_BUTTON_RIGHT_SHOULDER)])
 	_action("pause", [_key(KEY_ESCAPE), _button(JOY_BUTTON_START)])
 	_action("restart", [_key(KEY_R), _button(JOY_BUTTON_BACK)])
 	_action("debug_toggle", [_key(KEY_F3)])

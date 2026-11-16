@@ -29,6 +29,7 @@ func _defaults() -> Dictionary:
 		"inks": ["blue"],
 		"boosts": {},
 		"settings": {"sound": true, "music": true, "vibration": true},
+		"items": {},
 		"best_time": 0.0,
 		"runs": 0,
 		"wins": 0,
@@ -76,6 +77,24 @@ func unlock_ink(id: String) -> bool:
 		return false
 	add_seals(-ink_cost(id))
 	(data["inks"] as Array).append(id)
+	save()
+	return true
+
+
+func item_count(id: String) -> int:
+	return int((data.get("items", {}) as Dictionary).get(id, 0))
+
+
+func add_item(id: String, amount: int = 1) -> void:
+	(data["items"] as Dictionary)[id] = item_count(id) + amount
+	save()
+
+
+## Spends one stored item. Returns false when there is none.
+func use_item(id: String) -> bool:
+	if item_count(id) <= 0:
+		return false
+	(data["items"] as Dictionary)[id] = item_count(id) - 1
 	save()
 	return true
 

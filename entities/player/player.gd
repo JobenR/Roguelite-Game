@@ -16,7 +16,7 @@ var weapon: Dictionary = {}
 var aim_dir: Vector2 = Vector2.RIGHT
 var on_ink: bool = false
 var moving: bool = false
-## Share of incoming damage blocked (set each frame by a Fortress glyph).
+## Share of incoming damage blocked by an outside effect (none at present).
 var shelter: float = 0.0
 
 var _enemies: EnemyManager

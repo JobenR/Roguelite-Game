@@ -262,8 +262,27 @@ func _process(delta: float) -> void:
 	var burnt := ink_grid.dead_count > 0
 	var use_flow := burnt and flow != null and flow.ready
 
+	var bound_pull := DataDB.arsenal_num("lasso", "pull_speed", 520.0) * delta
+
 	for enemy in active:
 		var pos := enemy.position
+		if enemy.bound_left > 0.0:
+			# Lassoed: dragged into the knot, jostling, unable to chase or bite.
+			enemy.bound_left -= delta
+			var to_knot := enemy.bound_center - pos
+			var far := to_knot.length()
+			if far > enemy.bound_radius:
+				pos += to_knot / far * minf(bound_pull, far - enemy.bound_radius)
+			else:
+				pos += Vector2(randf_range(-1.0, 1.0), randf_range(-1.0, 1.0)) * 40.0 * delta
+			enemy.position = pos
+			if burn_tick:
+				if burn > 0.0 and ink_grid.is_ink(pos):
+					_burning.append(enemy)
+				if enemy.bleed_left > 0.0:
+					enemy.bleed_left -= 0.25
+					_bleeding.append(enemy)
+			continue
 		var to_player := player_pos - pos
 		var dist := to_player.length()
 		var toward := to_player / dist if dist > 0.001 else Vector2.ZERO

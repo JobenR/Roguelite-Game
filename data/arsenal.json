@@ -253,5 +253,16 @@
  "ink_wall": {
   "seconds": 2.0,
   "seconds_per_level": 1.0
+ },
+ "lasso": {
+  "max": 45,
+  "range": 560,
+  "gather_radius": 300,
+  "seconds": 6.0,
+  "pull_speed": 520
+ },
+ "page_wipe": {
+  "radius": 1000,
+  "boss_share": 0.25
  }
 }

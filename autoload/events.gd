@@ -8,8 +8,9 @@ signal player_health_changed(hp: float, max_hp: float)
 signal player_died
 signal secondary_charge_changed(ratio: float)
 signal pulse_charge_changed(ratio: float)
-## cells_filled is 0 when the pulse found no closed shape and fizzled.
+## The Ultimate was released; cells_filled is the ground it flooded.
 signal pulse_fired(cells_filled: int)
+signal ultimate_ready
 signal xp_collected(amount: int)
 signal xp_changed(xp: int, xp_to_next: int, level: int)
 signal level_up(level: int)
@@ -21,7 +22,6 @@ signal wave_warning(number: int, seconds: float, label: String)
 signal power_granted(id: String, seconds: float)
 signal screen_shake(amount: float)
 signal dash_charge_changed(ratio: float)
-signal glyph_triggered(kind: String, scale: float)
 signal milestone_reached(percent: int, text: String)
 ## Asks the level-up screen for an extra card pick with this title.
 signal bonus_card(title: String)
@@ -38,3 +38,4 @@ signal final_boss_defeated
 signal heavy_presence(count: int)
 ## Burning Page: a strip has burnt. share is the part of it the player owned.
 signal strip_burned(index: int, share: float, xp: int, perfect: bool)
+signal items_changed

@@ -324,7 +324,8 @@
     }
    ],
    "set": "pulse",
-   "rarity": "rare"
+   "rarity": "rare",
+   "retired": true
   },
   "permanent_marker": {
    "name": "Permanent Marker",
@@ -1227,7 +1228,8 @@
      "stat": "bridges",
      "add": 1
     }
-   ]
+   ],
+   "retired": true
   },
   "watermark": {
    "name": "Watermark",
@@ -1323,7 +1325,8 @@
      "stat": "mending",
      "add": 1
     }
-   ]
+   ],
+   "retired": true
   },
   "aftershock": {
    "name": "Aftershock",

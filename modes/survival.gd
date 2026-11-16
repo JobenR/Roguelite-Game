@@ -15,8 +15,8 @@ extends Node2D
 @onready var hazards: Hazards = $Hazards
 @onready var arsenal: Arsenal = $Arsenal
 @onready var enemy_shots: EnemyShots = $EnemyShots
-@onready var glyphs: GlyphSystem = $GlyphSystem
 @onready var milestones: MilestoneSystem = $MilestoneSystem
+@onready var item_system: ItemSystem = $ItemSystem
 @onready var aux: AuxWeapons = $AuxWeapons
 @onready var pickups: PickupManager = $PickupManager
 @onready var gems: GemManager = $GemManager
@@ -42,8 +42,8 @@ func _ready() -> void:
 	hazards.setup(enemies, ink, effects)
 	secondary.setup(player, enemies, ink, effects, hazards)
 	arsenal.setup(player, enemies, bullets, ink, effects, hazards, secondary)
-	glyphs.setup(player, enemies, ink, effects)
-	pulse.setup(player, enemies, ink, effects, glyphs, hazards)
+	pulse.setup(player, enemies, ink, effects, hazards)
+	item_system.setup(player, enemies, effects)
 	milestones.setup(ink, player, pulse)
 	gems.setup(player)
 	aux.setup(player, enemies, ink, effects)

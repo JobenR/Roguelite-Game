@@ -33,8 +33,9 @@ func _ready() -> void:
 	_buttons = [
 		_button("fire", "Fire", 70.0, Vector2(-110, -110), false),
 		_button("secondary", "Bomb", 46.0, Vector2(-260, -70), false),
-		_button("pulse", "Pulse", 46.0, Vector2(-80, -260), false),
+		_button("pulse", "Deluge", 50.0, Vector2(-80, -260), false),
 		_button("dash", "Dash", 40.0, Vector2(-235, -185), false),
+		_button("item", "Item", 40.0, Vector2(-205, -300), false),
 		_button("pause", "II", 24.0, Vector2(-30, 140), true),
 		_button("debug_toggle", "DBG", 24.0, Vector2(-30, 80), true),
 	]
@@ -42,6 +43,7 @@ func _ready() -> void:
 	Events.pulse_charge_changed.connect(_set_charge.bind("pulse"))
 	Events.dash_charge_changed.connect(_set_charge.bind("dash"))
 	Events.upgrade_applied.connect(func(_id: String) -> void: queue_redraw())
+	Events.items_changed.connect(queue_redraw)
 
 
 func _button(action: String, label: String, radius: float, offset: Vector2, top: bool) -> Dictionary:
@@ -58,6 +60,8 @@ func _set_charge(ratio: float, action: String) -> void:
 
 ## DASH only exists once its upgrade is owned.
 func _is_hidden(button: Dictionary) -> bool:
+	if button["action"] == "item":
+		return ItemSystem.held() == ""
 	return button["action"] == "dash" and Upgrades.bonus("dash") <= 0.0
 
 
@@ -196,6 +200,11 @@ func _draw() -> void:
 			continue
 		var text: String = button["label"]
 		var font_size := 26 if radius > 40.0 else 15
+		if button["action"] == "item":
+			# Shows what will be used and how many are left.
+			var held := ItemSystem.held()
+			text = "%s %d" % [{"lasso": "Lasso", "page_wipe": "Wipe"}.get(held, "Item"), ItemSystem.count(held)]
+			font_size = 17
 		var text_size := Sumi.TITLE_FONT.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size)
 		var text_color := Color(Sumi.PAPER, 0.95) if pressed else Color(ink, 0.9 * dim)
 		draw_string(Sumi.TITLE_FONT, center + Vector2(-text_size.x * 0.5, font_size * 0.35), text, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size, text_color)

@@ -56,3 +56,4 @@ func _pay(milestone: Dictionary) -> void:
 		"card":
 			Events.bonus_card.emit("INK %d%%: BONUS UPGRADE" % percent)
 	Events.milestone_reached.emit(percent, String(milestone.get("text", "")))
+

@@ -14,7 +14,7 @@ func _ready() -> void:
 	get_tree().paused = false
 	Engine.time_scale = 1.0
 	Audio.refresh_music()
-	Audio.set_heavy(false, true)
+	Audio.calm()
 
 	var backdrop := Backdrop.new()
 	add_child(backdrop)
