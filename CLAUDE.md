@@ -26,7 +26,7 @@ reward.** The user picked mock-up A plus E and rejected a first attempt that
   are blue strokes flung outward with a broken pale ring. Red is for danger
   and the UI seal.
 - Glow is rare and earned (`Effects.big_moment`, and ink marked with
-  `InkGrid.set_glow`): pulse-filled ground shines brighter, near white; glyphs burst gold,
+  `InkGrid.set_glow`): ground flooded by the Deluge shines brighter, near white;
   bosses burst in their core colour, Legendary cards shimmer.
 - UI takes every colour, font and panel style from `ui/common/sumi.gd`
   (`Sumi`): paper panels, ink borders, seal red, Kaushan Script titles.
@@ -49,10 +49,10 @@ reward.** The user picked mock-up A plus E and rejected a first attempt that
   Aim assist snaps to the nearest enemy inside a cone (`aim_assist_deg` in
   player.json); the last stick aim is held for `aim_hold_seconds`.
   Auto-aim is NOT default: it is a temporary power from a pickup. Also a
-  secondary weapon (ink bomb) that recharges over time and from kills, and the
-  pulse, charged by XP and kills.
-- PC keys: WASD move, arrow keys aim, Space fire, E bomb, Q pulse, Shift dash
-  (once the Dash upgrade is owned), Esc pause.
+  secondary weapon (ink bomb) that recharges over time and from kills, the
+  Deluge, and an Item button for saved items.
+- PC keys: WASD move, arrow keys aim, Space fire, E bomb, Q Deluge, F item,
+  Shift dash (once Dash is owned), Esc pause.
 - Modes: Survival (bounded arena about 3x3 screens, endless) and Burning Page
   (arena shrinks; your swallowed ink stays walkable and locked in, everything
   else swallowed is impassable for everyone; each swallowed strip pays out by
@@ -116,8 +116,7 @@ reward.** The user picked mock-up A plus E and rejected a first attempt that
    has it running on their iPhone through Xcode with a free Apple ID. To see an
    update on the phone they must download the project again, re-export from
    Godot and press Play in Xcode. Still open: frame rate on the phone.
-   Later feedback: the metal was "too thin" (now four rhythm guitars, harder
-   clipping, double kick, louder master); Burning Page payouts were too weak
+   Later feedback: Burning Page payouts were too weak
    (doubled, card at 70%, pulse charge at 35%, Seals per strip); difficulty
    after the balance pass felt about right.
 7. Meta (done): title screen (`menus/title.tscn`, the main scene) with ink
@@ -127,10 +126,9 @@ reward.** The user picked mock-up A plus E and rejected a first attempt that
    wins the run, after which the player may keep going.
    Sounds are generated in code and have NOT been heard by anyone but the
    user. Their feedback so far: effects were too repetitive (now several
-   variants each, and gems climb a scale), and they want heavy metal riffs
-   when the larger enemies arrive. Music is therefore two synced tracks, a calm
-   koto line and a metal version of the same melody; `Audio` fades to metal
-   while any `heavy` enemy is alive (`Events.heavy_presence`).
+   variants each, and gems climb a scale). They asked for metal, then disliked
+   the generated metal on hearing it: do not bring it back. Music is the calm
+   koto line plus three faster "pressure" versions of it for boss fights.
    The user also found Seals too fast: earnings were cut and prices raised.
    Balance pass (done by simulation, not by play): `tools/balance_sim.gd` showed
    the page filling to the enemy cap by minute two and levelling stalling, so
@@ -179,7 +177,7 @@ explicitly. This includes end-of-update feedback questions: offer choices.
   actions from `_input` events: the touch UI feeds actions with
   `Input.action_press()`, which generates no events. Raw touch events are allowed
   only in `ui/touch/`.
-- **Actions:** `move_left/right/up/down`, `aim_left/right/up/down`, `fire`, `secondary`, `pulse`, `dash`, `pause`,
+- **Actions:** `move_left/right/up/down`, `aim_left/right/up/down`, `fire`, `secondary`, `pulse`, `item`, `dash`, `pause`,
   `restart`, `debug_toggle` (F3), `debug_spawn` (F2). Defined in `project.godot`;
   regenerate with `tools/setup_input_map.gd`.
 - **Performance:** no physics bodies and no per-entity `_process` for enemies,
@@ -267,12 +265,9 @@ explicitly. This includes end-of-update feedback questions: offer choices.
 - Enemies drop a smudge every `trail_interval` seconds. Each smudge only
   overwrites ink with probability `ink_cut_chance`; otherwise it paints around
   it. These two numbers set how fragile loops are.
-- Pulse (`InkGrid.find_enclosed`): flood-fills from the open sides of the pulse's
-  square reach through non-ink cells. Whatever the flood cannot reach is
-  enclosed and gets filled. Consequences: a shape must fit inside the reach, any
-  gap in the outline voids it, and the page edge counts as a wall. A pulse that
-  finds nothing fizzles and keeps its charge (unless Shockwave is owned).
-  `gap_cells` (Forgiving Pulse) thickens walls before the flood to plug small gaps.
+- The Deluge floods a disc with `InkGrid.flood_disc`, which also marks it to
+  glow. `InkGrid.find_enclosed` (loop detection) is no longer used by play; it
+  remains only because `tools/ink_test.gd` covers it.
 
 ## Character growth and the store
 
