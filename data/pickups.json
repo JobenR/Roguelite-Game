@@ -75,6 +75,14 @@
       "weight": 3,
       "color": "#8a5a2b",
       "icon": "letter"
+    },
+    "true_brush": {
+      "name": "True Brush",
+      "duration": 5,
+      "weight": 4,
+      "color": "#c9962a",
+      "icon": "letter",
+      "mode": "masterpiece"
     }
   }
 }

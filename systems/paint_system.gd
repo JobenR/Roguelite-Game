@@ -20,6 +20,7 @@ var _check_left: float = 0.0
 var _lull_left: float = 0.0
 var _home_ink: String = "blue"
 var _best_stars: int = 0
+var _brush_left: float = 20.0
 
 
 ## The picture to paint next: the first without a star, else the weakest.
@@ -169,9 +170,26 @@ func _process(delta: float) -> void:
 			if done:
 				_effects.big_moment(label["pos"], 200.0, _ink.grid.palette[int(label["tint"])].lerp(Color.WHITE, 0.4), 0.6)
 				Audio.play("milestone")
+	# True Brush: while the power lasts, every stroke takes the right colour.
+	# The card recharges it on a timer.
+	_ink.grid.auto_tint = GameState.has_power("true_brush")
+	var level := Upgrades.bonus("true_brush")
+	if level > 0.0 and not _ink.grid.auto_tint:
+		_brush_left -= delta
+		if _brush_left <= 0.0:
+			_brush_left = DataDB.arsenal_num("true_brush", "recharge", 50.0) - level * DataDB.arsenal_num("true_brush", "recharge_per_level", 8.0)
+			_grant_brush()
 	if _lull_left > 0.0:
 		_lull_left -= delta
 	queue_redraw()
+
+
+func _grant_brush() -> void:
+	var seconds := float(DataDB.pickups.get("types", {}).get("true_brush", {}).get("duration", 5.0))
+	GameState.grant_power("true_brush", seconds)
+	Events.power_granted.emit("true_brush", seconds)
+	Events.alert.emit("TRUE BRUSH! PAINT EVERYTHING", 2.0)
+	_effects.big_moment(_player.position, 220.0, Color("#ffe9a8"), 0.6)
 
 
 func _dip(well: Dictionary) -> void:
@@ -194,6 +212,9 @@ func _on_boss_defeated(_boss_name: String) -> void:
 	_director.hold_spawns = seconds
 	Audio.hold_pressure(seconds)
 	Events.alert.emit("TOUCH UP! %d SECONDS" % int(seconds), 3.0)
+	# Each boss beaten also pays a True Brush for the touch-up.
+	if DataDB.arsenal_num("true_brush", "boss_grant", 1.0) > 0.0:
+		_grant_brush()
 
 
 func _on_final_boss_defeated() -> void:
@@ -216,6 +237,10 @@ func _draw() -> void:
 		var at: Vector2 = label["pos"] + Vector2(-width * 0.5, size * 0.35)
 		draw_string_outline(font, at, text, HORIZONTAL_ALIGNMENT_LEFT, -1, size, 8, Color(Sumi.PAPER, 0.85))
 		draw_string(font, at, text, HORIZONTAL_ALIGNMENT_LEFT, -1, size, Color(Sumi.INK, 0.8))
+	if _player != null and GameState.has_power("true_brush"):
+		var beat := 0.5 + 0.5 * sin(Time.get_ticks_msec() * 0.012)
+		draw_arc(_player.position, 46.0 + 8.0 * beat, 0.0, TAU, 40, Color(1.0, 0.86, 0.45, 0.9), 6.0)
+		draw_circle(_player.position, 60.0, Color(1.0, 0.9, 0.55, 0.14))
 	var reach := float(_cfg.get("well_radius", 70.0))
 	var held := _ink.grid.current_tint if _ink != null else 0
 	for well in _wells:

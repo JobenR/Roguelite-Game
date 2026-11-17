@@ -109,7 +109,18 @@ func _on_enemy_killed(_type_id: String, pos: Vector2, splat_radius: float, _xp: 
 	var reclaim := Upgrades.bonus("reclaim")
 	if reclaim > 0.0 and grid.state_at(pos) == InkGrid.SMUDGE:
 		grid.clean_circle(pos, radius * (1.5 + reclaim))
-	splat(pos, radius, dir)
+	# Masterpiece: a kill inside a numbered area splats that area's own colour,
+	# whatever ink the player carries, and stays inside the area.
+	var area := int(grid.region[grid.cell_index(pos)]) if grid.paint_on else 0
+	if area != 0:
+		var carried := grid.current_tint
+		grid.current_tint = int(grid.region_target[area])
+		grid.clip_region = area
+		splat(pos, radius, dir)
+		grid.clip_region = 0
+		grid.current_tint = carried
+	else:
+		splat(pos, radius, dir)
 	var sticky := Upgrades.bonus("sticky")
 	if sticky > 0.0:
 		_enemies.slow_area(pos, radius, sticky + 0.15, DataDB.arsenal_num("sticky_splats", "seconds", 2.0))

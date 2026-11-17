@@ -1953,6 +1953,24 @@
    "rarity": "epic",
    "short": "Deluge fills +1 area",
    "mode": "masterpiece"
+  },
+  "true_brush": {
+   "name": "True Brush",
+   "desc": "Every 42 seconds, for 5 seconds your brush is huge, you move faster and all your ink takes the colour each area needs. Each level recharges 8 seconds sooner.",
+   "max_level": 3,
+   "effects": [
+    {
+     "stat": "true_brush",
+     "add": 1
+    }
+   ],
+   "category": "ink",
+   "icon": "painter",
+   "badge": "TB",
+   "set": "ink",
+   "rarity": "legendary",
+   "short": "Auto-colour brush, 5 s",
+   "mode": "masterpiece"
   }
  },
  "synergies": {

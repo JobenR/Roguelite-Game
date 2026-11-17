@@ -176,6 +176,8 @@ func _update_health(delta: float) -> void:
 
 func _move(move: Vector2, delta: float) -> void:
 	var current_speed := Upgrades.value("move_speed", speed)
+	if GameState.has_power("true_brush"):
+		current_speed *= DataDB.arsenal_num("true_brush", "speed_mult", 1.35)
 	if on_ink:
 		current_speed *= 1.0 + _ink_speed_bonus + Upgrades.bonus("ink_speed")
 	# Slipstream: builds while you hold a straight line.
@@ -217,6 +219,8 @@ func _paint_trail(move: Vector2) -> void:
 	if position.distance_squared_to(_last_trail_pos) <= 9.0:
 		return
 	var trail := Upgrades.value("trail_radius", _trail_radius)
+	if GameState.has_power("true_brush"):
+		trail *= DataDB.arsenal_num("true_brush", "trail_mult", 4.0)
 	# Brush pressure: the line swells and thins as it goes.
 	_trail_travel += position.distance_to(_last_trail_pos) if _last_trail_pos != Vector2.INF else 0.0
 	trail *= 0.75 + 0.55 * absf(sin(_trail_travel * 0.013)) + 0.2 * absf(sin(_trail_travel * 0.047))

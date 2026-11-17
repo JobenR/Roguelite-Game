@@ -52,6 +52,19 @@ func _process(_delta: float) -> bool:
 		grid.paint_circle(body, 20.0, InkGrid.SMUDGE)
 		_check("smudge wipes correct paint", grid.correct_count < before)
 		grid.current_tint = 1
+		# A kill inside the gold tail (area 5) splats gold, though blue is carried.
+		var tail: Vector2 = grid.region_center[5]
+		var gold_before: int = grid.region_correct[5]
+		var pond_before: int = grid.region_correct[1]
+		root.get_node("Events").enemy_killed.emit("walker", tail, 60.0, 0, Vector2.RIGHT)
+		_check("a kill splats the colour of the area it happened in", grid.region_correct[5] > gold_before and grid.tint[grid.cell_index(tail)] == 3)
+		_check("the splat stays inside that area", grid.region_correct[1] == pond_before and grid.current_tint == 1)
+		# True Brush: blue is carried, but a stroke over the gold eye lays gold.
+		var eye: Vector2 = grid.region_center[9]
+		grid.auto_tint = true
+		grid.paint_circle(eye, 16.0, InkGrid.INK)
+		grid.auto_tint = false
+		_check("the True Brush lays the colour each area wants", grid.tint[grid.cell_index(eye)] == 3 and grid.region_correct[9] > 0)
 		# Walk into the crimson well.
 		scene.player.position = _paint.get("_wells")[1]["pos"]
 	if _frames == 10:
@@ -77,6 +90,7 @@ func _process(_delta: float) -> bool:
 		root.get_node("Events").boss_defeated.emit("The Eraser")
 	if _frames == 20:
 		_check("the lull holds spawns", scene.director.hold_spawns > 10.0)
+		_check("beating a boss pays a True Brush", gs.has_power("true_brush") and grid.auto_tint)
 		root.get_node("Events").final_boss_defeated.emit()
 		paused = false
 	if _frames == 24:

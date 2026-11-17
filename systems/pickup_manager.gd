@@ -44,7 +44,12 @@ func _on_enemy_killed(_type_id: String, pos: Vector2, _splat_radius: float, _xp:
 
 ## Weighted random pickup type.
 func _pick_type() -> String:
-	var types: Dictionary = DataDB.pickups.get("types", {})
+	var all: Dictionary = DataDB.pickups.get("types", {})
+	# Some pickups belong to one mode only.
+	var types: Dictionary = {}
+	for id: String in all:
+		if not all[id].has("mode") or String(all[id]["mode"]) == GameState.mode_id:
+			types[id] = all[id]
 	var total := 0.0
 	for id: String in types:
 		total += float(types[id].get("weight", 1.0))

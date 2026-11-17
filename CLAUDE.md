@@ -63,10 +63,16 @@ reward.** The user picked mock-up A plus E and rejected a first attempt that
   shapes in a 1600x900 design space). Ink wells on the page change the
   player's ink, colour AND play style (`PaintSystem`, `Upgrades.swap_ink`,
   `Events.ink_changed`). The wrong colour paints but does not count; smudge
-  wipes paint; the score is the average share correct over the areas; stars at
+  wipes paint; a kill inside a numbered area splats that area's own colour
+  and is clipped to it (the user's rule: enemies unpaint, their deaths repaint
+  correctly); the score is the average share correct over the areas; stars at
   60/75/90% are awarded when the final boss dies and saved per picture; a
   12-second no-spawn lull with boss music follows each boss; the Deluge fills
   the numbered area the player stands in (Flood Fill card adds more areas).
+  True Brush (the user's idea): a 5-second power (`GameState.powers`,
+  `grid.auto_tint`) with a huge, fast brush whose ink takes the colour each
+  cell wants; from a Masterpiece-only pickup, a recharging legendary card, and
+  free after each boss. Cards and pickups may carry `"mode"` to limit them.
   Built from the user's description and not yet played by them: balance and
   feel are provisional. Not built yet: a picture gallery or picker (the mode
   serves the first picture without a star).

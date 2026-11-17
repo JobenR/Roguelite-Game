@@ -46,6 +46,11 @@ var region: PackedByteArray = PackedByteArray()
 var palette: Array[Color] = []          # index 0 unused
 var paint_pixels: PackedByteArray = PackedByteArray()   # RGB8: the colour laid on each cell
 var paint_dirty: bool = false
+## While set, ink is laid only in this region and on paper outside the
+## picture, so a kill splat never spills a mistake into the area next door.
+var clip_region: int = 0
+## True Brush: while on, every stroke takes the colour its cell wants.
+var auto_tint: bool = false
 var region_cells: Array[PackedInt32Array] = []   # cell indices of each region; index 0 unused
 var region_target: PackedByteArray = PackedByteArray()
 var region_center: PackedVector2Array = PackedVector2Array()
@@ -87,6 +92,8 @@ func is_ink(pos: Vector2) -> bool:
 
 
 func set_cell(index: int, state: int) -> void:
+	if clip_region != 0 and state == INK and region[index] != 0 and region[index] != clip_region:
+		return
 	var old := cells[index]
 	if old == state or old == LOCKED or old == DEAD:
 		# Fresh ink laid over Deluge-flooded ground shows as an ordinary stroke,
@@ -95,7 +102,7 @@ func set_cell(index: int, state: int) -> void:
 			if pixels[index * 4 + 3] != 0:
 				pixels[index * 4 + 3] = 0
 				dirty = true
-			if paint_on and tint[index] != current_tint:
+			if paint_on and tint[index] != _tint_for(index):
 				_retint(index, true)
 		return
 	if paint_on:
@@ -128,6 +135,12 @@ func set_cell(index: int, state: int) -> void:
 	dirty = true
 
 
+## The colour a fresh stroke lays on this cell: the carried ink, or with the
+## True Brush the colour the picture wants there.
+func _tint_for(index: int) -> int:
+	return target[index] if (auto_tint and target[index] != 0) else current_tint
+
+
 ## Lays the current colour on a cell. `was_ink` says the cell already held
 ## ink, so its old colour may have been counted as correct.
 func _retint(index: int, was_ink: bool) -> void:
@@ -135,11 +148,12 @@ func _retint(index: int, was_ink: bool) -> void:
 	if was_ink and goal != 0 and tint[index] == goal:
 		correct_count -= 1
 		region_correct[region[index]] -= 1
-	tint[index] = current_tint
-	if goal != 0 and current_tint == goal:
+	var lay := _tint_for(index)
+	tint[index] = lay
+	if goal != 0 and lay == goal:
 		correct_count += 1
 		region_correct[region[index]] += 1
-	var c := palette[current_tint]
+	var c := palette[lay]
 	var p := index * 3
 	paint_pixels[p] = c.r8
 	paint_pixels[p + 1] = c.g8
