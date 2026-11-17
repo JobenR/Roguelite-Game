@@ -105,8 +105,8 @@ reward.** The user picked mock-up A plus E and rejected a first attempt that
    Chosen on the title screen (`GameState.mode_id`); both modes share
    `modes/survival.tscn`.
    On-device feedback pass (done): the user now tests on a real iPhone. They
-   disliked the generated metal (music is now calm plus three faster "pressure"
-   versions of the same plucked theme, one tier per boss met); found the first
+   disliked the generated metal (boss music has three tiers, one per boss met; see the
+   music history under Meta); found the first
    boss far too tanky (boss and tough-enemy health cut hard); found cards too
    wordy (each has a `short` line of a few bold words; keep new cards to that)
    and wanted richer card art (rarity splash, rays, sparks, shine).
@@ -126,9 +126,13 @@ reward.** The user picked mock-up A plus E and rejected a first attempt that
    wins the run, after which the player may keep going.
    Sounds are generated in code and have NOT been heard by anyone but the
    user. Their feedback so far: effects were too repetitive (now several
-   variants each, and gems climb a scale). They asked for metal, then disliked
-   the generated metal on hearing it: do not bring it back. Music is the calm
-   koto line plus three faster "pressure" versions of it for boss fights.
+   variants each, and gems climb a scale). Music history: synthetic metal was
+   judged thin, then plucked "pressure" tracks were judged "too digital". The
+   user now wants the crunch of a heavily distorted guitar on a slow riff, like
+   the newest Doom games. Boss music is three tiers of one slow down-tuned riff
+   (`music_pressure1..3.wav`, 32 kHz, distortion oversampled 4x, room reverb);
+   normal play keeps the calm koto line. If this still sounds digital, the
+   honest fix is a recorded track dropped into `assets/audio/`, not more synthesis.
    The user also found Seals too fast: earnings were cut and prices raised.
    Balance pass (done by simulation, not by play): `tools/balance_sim.gd` showed
    the page filling to the enemy cap by minute two and levelling stalling, so

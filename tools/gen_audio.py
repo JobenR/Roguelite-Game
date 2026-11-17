@@ -246,59 +246,237 @@ for at, i in melody:
 for bar in range(0, BARS, 4):
     place(calm, taiko(0.9, 60.0, 0.6), bar * 4 * BEAT, 0.35)
     place(calm, pluck(PENTA[0], 2.2, 0.3), bar * 4 * BEAT, 0.45)
+# A little room around the koto, so it does not sound bone dry.
+_n = int(RATE * 1.3)
+_tail = np.random.default_rng(9).normal(0.0, 1.0, _n) * np.exp(-6.5 * np.arange(_n) / RATE)
+_tail = fft_filter(_tail, lo=250.0, hi=4500.0)
+_size = len(calm) + _n
+_echo = np.fft.irfft(np.fft.rfft(calm, _size) * np.fft.rfft(_tail, _size), _size)[: len(calm)]
+calm = 0.8 * calm + 0.2 * _echo * np.max(np.abs(calm)) / np.max(np.abs(_echo))
 save("music", calm, 0.6)
 
-# Pressure: the same plucked melody, faster and busier, for boss fights. Three
-# tiers, one per boss met in a run, each quicker and more insistent than the last.
-def pressure(tier):
-    beat = [0.625, 0.555, 0.5][tier - 1]            # 96, 108, 120 beats a minute
-    length = BARS * 4 * beat
-    scale = beat / BEAT
-    out = np.zeros(int(RATE * length))
-    xx = t(length)
-    # Drone with a tremolo that quickens with the tier.
-    for freq, amp_ in [(73.42, 0.2), (110.0, 0.16), (146.83, 0.1)]:
-        cycles = round(freq * length)
-        wobble = 0.7 + 0.3 * np.sin(2 * np.pi * round(length / beat / (4 - tier)) * xx / length)
-        out += amp_ * np.sin(2 * np.pi * cycles * xx / length) * wobble
-    # The melody, brighter, doubled an octave up from tier two.
-    for at, i in melody:
-        when = at * scale
-        if when < length - 1.5:
-            place(out, pluck(PENTA[i], 1.2, 0.5 + 0.06 * tier), when, 0.55)
-            if tier >= 2:
-                place(out, pluck(PENTA[i] * 2.0, 0.7, 0.6), when + beat / 4, 0.22)
-    # A low plucked ostinato: eighths, then sixteenths at the top tier.
-    step = beat / (4 if tier == 3 else 2)
-    pattern = [0, 0, 2, 0, 4, 0, 2, 3] if tier < 3 else [0, 0, 4, 0, 2, 0, 4, 0, 0, 0, 5, 0, 4, 2, 3, 2]
-    count = int(length / step)
-    for k in range(count):
-        if k * step < length - 0.3:
-            accent = 1.0 if k % (len(pattern)) == 0 else 0.6
-            place(out, pluck(PENTA[pattern[k % len(pattern)]], 0.22, 0.7), k * step, 0.38 * accent)
-    # Taiko: a pulse that fills in as the tier rises.
-    beats = int(length / beat)
-    for k in range(beats):
-        at = k * beat
-        if at > length - 0.7:
-            break
-        if k % 4 == 0:
-            place(out, taiko(0.6, 62.0, 1.0), at, 0.6)
-        elif k % 2 == 0:
-            place(out, taiko(0.45, 78.0, 0.9), at, 0.42)
-        elif tier >= 2:
-            place(out, taiko(0.3, 104.0, 0.8), at, 0.3)
-        if tier == 3:
-            place(out, taiko(0.2, 140.0, 0.7), at + beat / 2, 0.24)
-    # Rim clicks keep time between drum hits.
-    click_step = beat / 2
-    for k in range(int(length / click_step)):
-        if k % 2 == 1 and k * click_step < length - 0.2:
-            cx = t(0.03)
-            place(out, np.sin(2 * np.pi * 1800 * cx) * np.exp(-140.0 * cx), k * click_step, 0.1 + 0.04 * tier)
-    return out
+# --- boss music: a slow, heavy, down-tuned guitar riff -----------------------
+# Rendered at a higher sample rate than the effects, with the distortion run
+# at four times that rate. Clipping creates overtones far above what a low
+# sample rate can hold; without oversampling they fold back down as a harsh
+# digital fizz, which is what made the earlier attempt sound artificial.
+MR = 32000
+TEMPO = 76.0
+STEP = 60.0 / TEMPO / 4.0           # one sixteenth note
+BAR = STEP * 16
+BOSS_BARS = 8
+BOSS_LEN = BAR * BOSS_BARS
+LOW_B = 61.74                       # B1: the riff sits a fourth below a normal guitar
 
 
+def mt(seconds):
+    return np.arange(int(MR * seconds)) / MR
+
+
+def mfilter(x, lo=None, hi=None, order=8, rate=MR):
+    spectrum = np.fft.rfft(x)
+    f = np.fft.rfftfreq(len(x), 1.0 / rate)
+    if hi:
+        spectrum *= 1.0 / np.sqrt(1.0 + (f / hi) ** order)
+    if lo:
+        ratio = (np.maximum(f, 1e-6) / lo) ** (order // 2)
+        spectrum *= ratio / np.sqrt(1.0 + ratio ** 2)
+    return np.fft.irfft(spectrum, len(x))
+
+
+def meq(x, bands, rate=MR):
+    spectrum = np.fft.rfft(x)
+    f = np.fft.rfftfreq(len(x), 1.0 / rate)
+    for lo, hi, db in bands:
+        centre = np.sqrt(lo * hi)
+        width = np.log2(hi / lo)
+        spectrum *= 10.0 ** (db / 20.0 * np.exp(-0.5 * (np.log2(np.maximum(f, 1.0) / centre) / (width * 0.6)) ** 2))
+    return np.fft.irfft(spectrum, len(x))
+
+
+def oversample(x, factor):
+    spectrum = np.fft.rfft(x)
+    padded = np.zeros(len(x) * factor // 2 + 1, dtype=complex)
+    padded[: len(spectrum)] = spectrum
+    return np.fft.irfft(padded, len(x) * factor) * factor
+
+
+def downsample(x, factor):
+    spectrum = np.fft.rfft(x)
+    n = len(x) // factor
+    return np.fft.irfft(spectrum[: n // 2 + 1], n) / factor
+
+
+_gstring_cache = {}
+
+
+def gstring(freq, seconds, take):
+    """A heavy-gauge guitar string: plucked near the bridge, slow to die away."""
+    key = (round(freq, 3), round(seconds, 3), take)
+    if key not in _gstring_cache:
+        n = int(MR * seconds)
+        period = max(2, int(round(MR / freq)))
+        burst = np.random.default_rng(500 + take * 31 + int(freq * 7)).uniform(-1.0, 1.0, period)
+        # Picking near the bridge cancels some overtones; a comb models that.
+        pick = max(1, period // 7)
+        burst = burst - 0.6 * np.roll(burst, pick)
+        out = np.zeros(n)
+        buf = burst.copy()
+        for i in range(n):
+            k = i % period
+            out[i] = buf[k]
+            buf[k] = (0.52 * buf[k] + 0.48 * buf[(k + 1) % period]) * 0.9992
+        _gstring_cache[key] = out
+    return _gstring_cache[key]
+
+
+def power_chord(root, seconds, take, detune):
+    return (gstring(root * detune, seconds, take) + 0.85 * gstring(root * 1.4983 * detune, seconds, take + 1)
+            + 0.6 * gstring(root * 2.0 * detune, seconds, take + 2))
+
+
+def high_gain_amp(x, drive):
+    """Boost pedal, two clipping stages at 4x the sample rate, then a 4x12 cab."""
+    x = mfilter(x, lo=95.0, order=4)
+    x = meq(x, [(650.0, 1500.0, 7.0)])                     # the mid push of an overdrive pedal
+    x = x / max(1e-9, np.max(np.abs(x)))
+    up = oversample(x, 4)
+    up = np.tanh(drive * up) + 0.12 * np.tanh(drive * 0.6 * up) ** 2   # slightly lopsided, like valves
+    up = np.tanh(3.2 * up)
+    up = mfilter(up, hi=7000.0, order=10, rate=MR * 4)
+    y = downsample(up, 4)
+    y = mfilter(y, lo=78.0, hi=5200.0, order=10)           # a guitar speaker passes little above 5 kHz
+    return meq(y, [(95.0, 170.0, 5.5), (350.0, 620.0, -5.0), (2100.0, 3300.0, 6.0), (4200.0, 5200.0, -3.0)])
+
+
+def room(x, wet, seconds=1.1, seed=3):
+    """Reverb: convolve with a decaying burst of filtered noise, so nothing sounds bone dry."""
+    n = int(MR * seconds)
+    tail = np.random.default_rng(seed).normal(0.0, 1.0, n) * np.exp(-5.5 * np.arange(n) / MR / seconds * 1.6)
+    tail = mfilter(tail, lo=220.0, hi=4800.0, order=4)
+    size = len(x) + n
+    echo = np.fft.irfft(np.fft.rfft(x, size) * np.fft.rfft(tail, size), size)[: len(x)]
+    echo *= np.max(np.abs(x)) / max(1e-9, np.max(np.abs(echo)))
+    return (1.0 - wet) * x + wet * echo
+
+
+def mplace(dst, src, at_seconds, gain=1.0):
+    start = int(at_seconds * MR)
+    end = min(len(dst), start + len(src))
+    if end > start:
+        dst[start:end] += src[: end - start] * gain
+
+
+# The riff. Each entry: (semitones above low B, length in sixteenths, palm-muted).
+# Slow and sparse: long ringing chords, a pair of chugs, and the flat second
+# and flat fifth that give doom its menace.
+M, O = True, False
+BAR_1 = [(0, 6, O), (0, 1, M), (0, 1, M), (3, 4, O), (0, 1, M), (0, 1, M), (1, 2, O)]
+BAR_2 = [(0, 6, O), (0, 1, M), (0, 1, M), (6, 4, O), (5, 2, O), (3, 2, O)]
+BAR_4 = [(0, 4, O), (0, 1, M), (0, 1, M), (8, 2, O), (7, 2, O), (6, 2, O), (3, 2, O), (1, 2, O)]
+BAR_8 = [(0, 4, O), (1, 4, O), (0, 8, O)]
+RIFF = [BAR_1, BAR_2, BAR_1, BAR_4, BAR_1, BAR_2, BAR_1, BAR_8]
+
+
+def semitone(n):
+    return LOW_B * 2.0 ** (n / 12.0)
+
+
+def guitar_take(take, detune, octave=1.0):
+    g = np.zeros(int(MR * BOSS_LEN))
+    for bar, notes in enumerate(RIFF):
+        step = 0
+        for root, length, muted in notes:
+            seconds = STEP * (0.9 if muted else length) + (0.0 if muted else 0.12)
+            chord = power_chord(semitone(root) * octave, seconds, take, detune)
+            fade = np.exp(-(22.0 if muted else 0.55) * mt(seconds)[: len(chord)])
+            # A short fade-out so each chord is cut by the next, as a hand would mute it.
+            tail = np.minimum(1.0, (len(chord) - np.arange(len(chord))) / (MR * 0.02))
+            mplace(g, chord * fade * tail, bar * BAR + step * STEP, 0.85 if muted else 1.0)
+            step += length
+    return g
+
+
+left = high_gain_amp(guitar_take(0, 1.0), 22.0)
+right = high_gain_amp(guitar_take(10, 1.0038), 22.0)
+low = high_gain_amp(guitar_take(20, 0.9965, 0.5), 14.0)    # a third guitar an octave down
+guitars = left + right
+guitars /= np.max(np.abs(guitars))
+low /= np.max(np.abs(low))
+
+# Bass: a distorted note under every chord, plus a clean sub.
+bass = np.zeros(int(MR * BOSS_LEN))
+for bar, notes in enumerate(RIFF):
+    step = 0
+    for root, length, muted in notes:
+        seconds = STEP * (0.9 if muted else length)
+        xx = mt(seconds)
+        freq = semitone(root)
+        tone = np.sin(2 * np.pi * freq * xx) + 0.5 * np.sin(2 * np.pi * freq * 0.5 * xx)
+        mplace(bass, np.tanh(3.0 * tone) * np.exp(-(14.0 if muted else 0.8) * xx), bar * BAR + step * STEP)
+        step += length
+bass = mfilter(bass, hi=900.0, order=4)
+bass /= np.max(np.abs(bass))
+
+
+def boss_kick():
+    xx = mt(0.32)
+    freq = 42.0 + 120.0 * np.exp(-34.0 * xx)
+    body = np.tanh(2.5 * np.sin(2 * np.pi * np.cumsum(freq) / MR)) * np.exp(-9.0 * xx)
+    click = mfilter(np.random.default_rng(1).normal(0, 1, len(xx)), lo=2500.0, hi=7500.0, order=4) * np.exp(-150.0 * xx)
+    return body + 0.5 * click
+
+
+def boss_snare():
+    xx = mt(0.42)
+    crack = mfilter(np.random.default_rng(2).normal(0, 1, len(xx)), lo=600.0, hi=9000.0, order=4) * np.exp(-13.0 * xx)
+    return np.tanh(1.8 * (crack + 0.8 * np.sin(2 * np.pi * 180.0 * xx) * np.exp(-20.0 * xx)))
+
+
+def cymbal(seconds, decay, seed):
+    xx = mt(seconds)
+    return mfilter(np.random.default_rng(seed).normal(0, 1, len(xx)), lo=5500.0, order=4) * np.exp(-decay * xx)
+
+
+KICK, SNARE, HAT, CRASH = boss_kick(), boss_snare(), cymbal(0.09, 55.0, 5), cymbal(2.4, 1.9, 6)
+
+
+def drums(tier):
+    d = np.zeros(int(MR * BOSS_LEN))
+    for bar in range(BOSS_BARS):
+        base = bar * BAR
+        if bar % 4 == 0:
+            mplace(d, CRASH, base, 0.5)
+        # Half-time: a heavy kick on the one, the snare landing late on the three.
+        kicks = [0, 6, 7] if tier == 1 else ([0, 3, 6, 7, 14] if tier == 2 else [0, 2, 3, 6, 7, 10, 11, 14, 15])
+        for k in kicks:
+            mplace(d, KICK, base + k * STEP, 1.0)
+        mplace(d, SNARE, base + 8 * STEP, 1.0)
+        for k in range(0, 16, 4 if tier == 1 else 2):
+            mplace(d, HAT, base + k * STEP, 0.22)
+        if bar == BOSS_BARS - 1:
+            for k in (12, 13, 14, 15):
+                mplace(d, SNARE, base + k * STEP, 0.55 + 0.1 * (k - 12))
+    return d / np.max(np.abs(d))
+
+
+def save_music(name, data, peak=0.82):
+    data = np.asarray(data, dtype=np.float64)
+    data = data / np.max(np.abs(data)) * peak
+    with wave.open(os.path.join(OUT, name + ".wav"), "wb") as f:
+        f.setnchannels(1)
+        f.setsampwidth(2)
+        f.setframerate(MR)
+        f.writeframes((data * 32767.0).astype(np.int16).tobytes())
+
+
+# Three tiers of the same riff, one per boss met in a run: guitars and a slow
+# beat; then the octave-down guitar and a busier kick; then everything, louder.
 for tier in (1, 2, 3):
-    save("music_pressure%d" % tier, pressure(tier), 0.66)
+    mix = 0.9 * guitars + 0.5 * bass + 1.0 * drums(tier)
+    if tier >= 2:
+        mix += 0.55 * low
+    mix = room(mix, 0.16)
+    mix = np.tanh((1.7 + 0.35 * tier) * mix / np.max(np.abs(mix)))   # a limiter, pushed harder each tier
+    save_music("music_pressure%d" % tier, mix)
 print("wrote", len(os.listdir(OUT)), "files to", os.path.normpath(OUT))

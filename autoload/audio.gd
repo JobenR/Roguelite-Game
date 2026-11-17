@@ -4,8 +4,8 @@ extends Node
 ## tools/gen_audio.py. Respects the sound, music and vibration settings.
 ##
 ## Music: a calm plucked koto line for normal play, and three "pressure"
-## versions of the same melody, each faster and busier. A boss switches to
-## pressure; the tier rises with each boss met in the run (first boss tier 1,
+## tracks for boss fights: one slow, down-tuned, heavily distorted guitar
+## riff, each tier heavier than the last. A boss switches to pressure; the tier rises with each boss met in the run (first boss tier 1,
 ## second tier 2, third and the final boss tier 3). It eases back to calm a
 ## few seconds after the boss dies.
 
