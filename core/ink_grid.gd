@@ -69,6 +69,11 @@ func is_ink(pos: Vector2) -> bool:
 func set_cell(index: int, state: int) -> void:
 	var old := cells[index]
 	if old == state or old == LOCKED or old == DEAD:
+		# Fresh ink laid over Deluge-flooded ground shows as an ordinary stroke,
+		# so the player can still see their trail and splats there.
+		if (state == INK or state == LOCKED) and old != DEAD and pixels[index * 4 + 3] != 0:
+			pixels[index * 4 + 3] = 0
+			dirty = true
 		return
 	var was_ink := old == INK
 	var now_ink := state == INK or state == LOCKED
