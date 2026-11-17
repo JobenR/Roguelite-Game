@@ -186,6 +186,10 @@ func _build_modes() -> void:
 		name_label.add_theme_font_override("font", Sumi.TITLE_FONT)
 		face.add_child(name_label)
 		face.add_child(_card_text(String(def.get("desc", "")), 18, Sumi.INK))
+		if def.has("paint"):
+			var next := PaintSystem.next_picture()
+			var got := int((SaveData.data.get("pictures", {}) as Dictionary).get(next, 0))
+			face.add_child(_card_text("Next: %s (%d/3 stars)" % [String(DataDB.pictures.get(next, {}).get("name", "")), got], 18, Sumi.SEAL))
 		row.add_child(card)
 		if id == GameState.mode_id:
 			card.grab_focus()

@@ -53,10 +53,23 @@ reward.** The user picked mock-up A plus E and rejected a first attempt that
   Deluge, and an Item button for saved items.
 - PC keys: WASD move, arrow keys aim, Space fire, E bomb, Q Deluge, F item,
   Shift dash (once Dash is owned), Esc pause.
-- Modes: Survival (bounded arena about 3x3 screens, endless) and Burning Page
+- Modes: Survival (bounded arena about 3x3 screens, endless), Masterpiece (below) and Burning Page
   (arena shrinks; your swallowed ink stays walkable and locked in, everything
   else swallowed is impassable for everyone; each swallowed strip pays out by
   the share you owned).
+
+- Third mode, Masterpiece (paint by number; the user's idea, shaped by their
+  answers): the page carries a picture of numbered areas (`data/pictures.json`,
+  shapes in a 1600x900 design space). Ink wells on the page change the
+  player's ink, colour AND play style (`PaintSystem`, `Upgrades.swap_ink`,
+  `Events.ink_changed`). The wrong colour paints but does not count; smudge
+  wipes paint; the score is the average share correct over the areas; stars at
+  60/75/90% are awarded when the final boss dies and saved per picture; a
+  12-second no-spawn lull with boss music follows each boss; the Deluge fills
+  the numbered area the player stands in (Flood Fill card adds more areas).
+  Built from the user's description and not yet played by them: balance and
+  feel are provisional. Not built yet: a picture gallery or picker (the mode
+  serves the first picture without a star).
 
 ## Milestones
 
@@ -170,7 +183,7 @@ explicitly. This includes end-of-update feedback questions: offer choices.
 - `modes/` one root scene per game mode; the root script wires systems together.
 - `tools/` headless scripts: `setup_input_map.gd`, `smoke_test.gd`, `ink_test.gd`,
   `restart_test.gd`, `meta_test.gd` (final boss, victory, payout, unlocks),
-  `burn_test.gd` (Burning Page), `progress_test.gd` (skills, store items,
+  `burn_test.gd` (Burning Page), `paint_test.gd` (Masterpiece), `progress_test.gd` (skills, store items,
   Lasso, Deluge), `balance_sim.gd` (a bot run
   that prints horde size and level per minute); and `gen_audio.py` (regenerates every sound; needs numpy).
 
@@ -261,7 +274,9 @@ explicitly. This includes end-of-update feedback questions: offer choices.
 
 - `InkGrid`: 8px cells (`ink_cell_size` in modes.json), one byte each (`NEUTRAL`, `INK`, `SMUDGE`,
   `LOCKED` = permanent player ink that nothing overwrites; test ownership with
-  `grid.is_ink(pos)`, never `== INK`), plus an RGBA
+  `grid.is_ink(pos)`, never `== INK`; in Masterpiece each cell also has a
+  `tint`, a `target` colour and a `region`, and all painting uses
+  `grid.current_tint`), plus an RGBA
   buffer uploaded as one texture and drawn by `entities/ground/ink.gdshader`.
 - Player footsteps paint a thin line (`trail_radius`). Kills call
   `InkSystem.splat(pos, radius, dir)`: a lumpy core plus a streak and droplets
@@ -306,6 +321,7 @@ godot --headless --path . --fixed-fps 60 --script res://tools/restart_test.gd
 godot --headless --path . --fixed-fps 60 --script res://tools/meta_test.gd
 godot --headless --path . --fixed-fps 60 --script res://tools/burn_test.gd
 godot --headless --path . --fixed-fps 60 --script res://tools/progress_test.gd
+godot --headless --path . --fixed-fps 60 --script res://tools/paint_test.gd
 ```
 
 Always run these under `timeout` and pipe through `grep`/`head`: a tool script
@@ -314,5 +330,5 @@ tool script run with `--script`, do not type a variable as a class that uses
 autoloads (`BurnSystem`, `Player`...): it is compiled before the autoloads
 exist. Use `Node` and `get`/`call`.
 
-The ink, meta, burn and progress tests must print ALL PASSED; the smoke test must print frame lines with
+The ink, meta, burn, progress and paint tests must print ALL PASSED; the smoke test must print frame lines with
 no script errors.

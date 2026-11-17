@@ -43,6 +43,13 @@ func reset() -> void:
 	Events.upgrade_applied.emit("")
 
 
+## Masterpiece mode: trade one ink's strengths and weaknesses for another's.
+func swap_ink(old_id: String, new_id: String) -> void:
+	_apply_effects(DataDB.inks.get(old_id, {}).get("effects", []), -1.0)
+	_apply_effects(DataDB.inks.get(new_id, {}).get("effects", []))
+	Events.upgrade_applied.emit("")
+
+
 ## Final value of a stat given its base.
 func value(stat: String, base: float) -> float:
 	return (base + float(_add.get(stat, 0.0))) * (1.0 + float(_mult.get(stat, 0.0)))
@@ -76,6 +83,9 @@ func roll_choices(count: int) -> Array[String]:
 	var all := defs()
 	for id: String in all:
 		if banished.has(id) or bool(all[id].get("retired", false)) or level_of(id) >= int(all[id].get("max_level", 1)):
+			continue
+		# Some cards only make sense in one mode.
+		if all[id].has("mode") and String(all[id]["mode"]) != GameState.mode_id:
 			continue
 		var weight := float(weights.get(String(all[id].get("rarity", "common")), 100.0))
 		if level_of(id) > 0:

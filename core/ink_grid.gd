@@ -34,6 +34,26 @@ var bleed_rows: int = 0
 var bleed: PackedByteArray = PackedByteArray()
 
 
+## Paint by number (Masterpiece mode). Off in every other mode.
+## `target` is the colour each cell should be (0 = not part of the picture),
+## `region` the numbered area it belongs to, `tint` the colour it was last
+## painted with. A cell is correct when it is ink and tint equals target.
+var paint_on: bool = false
+var current_tint: int = 1
+var tint: PackedByteArray = PackedByteArray()
+var target: PackedByteArray = PackedByteArray()
+var region: PackedByteArray = PackedByteArray()
+var palette: Array[Color] = []          # index 0 unused
+var paint_pixels: PackedByteArray = PackedByteArray()   # RGB8: the colour laid on each cell
+var paint_dirty: bool = false
+var region_cells: Array[PackedInt32Array] = []   # cell indices of each region; index 0 unused
+var region_target: PackedByteArray = PackedByteArray()
+var region_center: PackedVector2Array = PackedVector2Array()
+var region_correct: PackedInt32Array = PackedInt32Array()   # correct cells in each region
+var correct_count: int = 0
+var target_total: int = 0
+
+
 func _init(area_size: Vector2, p_cell_size: float) -> void:
 	cell_size = p_cell_size
 	cols = maxi(1, int(ceil(area_size.x / cell_size)))
@@ -71,10 +91,19 @@ func set_cell(index: int, state: int) -> void:
 	if old == state or old == LOCKED or old == DEAD:
 		# Fresh ink laid over Deluge-flooded ground shows as an ordinary stroke,
 		# so the player can still see their trail and splats there.
-		if (state == INK or state == LOCKED) and old != DEAD and pixels[index * 4 + 3] != 0:
-			pixels[index * 4 + 3] = 0
-			dirty = true
+		if (state == INK or state == LOCKED) and old != DEAD:
+			if pixels[index * 4 + 3] != 0:
+				pixels[index * 4 + 3] = 0
+				dirty = true
+			if paint_on and tint[index] != current_tint:
+				_retint(index, true)
 		return
+	if paint_on:
+		if old == INK and tint[index] == target[index] and target[index] != 0:
+			correct_count -= 1
+			region_correct[region[index]] -= 1
+		if state == INK or state == LOCKED:
+			_retint(index, false)
 	var was_ink := old == INK
 	var now_ink := state == INK or state == LOCKED
 	if was_ink != now_ink:
@@ -97,6 +126,123 @@ func set_cell(index: int, state: int) -> void:
 	pixels[p + 2] = 255 if state == LOCKED else 0
 	pixels[p + 3] = 0  # any change clears the pulse glow
 	dirty = true
+
+
+## Lays the current colour on a cell. `was_ink` says the cell already held
+## ink, so its old colour may have been counted as correct.
+func _retint(index: int, was_ink: bool) -> void:
+	var goal := target[index]
+	if was_ink and goal != 0 and tint[index] == goal:
+		correct_count -= 1
+		region_correct[region[index]] -= 1
+	tint[index] = current_tint
+	if goal != 0 and current_tint == goal:
+		correct_count += 1
+		region_correct[region[index]] += 1
+	var c := palette[current_tint]
+	var p := index * 3
+	paint_pixels[p] = c.r8
+	paint_pixels[p + 1] = c.g8
+	paint_pixels[p + 2] = c.b8
+	paint_dirty = true
+	dirty = true
+
+
+## Turns on paint by number. `p_target` and `p_region` are one byte per cell.
+func start_paint(p_palette: Array[Color], p_target: PackedByteArray, p_region: PackedByteArray) -> void:
+	paint_on = true
+	palette = p_palette
+	target = p_target
+	region = p_region
+	tint.resize(cols * rows)
+	paint_pixels.resize(cols * rows * 3)
+	target_total = 0
+	var biggest := 0
+	for i in cols * rows:
+		biggest = maxi(biggest, region[i])
+	region_cells.clear()
+	region_target.resize(biggest + 1)
+	region_center.resize(biggest + 1)
+	region_correct.resize(biggest + 1)
+	region_correct.fill(0)
+	for id in biggest + 1:
+		region_cells.append(PackedInt32Array())
+	for i in cols * rows:
+		if region[i] != 0:
+			region_cells[region[i]].append(i)
+			region_target[region[i]] = target[i]
+	for id in range(1, biggest + 1):
+		region_center[id] = _middle_of(region_cells[id])
+	for i in cols * rows:
+		var goal := target[i]
+		if goal != 0:
+			target_total += 1
+		# Bare cells start as the colour they should become, so the soft edge
+		# of a stroke never blends toward black.
+		var c := palette[goal if goal != 0 else 1]
+		paint_pixels[i * 3] = c.r8
+		paint_pixels[i * 3 + 1] = c.g8
+		paint_pixels[i * 3 + 2] = c.b8
+	paint_dirty = true
+
+
+## A point well inside a region: the cell nearest its centre of mass.
+func _middle_of(list: PackedInt32Array) -> Vector2:
+	if list.is_empty():
+		return Vector2.ZERO
+	var sum := Vector2.ZERO
+	for i in list:
+		sum += Vector2(i % cols, i / cols)
+	var mean := sum / float(list.size())
+	var best := list[0]
+	var best_d := INF
+	for i in list:
+		var d := Vector2(i % cols, i / cols).distance_squared_to(mean)
+		if d < best_d:
+			best_d = d
+			best = i
+	return (Vector2(best % cols, best / cols) + Vector2(0.5, 0.5)) * cell_size
+
+
+## How much of the picture is right, 0..1: the average over its numbered
+## areas, so a small area matters as much as a large one.
+func accuracy() -> float:
+	var sum := 0.0
+	var count := 0
+	for id in range(1, region_cells.size()):
+		if not region_cells[id].is_empty():
+			sum += float(region_correct[id]) / float(region_cells[id].size())
+			count += 1
+	return sum / float(maxi(1, count))
+
+
+## Share of one numbered region painted in the right colour, 0..1.
+func region_accuracy(id: int) -> float:
+	return float(region_correct[id]) / float(maxi(1, region_cells[id].size()))
+
+
+## Fills a whole numbered region with the current colour and makes it glow.
+func flood_region(id: int, state: int) -> int:
+	var changed := 0
+	for i in region_cells[id]:
+		if cells[i] != state and cells[i] != LOCKED and cells[i] != DEAD:
+			changed += 1
+		set_cell(i, state)
+		set_glow(i)
+	return changed
+
+
+## Up to `count` unfinished regions that want colour `want`, nearest first.
+func regions_wanting(want: int, from: Vector2, skip: int, count: int) -> Array[int]:
+	var found: Array[int] = []
+	if count <= 0:
+		return found
+	for id in range(1, region_cells.size()):
+		if id != skip and region_target[id] == want and not region_cells[id].is_empty() and region_accuracy(id) < 0.9:
+			found.append(id)
+	found.sort_custom(func(a: int, b: int) -> bool:
+		return region_center[a].distance_squared_to(from) < region_center[b].distance_squared_to(from))
+	return found.slice(0, count)
 
 
 func is_dead(pos: Vector2) -> bool:

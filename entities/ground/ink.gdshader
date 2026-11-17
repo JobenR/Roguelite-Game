@@ -18,6 +18,10 @@ uniform vec4 locked_color : source_color = vec4(0.05, 0.14, 0.62, 0.95);
 uniform vec4 smudge_color : source_color = vec4(0.12, 0.11, 0.10, 0.36);
 uniform float bleed_strength = 0.42;
 uniform vec2 grid_size = vec2(480.0, 270.0);
+// Paint by number (Masterpiece mode): each cell carries its own ink colour.
+uniform bool paint_on = false;
+uniform sampler2D paint_tex : filter_linear, repeat_disable;    // colour laid on each cell
+uniform sampler2D target_tex : filter_nearest, repeat_disable;  // rgb = colour wanted, a = region id
 
 float hash(vec2 p) {
 	return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);
@@ -60,29 +64,61 @@ void fragment() {
 	float core = smoothstep(0.6, 0.95, t.r);
 	float lit = smoothstep(0.35, 0.6, t.a) * ink;
 
+	vec3 c_ink = ink_color.rgb;
+	vec3 c_light = ink_light.rgb;
+	vec3 c_glow = glow_color.rgb;
+	vec3 c_glow_light = glow_light.rgb;
+	vec3 c_locked = locked_color.rgb;
+	float hint = 0.0;
+	float outline = 0.0;
+	vec3 want = vec3(0.0);
+	if (paint_on) {
+		c_ink = texture(paint_tex, uv).rgb;
+		c_light = mix(c_ink, vec3(1.0), 0.3);
+		// Flooded areas shine only a little, so the picture keeps its colours.
+		c_glow = mix(c_ink, vec3(1.0), 0.12);
+		c_glow_light = mix(c_ink, vec3(1.0), 0.38);
+		c_locked = c_ink * 0.6;
+		// Read through the same wobble as the ink, so the outlines look hand drawn.
+		vec2 at = UV + wobble * 1.6 / grid_size;
+		vec4 goal = texture(target_tex, at);
+		vec2 one = 1.0 / grid_size;
+		float differs = step(0.001, abs(goal.a - texture(target_tex, at + vec2(one.x, 0.0)).a))
+				+ step(0.001, abs(goal.a - texture(target_tex, at + vec2(0.0, one.y)).a));
+		outline = min(differs, 1.0);
+		hint = step(0.001, goal.a);
+		want = goal.rgb;
+	}
+
 	// Bottom to top: smudge wash, bleed halo, glow halo, then the ink itself.
 	vec3 col = smudge_color.rgb;
 	float smudge = smoothstep(0.12, 0.7, wide_smudge + (wash - 0.5) * 0.18) * (1.0 - ink);
 	float a = smudge * smudge_color.a * (0.7 + 0.5 * wash);
 
 	float halo = smoothstep(0.03, 0.75, soak + (wash - 0.5) * 0.12) * (1.0 - ink) * bleed_strength;
-	over(col, a, ink_color.rgb, halo);
+	over(col, a, c_ink, halo);
 
 	// Where the two inks meet they marble together instead of meeting at an edge.
 	float meeting = smoothstep(0.05, 0.4, wide_smudge) * smoothstep(0.04, 0.5, soak) * (1.0 - ink);
 	float swirl = noise(cell * 0.7 + vec2(wash * 4.0, bristle * 3.0));
-	vec3 marble = mix(ink_color.rgb, vec3(0.16, 0.17, 0.24), smoothstep(0.3, 0.7, swirl));
+	vec3 marble = mix(c_ink, vec3(0.16, 0.17, 0.24), smoothstep(0.3, 0.7, swirl));
 	over(col, a, marble, meeting * 0.6);
 
 	float shine = smoothstep(0.03, 0.42, wide_glow) * (1.0 - ink) * 0.5;
-	over(col, a, glow_color.rgb, shine);
+	over(col, a, c_glow, shine);
 
-	vec3 black = mix(ink_color.rgb, ink_light.rgb, core * 0.5) * (0.86 + 0.28 * bristle);
-	vec3 blue = mix(glow_color.rgb, glow_light.rgb, core * 0.6) * (0.92 + 0.16 * bristle);
-	blue = mix(blue, locked_color.rgb, smoothstep(0.4, 0.6, t.b) * core);
+	// The picture to paint: a faint wash of the colour each area wants.
+	over(col, a, want, hint * (1.0 - ink) * (0.13 + 0.05 * wash));
+
+	vec3 black = mix(c_ink, c_light, core * 0.5) * (0.86 + 0.28 * bristle);
+	vec3 blue = mix(c_glow, c_glow_light, core * 0.6) * (0.92 + 0.16 * bristle);
+	blue = mix(blue, c_locked, smoothstep(0.4, 0.6, t.b) * core);
 	vec3 ink_rgb = mix(black, blue, lit);
 	float ink_a = ink * mix(ink_color.a * (0.86 + 0.14 * bristle), glow_color.a, lit);
 	over(col, a, ink_rgb, ink_a);
+
+	// Brushed outlines between the numbered areas, fainter once painted over.
+	over(col, a, vec3(0.08, 0.07, 0.06), outline * mix(0.6, 0.3, ink) * (0.6 + 0.6 * dry));
 
 	// Burnt paper (Burning Page mode): charred black with a glowing ember edge.
 	float burnt_raw = min(t.g, t.b);

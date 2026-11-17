@@ -1935,6 +1935,24 @@
     }
    ],
    "short": "Trail blocks foes"
+  },
+  "flood_fill": {
+   "name": "Flood Fill",
+   "desc": "The Deluge also fills the nearest other area that needs your colour",
+   "max_level": 3,
+   "effects": [
+    {
+     "stat": "flood_fill",
+     "add": 1
+    }
+   ],
+   "category": "ink",
+   "icon": "wide_ripple",
+   "badge": "FF",
+   "set": "pulse",
+   "rarity": "epic",
+   "short": "Deluge fills +1 area",
+   "mode": "masterpiece"
   }
  },
  "synergies": {

@@ -48,6 +48,12 @@ func setup(player: Player, enemies: EnemyManager, bullets: BulletManager, ink: I
 	_plane.merge({"bullet_speed": 250.0, "bullet_life": 4.5, "bullet_radius": 9.0, "homing": 5.5, "homing_range": 420.0, "no_split": true,
 		"visual": {"sides": 3, "color": "#f6f1e3", "outline": "#141210", "glow": "#b8ad96", "streak": 14, "shadow": false}}, true)
 	Events.player_hurt.connect(_on_player_hurt)
+	Events.ink_changed.connect(func() -> void:
+		for gun: Dictionary in [_quill, _spray]:
+			var shot_look: Dictionary = gun.get("visual", {})
+			shot_look["color"] = GameState.ink_color.to_html()
+			shot_look["outline"] = GameState.ink_color.to_html()
+			shot_look["glow"] = GameState.ink_light.to_html())
 	Events.power_granted.connect(_on_power_granted)
 
 

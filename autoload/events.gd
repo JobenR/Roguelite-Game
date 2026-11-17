@@ -40,3 +40,5 @@ signal heavy_presence(count: int)
 signal strip_burned(index: int, share: float, xp: int, perfect: bool)
 signal items_changed
 signal seal_collected(amount: int)
+## Masterpiece mode: the player dipped in a well and now carries another ink.
+signal ink_changed

@@ -73,6 +73,9 @@ func _ready() -> void:
 	Events.final_boss_defeated.connect(_on_victory)
 
 
+var paint: PaintSystem = null
+
+
 func setup(ink: InkSystem) -> void:
 	_ink = ink
 
@@ -121,6 +124,14 @@ func _show() -> void:
 	var ink_name := String(DataDB.inks.get(GameState.ink_id, {}).get("name", "Blue"))
 	_caption.text = "\"%s\"\nYour ink %d%%   Smudge %d%%   Bare paper %d%%" % [_title_for(ink_name, mine, theirs), mine, theirs, maxi(0, 100 - mine - theirs)]
 	_ink_line.text = "%s ink" % ink_name
+	if paint != null:
+		# Masterpiece: the picture, how much of it is right, and the stars.
+		var right := int(_ink.grid.accuracy() * 100.0)
+		_caption.text = "\"%s\"\nPainted correctly %d%%" % [String(paint.picture.get("name", "")), right]
+		if _victory:
+			_ink_line.text = "%d of 3 stars   %d%% correct" % [paint.stars(), right]
+		else:
+			_ink_line.text = "%d%% correct. Beat the final boss to earn stars." % right
 	_stats.text = "Survived %s\nLevel %d\nKills %d" % [GameState.format_time(GameState.run_time), GameState.level, GameState.kills]
 	visible = true
 	_primary.grab_focus()

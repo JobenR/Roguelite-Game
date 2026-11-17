@@ -22,6 +22,8 @@ var _final_cfg: Dictionary = {}
 var _final_stage: int = 0  # 0 waiting, 1 warned, 2 spawned
 ## Set by Burning Page mode, so nothing spawns on burnt paper.
 var burn: BurnSystem = null
+## Seconds for which nothing new spawns (Masterpiece mode's touch-up lull).
+var hold_spawns: float = 0.0
 var ink: InkSystem = null
 
 
@@ -78,6 +80,9 @@ func _process(delta: float) -> void:
 		_warned_index = wave_index + 1
 		Events.wave_warning.emit(wave_index + 2, next_in, String(_waves[wave_index + 1].get("label", "")))
 	_update_boss()
+	if hold_spawns > 0.0:
+		hold_spawns -= delta
+		return
 	if wave_index < 0:
 		return
 	var wave: Dictionary = _waves[wave_index]

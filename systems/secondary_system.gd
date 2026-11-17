@@ -35,6 +35,13 @@ func setup(player: Player, enemies: EnemyManager, ink: InkSystem, effects: Effec
 	look["halo"] = GameState.ink_light.to_html()
 	visual.setup(look, float(_weapon.get("bullet_radius", 10.0)))
 	visual.visible = false
+	Events.ink_changed.connect(func() -> void:
+		var fresh: Dictionary = (_weapon.get("visual", {}) as Dictionary).duplicate()
+		fresh["color"] = GameState.ink_color.to_html()
+		fresh["halo"] = GameState.ink_light.to_html()
+		var shown := visual.visible
+		visual.setup(fresh, float(_weapon.get("bullet_radius", 10.0)))
+		visual.visible = shown)
 	Events.enemy_killed.connect(_on_enemy_killed)
 	Events.secondary_charge_changed.emit(charge)
 	Events.player_died.connect(_stop_aiming)

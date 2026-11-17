@@ -13,6 +13,9 @@ var _texture: ImageTexture
 var _sprite: Sprite2D
 var _bleed_image: Image
 var _bleed_texture: ImageTexture
+var _paint_image: Image
+var _paint_texture: ImageTexture
+var _target_texture: ImageTexture
 var _enemies: EnemyManager
 var _pending_blasts: Array[Vector3] = []  # x, y, radius
 var _tax_left: float = 10.0
@@ -45,6 +48,25 @@ func setup(arena: Rect2, enemies: EnemyManager, p_cell_size: float) -> void:
 	_sprite.material = material
 	add_child(_sprite)
 	Events.enemy_killed.connect(_on_enemy_killed)
+
+
+## Paint by number: hands the shader the per-cell colours and the picture.
+func start_paint() -> void:
+	var material := _sprite.material as ShaderMaterial
+	_paint_image = Image.create_from_data(grid.cols, grid.rows, false, Image.FORMAT_RGB8, grid.paint_pixels)
+	_paint_texture = ImageTexture.create_from_image(_paint_image)
+	var goal := PackedByteArray()
+	goal.resize(grid.cols * grid.rows * 4)
+	for i in grid.cols * grid.rows:
+		var c := grid.palette[grid.target[i]] if grid.target[i] != 0 else Color.BLACK
+		goal[i * 4] = c.r8
+		goal[i * 4 + 1] = c.g8
+		goal[i * 4 + 2] = c.b8
+		goal[i * 4 + 3] = grid.region[i] * 6   # spread the ids so neighbours differ clearly
+	_target_texture = ImageTexture.create_from_image(Image.create_from_data(grid.cols, grid.rows, false, Image.FORMAT_RGBA8, goal))
+	material.set_shader_parameter("paint_on", true)
+	material.set_shader_parameter("paint_tex", _paint_texture)
+	material.set_shader_parameter("target_tex", _target_texture)
 
 
 ## Share of the page covered by the player's ink, 0..1.
@@ -147,3 +169,7 @@ func _process(delta: float) -> void:
 		_texture.update(_image)
 		_bleed_image.set_data(grid.bleed_cols, grid.bleed_rows, false, Image.FORMAT_L8, grid.bleed)
 		_bleed_texture.update(_bleed_image)
+		if grid.paint_dirty and _paint_texture != null:
+			grid.paint_dirty = false
+			_paint_image.set_data(grid.cols, grid.rows, false, Image.FORMAT_RGB8, grid.paint_pixels)
+			_paint_texture.update(_paint_image)

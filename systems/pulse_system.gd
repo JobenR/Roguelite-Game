@@ -79,7 +79,17 @@ func fire() -> int:
 
 	# The flood: a disc of glowing ink (permanent with Permanent Marker).
 	var state := InkGrid.LOCKED if Upgrades.bonus("permanent_marker") > 0.0 else InkGrid.INK
-	var flooded := grid.flood_disc(center, radius, state)
+	var flooded := 0
+	var area := int(grid.region[grid.cell_index(center)]) if grid.paint_on else 0
+	if area != 0:
+		# Masterpiece mode: standing in a numbered area, the Deluge is a fill
+		# tool. Flood Fill adds the nearest other areas wanting this colour.
+		flooded = grid.flood_region(area, state)
+		for other in grid.regions_wanting(grid.current_tint, center, area, int(Upgrades.bonus("flood_fill"))):
+			flooded += grid.flood_region(other, state)
+			_effects.big_moment(grid.region_center[other], 260.0, GameState.ink_light, 0.7)
+	else:
+		flooded = grid.flood_disc(center, radius, state)
 
 	_player.heal(Upgrades.bonus("pulse_heal"))
 	var harvest := Upgrades.bonus("harvest")

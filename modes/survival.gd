@@ -78,7 +78,20 @@ func _ready() -> void:
 		director.ink = ink
 		debug_overlay.burn = burn
 
+	# Masterpiece: lay out the picture and its ink wells. Done before the run
+	# starts, because it decides which ink the player begins with.
+	if mode.has("paint"):
+		var paint := PaintSystem.new()
+		paint.name = "PaintSystem"
+		add_child(paint)
+		move_child(paint, ink.get_index() + 1)
+		paint.setup(player, ink, effects, director, rect, mode["paint"])
+		run_summary.paint = paint
+		hud.paint = paint
+
 	GameState.start_run()
+	if mode.has("paint"):
+		Events.ink_changed.emit()
 	# Head Start (a store item): three free cards as the run begins.
 	if bool(SaveData.data.get("use_head_start", true)) and SaveData.use_item("head_start"):
 		for i in 3:

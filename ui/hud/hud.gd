@@ -3,6 +3,7 @@ extends Control
 ## Built in code for now.
 
 var _ink: InkSystem
+var paint: PaintSystem = null
 var _milestones: MilestoneSystem
 var _hp_bar: ProgressBar
 var _bomb_bar: ProgressBar
@@ -163,7 +164,11 @@ func _process(delta: float) -> void:
 	if _ink != null and _ink.grid != null:
 		# Floor, so the number never shows a milestone before it is reached.
 		ink_text = "   Ink %d%%" % int(_ink.ownership() * 100.0)
-		if _milestones != null and _milestones.next_percent() > 0:
+		if _ink.grid.paint_on:
+			ink_text = "   Picture %d%%" % int(_ink.grid.accuracy() * 100.0)
+			if paint != null:
+				ink_text += "  Stars %d/3" % paint.stars()
+		elif _milestones != null and _milestones.next_percent() > 0:
 			ink_text += " > %d%%" % _milestones.next_percent()
 	_time_label.text = "%s   Lv %d%s" % [GameState.format_time(GameState.run_time), GameState.level, ink_text]
 	_kills_label.text = "Kills %d\nSeals %d" % [GameState.kills, GameState.seals_earned()]

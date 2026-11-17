@@ -29,5 +29,25 @@
     },
     "name": "Burning Page",
     "desc": "The page burns inward. Your ink survives as ground only you made; each strip pays out for the share you owned. Beat The Great Eraser at 10:00."
+  },
+  "masterpiece": {
+    "arena_width": 3840,
+    "arena_height": 2160,
+    "ink_cell_size": 8,
+    "camera_zoom": 1.0,
+    "camera_zoom_touch": 1.3,
+    "paint": {
+      "stars": [
+        0.6,
+        0.75,
+        0.9
+      ],
+      "lull_seconds": 12,
+      "well_radius": 70,
+      "trail_mult": 2.5,
+      "done_share": 0.9
+    },
+    "name": "Masterpiece",
+    "desc": "Paint by number. Dip in the ink wells to change colour and style, fill each numbered area, and keep the horde off your picture. Beat The Great Eraser at 10:00 for up to three stars."
   }
 }

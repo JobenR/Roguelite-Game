@@ -84,6 +84,9 @@ func setup(enemies: EnemyManager, bullets: BulletManager, arena: Rect2, ink: Ink
 	_sniper_weapon["bullet_radius"] = DataDB.arsenal_num("sniper", "radius", 10.0)
 	_sniper_weapon["pierce_bonus"] = 99
 	_trail_radius = float(stats.get("trail_radius", _trail_radius))
+	# Masterpiece mode paints with a broader stroke.
+	_trail_radius *= float(DataDB.modes.get(GameState.mode_id, {}).get("paint", {}).get("trail_mult", 1.0))
+	Events.ink_changed.connect(_on_ink_changed)
 	_ink_speed_bonus = float(stats.get("ink_speed_bonus", 0.0))
 	_base_max_hp = max_hp
 	_base_pickup = float(stats.get("pickup_radius", _base_pickup))
@@ -103,6 +106,22 @@ func setup(enemies: EnemyManager, bullets: BulletManager, arena: Rect2, ink: Ink
 	barrel.position = Vector2(radius + 7.0, 0.0)
 	barrel.setup({"sides": 3, "color": GameState.ink_color.to_html(), "outline": GameState.ink_color.to_html(), "shadow": false}, 8.0)
 	Events.player_health_changed.emit(hp, max_hp)
+
+
+## A new ink was picked up from a well: recolour the drop, the gun and its shots.
+func _on_ink_changed() -> void:
+	for gun: Dictionary in [weapon, _sniper_weapon]:
+		var shot_look: Dictionary = gun.get("visual", {})
+		shot_look["color"] = GameState.ink_color.to_html()
+		shot_look["outline"] = GameState.ink_color.to_html()
+		shot_look["glow"] = GameState.ink_light.to_html()
+	var look: Dictionary = (_stats.get("visual", {}) as Dictionary).duplicate()
+	look["color"] = GameState.ink_color.to_html()
+	look["tier"] = clampi((SaveData.char_level() - 1) / 4, 0, 5)
+	look["marks"] = (SaveData.data.get("skills", {}) as Dictionary).duplicate()
+	look["core_shape"] = String(SaveData.data.get("look", "square"))
+	visual.setup(look, radius)
+	barrel.setup({"sides": 3, "color": GameState.ink_color.to_html(), "outline": GameState.ink_color.to_html(), "shadow": false}, 8.0)
 
 
 func _process(delta: float) -> void:

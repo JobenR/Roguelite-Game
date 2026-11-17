@@ -173,6 +173,11 @@ func _process(delta: float) -> void:
 		track.volume_db = lerpf(SILENT_DB, MUSIC_DB, sqrt(_levels[i]))
 
 
+## Keeps the boss music going for a while with no boss on the page.
+func hold_pressure(seconds: float) -> void:
+	_cool_left = maxf(_cool_left, seconds)
+
+
 ## A short vibration on phones, if the setting allows.
 func buzz(milliseconds: int) -> void:
 	if SaveData.setting("vibration"):

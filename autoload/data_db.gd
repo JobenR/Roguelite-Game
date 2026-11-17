@@ -16,6 +16,7 @@ var inks: Dictionary = {}
 var meta: Dictionary = {}
 var skills: Dictionary = {}
 var store: Dictionary = {}
+var pictures: Dictionary = {}
 
 
 func _ready() -> void:
@@ -34,6 +35,7 @@ func _ready() -> void:
 	meta = _load("res://data/meta.json")
 	skills = _load("res://data/skills.json")
 	store = _load("res://data/store.json")
+	pictures = _load("res://data/pictures.json")
 
 
 func _load(path: String) -> Dictionary:
