@@ -1,4 +1,23 @@
 {
+  "reclaim": {
+    "arena_width": 2560,
+    "arena_height": 1440,
+    "ink_cell_size": 8,
+    "camera_zoom": 1.0,
+    "camera_zoom_touch": 1.3,
+    "reclaim": {
+      "trail_mult": 2.6,
+      "enemy_ink_slow": 0.22,
+      "enemy_bite": 0.55,
+      "clear_radius": 240,
+      "player_seed": 150,
+      "enemy_color": "#ff3d8b",
+      "enemy_light": "#ffb3d1",
+      "hurry_seconds": 600
+    },
+    "name": "Reclaim",
+    "desc": "Enemy sources leak glowing ink across the page. Scrub it clean, destroy the sources, and own the field before they do. Ten pages, from open paper to a fortress."
+  },
   "survival": {
     "arena_width": 3840,
     "arena_height": 2160,

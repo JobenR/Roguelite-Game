@@ -15,6 +15,10 @@ var debug_visible: bool = false
 var ink_id: String = "blue"
 ## Which game mode the next run uses (a key in modes.json and waves.json).
 var mode_id: String = "survival"
+## Reclaim mode: index of the level (page) being played, from 0.
+var reclaim_level: int = 0
+## Set once a mode has been started, so the title opens on Reclaim until then.
+var mode_picked: bool = false
 var ink_color: Color = Color("#1a4df2")
 var ink_light: Color = Color("#4d8fff")
 ## Temporary powers: id -> seconds left.

@@ -17,6 +17,12 @@ var meta: Dictionary = {}
 var skills: Dictionary = {}
 var store: Dictionary = {}
 var pictures: Dictionary = {}
+var levels: Dictionary = {}
+var mode_text: Dictionary = {}
+# Untouched copies, so each mode's wording is applied to fresh data.
+var _plain_upgrades: Dictionary = {}
+var _plain_pickups: Dictionary = {}
+var _terms: Dictionary = {}
 
 
 func _ready() -> void:
@@ -36,6 +42,8 @@ func _ready() -> void:
 	skills = _load("res://data/skills.json")
 	store = _load("res://data/store.json")
 	pictures = _load("res://data/pictures.json")
+	levels = _load("res://data/levels.json")
+	mode_text = _load("res://data/mode_text.json")
 
 
 func _load(path: String) -> Dictionary:
@@ -48,6 +56,40 @@ func _load(path: String) -> Dictionary:
 		push_error("DataDB: %s is not a valid JSON object" % path)
 		return {}
 	return parsed
+
+
+## Rewords cards, pickups and a few UI terms for a mode (data/mode_text.json).
+## Modes without an entry get the original wording back. Called as a mode
+## starts and when the title screen opens.
+func apply_mode_text(mode_id: String) -> void:
+	if _plain_upgrades.is_empty():
+		_plain_upgrades = upgrades.duplicate(true)
+		_plain_pickups = pickups.duplicate(true)
+	upgrades = _plain_upgrades.duplicate(true)
+	pickups = _plain_pickups.duplicate(true)
+	var text: Dictionary = mode_text.get(mode_id, {})
+	var cards: Dictionary = upgrades.get("upgrades", {})
+	var worded: Dictionary = text.get("upgrades", {})
+	for id: String in worded:
+		if cards.has(id):
+			cards[id]["name"] = worded[id].get("name", cards[id].get("name", id))
+			cards[id]["short"] = worded[id].get("short", cards[id].get("short", ""))
+	var types: Dictionary = pickups.get("types", {})
+	var names: Dictionary = text.get("pickups", {})
+	for id: String in names:
+		if types.has(id):
+			types[id]["name"] = names[id]
+	var sets: Dictionary = upgrades.get("sets", {})
+	var set_names: Dictionary = text.get("sets", {})
+	for id: String in set_names:
+		if sets.has(id):
+			sets[id]["name"] = set_names[id]
+	_terms = text.get("terms", {})
+
+
+## A UI word as the current mode says it ("Deluge" is "Purge" in Reclaim).
+func term(word: String) -> String:
+	return String(_terms.get(word, word))
 
 
 ## A number from data/arsenal.json: arsenal_num("mines", "damage", 30.0).

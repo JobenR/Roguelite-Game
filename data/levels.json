@@ -1,0 +1,942 @@
+{
+ "levels": [
+  {
+   "name": "Open Field",
+   "blurb": "One source of ink on open paper. Learn to scrub.",
+   "arena": [
+    2560,
+    1440
+   ],
+   "player": [
+    400,
+    720
+   ],
+   "spawners": [
+    {
+     "pos": [
+      2260,
+      720
+     ],
+     "hp": 420
+    }
+   ],
+   "walls": [],
+   "enemy_start_radius": 170.0,
+   "creep_speed": 6.0,
+   "win_share": 0.9,
+   "par_seconds": 300,
+   "intensity": 0.7,
+   "time_offset": 0.0,
+   "id": 1
+  },
+  {
+   "name": "The Pillar",
+   "blurb": "A single pillar to dodge round, and two sources.",
+   "arena": [
+    2560,
+    1440
+   ],
+   "player": [
+    300,
+    720
+   ],
+   "spawners": [
+    {
+     "pos": [
+      2260,
+      330
+     ],
+     "hp": 460
+    },
+    {
+     "pos": [
+      2260,
+      1110
+     ],
+     "hp": 460
+    }
+   ],
+   "walls": [
+    {
+     "circle": [
+      1280,
+      720,
+      170
+     ]
+    }
+   ],
+   "enemy_start_radius": 170.0,
+   "creep_speed": 6.5,
+   "win_share": 0.9,
+   "par_seconds": 330,
+   "intensity": 0.8,
+   "time_offset": 20,
+   "id": 2
+  },
+  {
+   "name": "Four Pillars",
+   "blurb": "Cover to fight from, and a source above and below.",
+   "arena": [
+    2560,
+    1440
+   ],
+   "player": [
+    300,
+    720
+   ],
+   "spawners": [
+    {
+     "pos": [
+      1280,
+      170
+     ],
+     "hp": 480
+    },
+    {
+     "pos": [
+      1280,
+      1270
+     ],
+     "hp": 480
+    }
+   ],
+   "walls": [
+    {
+     "circle": [
+      800,
+      450,
+      120
+     ]
+    },
+    {
+     "circle": [
+      1760,
+      450,
+      120
+     ]
+    },
+    {
+     "circle": [
+      800,
+      990,
+      120
+     ]
+    },
+    {
+     "circle": [
+      1760,
+      990,
+      120
+     ]
+    }
+   ],
+   "enemy_start_radius": 170.0,
+   "creep_speed": 7.0,
+   "win_share": 0.9,
+   "par_seconds": 330,
+   "intensity": 0.9,
+   "time_offset": 45,
+   "id": 3
+  },
+  {
+   "name": "The Long Wall",
+   "blurb": "Two walls make a slow zigzag. Three sources.",
+   "arena": [
+    2560,
+    1440
+   ],
+   "player": [
+    260,
+    720
+   ],
+   "spawners": [
+    {
+     "pos": [
+      2300,
+      300
+     ],
+     "hp": 520
+    },
+    {
+     "pos": [
+      2300,
+      1150
+     ],
+     "hp": 520
+    },
+    {
+     "pos": [
+      1560,
+      720
+     ],
+     "hp": 520
+    }
+   ],
+   "walls": [
+    {
+     "rect": [
+      1100,
+      0,
+      56,
+      1000
+     ]
+    },
+    {
+     "rect": [
+      1800,
+      440,
+      56,
+      1000
+     ]
+    }
+   ],
+   "enemy_start_radius": 170.0,
+   "creep_speed": 7.0,
+   "win_share": 0.9,
+   "par_seconds": 360,
+   "intensity": 1.0,
+   "time_offset": 70,
+   "id": 4
+  },
+  {
+   "name": "Crossroads",
+   "blurb": "Four rooms joined by narrow doors. The Eraser guards the middle.",
+   "arena": [
+    3200,
+    1800
+   ],
+   "player": [
+    300,
+    300
+   ],
+   "spawners": [
+    {
+     "pos": [
+      2900,
+      260
+     ],
+     "hp": 560
+    },
+    {
+     "pos": [
+      2900,
+      1540
+     ],
+     "hp": 560
+    },
+    {
+     "pos": [
+      300,
+      1540
+     ],
+     "hp": 560
+    }
+   ],
+   "walls": [
+    {
+     "rect": [
+      1572,
+      0,
+      56,
+      700
+     ]
+    },
+    {
+     "rect": [
+      1572,
+      1100,
+      56,
+      700
+     ]
+    },
+    {
+     "rect": [
+      0,
+      872,
+      1300,
+      56
+     ]
+    },
+    {
+     "rect": [
+      1700,
+      872,
+      1500,
+      56
+     ]
+    }
+   ],
+   "enemy_start_radius": 170.0,
+   "creep_speed": 7.5,
+   "win_share": 0.9,
+   "par_seconds": 420,
+   "intensity": 1.1,
+   "time_offset": 100,
+   "boss": {
+    "enemy": "eraser",
+    "at_share": 0.45
+   },
+   "id": 5
+  },
+  {
+   "name": "Ring Road",
+   "blurb": "A walled ring with a source at its heart.",
+   "arena": [
+    3200,
+    1800
+   ],
+   "player": [
+    400,
+    300
+   ],
+   "spawners": [
+    {
+     "pos": [
+      1600,
+      900
+     ],
+     "hp": 640
+    },
+    {
+     "pos": [
+      2900,
+      300
+     ],
+     "hp": 560
+    },
+    {
+     "pos": [
+      300,
+      1500
+     ],
+     "hp": 560
+    }
+   ],
+   "walls": [
+    {
+     "rect": [
+      1000,
+      500,
+      450,
+      56
+     ]
+    },
+    {
+     "rect": [
+      1750,
+      500,
+      450,
+      56
+     ]
+    },
+    {
+     "rect": [
+      1000,
+      1244,
+      450,
+      56
+     ]
+    },
+    {
+     "rect": [
+      1750,
+      1244,
+      450,
+      56
+     ]
+    },
+    {
+     "rect": [
+      1000,
+      556,
+      56,
+      244
+     ]
+    },
+    {
+     "rect": [
+      1000,
+      1000,
+      56,
+      244
+     ]
+    },
+    {
+     "rect": [
+      2144,
+      556,
+      56,
+      244
+     ]
+    },
+    {
+     "rect": [
+      2144,
+      1000,
+      56,
+      244
+     ]
+    }
+   ],
+   "enemy_start_radius": 170.0,
+   "creep_speed": 7.5,
+   "win_share": 0.9,
+   "par_seconds": 420,
+   "intensity": 1.15,
+   "time_offset": 140,
+   "id": 6
+  },
+  {
+   "name": "Corridors",
+   "blurb": "Long walls with alternating doors. Four sources.",
+   "arena": [
+    3200,
+    1800
+   ],
+   "player": [
+    300,
+    900
+   ],
+   "spawners": [
+    {
+     "pos": [
+      3000,
+      250
+     ],
+     "hp": 600
+    },
+    {
+     "pos": [
+      3000,
+      1550
+     ],
+     "hp": 600
+    },
+    {
+     "pos": [
+      1250,
+      900
+     ],
+     "hp": 600
+    },
+    {
+     "pos": [
+      1950,
+      900
+     ],
+     "hp": 600
+    }
+   ],
+   "walls": [
+    {
+     "rect": [
+      800,
+      0,
+      56,
+      1300
+     ]
+    },
+    {
+     "rect": [
+      1600,
+      500,
+      56,
+      1300
+     ]
+    },
+    {
+     "rect": [
+      2400,
+      0,
+      56,
+      1300
+     ]
+    }
+   ],
+   "enemy_start_radius": 170.0,
+   "creep_speed": 8.0,
+   "win_share": 0.9,
+   "par_seconds": 480,
+   "intensity": 1.25,
+   "time_offset": 190,
+   "id": 7
+  },
+  {
+   "name": "Checkerboard",
+   "blurb": "A field of blocks. Four sources press from the edges.",
+   "arena": [
+    3840,
+    2160
+   ],
+   "player": [
+    300,
+    1080
+   ],
+   "spawners": [
+    {
+     "pos": [
+      3500,
+      300
+     ],
+     "hp": 640
+    },
+    {
+     "pos": [
+      3500,
+      1860
+     ],
+     "hp": 640
+    },
+    {
+     "pos": [
+      1920,
+      190
+     ],
+     "hp": 640
+    },
+    {
+     "pos": [
+      1920,
+      1970
+     ],
+     "hp": 640
+    }
+   ],
+   "walls": [
+    {
+     "rect": [
+      640,
+      480,
+      170,
+      170
+     ]
+    },
+    {
+     "rect": [
+      1200,
+      480,
+      170,
+      170
+     ]
+    },
+    {
+     "rect": [
+      1760,
+      480,
+      170,
+      170
+     ]
+    },
+    {
+     "rect": [
+      2320,
+      480,
+      170,
+      170
+     ]
+    },
+    {
+     "rect": [
+      2880,
+      480,
+      170,
+      170
+     ]
+    },
+    {
+     "rect": [
+      960,
+      1000,
+      170,
+      170
+     ]
+    },
+    {
+     "rect": [
+      1520,
+      1000,
+      170,
+      170
+     ]
+    },
+    {
+     "rect": [
+      2080,
+      1000,
+      170,
+      170
+     ]
+    },
+    {
+     "rect": [
+      2640,
+      1000,
+      170,
+      170
+     ]
+    },
+    {
+     "rect": [
+      3200,
+      1000,
+      170,
+      170
+     ]
+    },
+    {
+     "rect": [
+      640,
+      1520,
+      170,
+      170
+     ]
+    },
+    {
+     "rect": [
+      1200,
+      1520,
+      170,
+      170
+     ]
+    },
+    {
+     "rect": [
+      1760,
+      1520,
+      170,
+      170
+     ]
+    },
+    {
+     "rect": [
+      2320,
+      1520,
+      170,
+      170
+     ]
+    },
+    {
+     "rect": [
+      2880,
+      1520,
+      170,
+      170
+     ]
+    }
+   ],
+   "enemy_start_radius": 170.0,
+   "creep_speed": 8.0,
+   "win_share": 0.9,
+   "par_seconds": 540,
+   "intensity": 1.35,
+   "time_offset": 240,
+   "id": 8
+  },
+  {
+   "name": "Fortress",
+   "blurb": "A walled fortress holds the strongest source.",
+   "arena": [
+    3840,
+    2160
+   ],
+   "player": [
+    300,
+    300
+   ],
+   "spawners": [
+    {
+     "pos": [
+      1920,
+      1080
+     ],
+     "hp": 760
+    },
+    {
+     "pos": [
+      3500,
+      300
+     ],
+     "hp": 640
+    },
+    {
+     "pos": [
+      3500,
+      1860
+     ],
+     "hp": 640
+    },
+    {
+     "pos": [
+      300,
+      1860
+     ],
+     "hp": 640
+    }
+   ],
+   "walls": [
+    {
+     "rect": [
+      1360,
+      680,
+      400,
+      56
+     ]
+    },
+    {
+     "rect": [
+      2080,
+      680,
+      400,
+      56
+     ]
+    },
+    {
+     "rect": [
+      1360,
+      1424,
+      400,
+      56
+     ]
+    },
+    {
+     "rect": [
+      2080,
+      1424,
+      400,
+      56
+     ]
+    },
+    {
+     "rect": [
+      1360,
+      736,
+      56,
+      264
+     ]
+    },
+    {
+     "rect": [
+      1360,
+      1160,
+      56,
+      264
+     ]
+    },
+    {
+     "rect": [
+      2424,
+      736,
+      56,
+      264
+     ]
+    },
+    {
+     "rect": [
+      2424,
+      1160,
+      56,
+      264
+     ]
+    },
+    {
+     "circle": [
+      900,
+      700,
+      110
+     ]
+    },
+    {
+     "circle": [
+      900,
+      1460,
+      110
+     ]
+    },
+    {
+     "circle": [
+      2900,
+      700,
+      110
+     ]
+    },
+    {
+     "circle": [
+      2900,
+      1460,
+      110
+     ]
+    }
+   ],
+   "enemy_start_radius": 170.0,
+   "creep_speed": 8.5,
+   "win_share": 0.9,
+   "par_seconds": 600,
+   "intensity": 1.5,
+   "time_offset": 290,
+   "id": 9
+  },
+  {
+   "name": "The Great Smudge",
+   "blurb": "The whole page, five sources, and the Great Eraser.",
+   "arena": [
+    3840,
+    2160
+   ],
+   "player": [
+    300,
+    1080
+   ],
+   "spawners": [
+    {
+     "pos": [
+      3500,
+      260
+     ],
+     "hp": 700
+    },
+    {
+     "pos": [
+      3500,
+      1900
+     ],
+     "hp": 700
+    },
+    {
+     "pos": [
+      1920,
+      1080
+     ],
+     "hp": 820
+    },
+    {
+     "pos": [
+      1100,
+      300
+     ],
+     "hp": 640
+    },
+    {
+     "pos": [
+      1100,
+      1860
+     ],
+     "hp": 640
+    }
+   ],
+   "walls": [
+    {
+     "rect": [
+      760,
+      0,
+      56,
+      1500
+     ]
+    },
+    {
+     "rect": [
+      2900,
+      660,
+      56,
+      1500
+     ]
+    },
+    {
+     "rect": [
+      1500,
+      760,
+      300,
+      56
+     ]
+    },
+    {
+     "rect": [
+      2040,
+      760,
+      300,
+      56
+     ]
+    },
+    {
+     "rect": [
+      1500,
+      1344,
+      300,
+      56
+     ]
+    },
+    {
+     "rect": [
+      2040,
+      1344,
+      300,
+      56
+     ]
+    },
+    {
+     "rect": [
+      1500,
+      816,
+      56,
+      84
+     ]
+    },
+    {
+     "rect": [
+      1500,
+      1260,
+      56,
+      84
+     ]
+    },
+    {
+     "rect": [
+      2284,
+      816,
+      56,
+      84
+     ]
+    },
+    {
+     "rect": [
+      2284,
+      1260,
+      56,
+      84
+     ]
+    },
+    {
+     "circle": [
+      2400,
+      340,
+      120
+     ]
+    },
+    {
+     "circle": [
+      2400,
+      1820,
+      120
+     ]
+    },
+    {
+     "circle": [
+      1400,
+      1080,
+      100
+     ]
+    }
+   ],
+   "enemy_start_radius": 170.0,
+   "creep_speed": 9.0,
+   "win_share": 0.9,
+   "par_seconds": 660,
+   "intensity": 1.7,
+   "time_offset": 340,
+   "boss": {
+    "enemy": "great_eraser",
+    "at_share": 0.55
+   },
+   "id": 10
+  }
+ ]
+}

@@ -59,6 +59,11 @@ var correct_count: int = 0
 var target_total: int = 0
 
 
+## Reclaim mode: walls (dead cells) stop shots, and enemy ink slows the player.
+var walls_stop_shots: bool = false
+var enemy_ink_slow: float = 0.0
+
+
 func _init(area_size: Vector2, p_cell_size: float) -> void:
 	cell_size = p_cell_size
 	cols = maxi(1, int(ceil(area_size.x / cell_size)))
@@ -257,6 +262,31 @@ func regions_wanting(want: int, from: Vector2, skip: int, count: int) -> Array[i
 	found.sort_custom(func(a: int, b: int) -> bool:
 		return region_center[a].distance_squared_to(from) < region_center[b].distance_squared_to(from))
 	return found.slice(0, count)
+
+
+## A permanent barrier: impassable, and nothing can paint it. Used to lay out
+## level walls before play; it does not mark the cell as the player's.
+func make_wall(index: int) -> void:
+	var old := cells[index]
+	if old == DEAD:
+		return
+	if old == INK or old == LOCKED:
+		ink_count -= 1
+	elif old == SMUDGE:
+		smudge_count -= 1
+	cells[index] = DEAD
+	dead_count += 1
+	var p := index * 4
+	pixels[p] = 0
+	pixels[p + 1] = 255
+	pixels[p + 2] = 255
+	pixels[p + 3] = 0
+	dirty = true
+
+
+## Share of the open page (walls excluded) held by the horde's ink, 0..1.
+func enemy_share() -> float:
+	return float(smudge_count) / float(maxi(1, total_cells() - dead_count))
 
 
 func is_dead(pos: Vector2) -> bool:

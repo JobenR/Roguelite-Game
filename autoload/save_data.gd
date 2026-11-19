@@ -38,6 +38,7 @@ func _defaults() -> Dictionary:
 		"looks": ["square"],
 		"look": "square",
 		"vip": false,
+		"reclaim": {},
 		"vip_claimed": "",
 		"use_head_start": true,
 		"best_time": 0.0,

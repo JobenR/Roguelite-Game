@@ -71,9 +71,13 @@ func _ready() -> void:
 
 	Events.player_died.connect(_on_player_died)
 	Events.final_boss_defeated.connect(_on_victory)
+	Events.level_won.connect(_on_level_won)
+	Events.level_lost.connect(_on_level_lost)
 
 
 var paint: PaintSystem = null
+var reclaim: ReclaimSystem = null
+var _stars: int = 0
 
 
 func setup(ink: InkSystem) -> void:
@@ -99,7 +103,35 @@ func _on_player_died() -> void:
 	_show()
 
 
+## Reclaim: the page is yours. Stars, then on to the next page.
+func _on_level_won(stars: int) -> void:
+	_victory = true
+	_stars = stars
+	get_tree().paused = true
+	GameState.finish_run()
+	_heading.text = "Page reclaimed"
+	var more := GameState.reclaim_level + 1 < ReclaimSystem.level_count()
+	_primary.text = "Next page" if more else "Menu"
+	_secondary.text = "Menu"
+	_seals.text = _reward_text()
+	_show()
+
+
+## Reclaim: the horde's ink took the page first.
+func _on_level_lost() -> void:
+	_victory = false
+	_stars = 0
+	_heading.text = "The page is lost"
+	_primary.text = "Try again"
+	_secondary.text = "Menu"
+	GameState.finish_run()
+	_seals.text = _reward_text()
+	_show()
+
+
 func _on_victory() -> void:
+	if reclaim != null:
+		return   # a page is won by the race, not by a boss
 	_victory = true
 	get_tree().paused = true
 	_heading.text = "The page is yours"
@@ -124,6 +156,16 @@ func _show() -> void:
 	var ink_name := String(DataDB.inks.get(GameState.ink_id, {}).get("name", "Blue"))
 	_caption.text = "\"%s\"\nYour ink %d%%   Smudge %d%%   Bare paper %d%%" % [_title_for(ink_name, mine, theirs), mine, theirs, maxi(0, 100 - mine - theirs)]
 	_ink_line.text = "%s ink" % ink_name
+	if reclaim != null:
+		var mine_now := int(round(_ink.ownership() * 100.0))
+		var theirs_now := int(round(_ink.enemy_share() * 100.0))
+		_caption.text = "\"%s\"\nYour ground %d%%   Enemy ink %d%%" % [String(reclaim.level.get("name", "")), mine_now, theirs_now]
+		if _victory:
+			_ink_line.text = "%d of 3 stars" % _stars
+			_stats.text = "Cleared in %s (par %s)\nSources destroyed %d of %d\nKills %d" % [GameState.format_time(GameState.run_time),
+					GameState.format_time(float(reclaim.level.get("par_seconds", 300.0))), reclaim.destroyed, reclaim.sources.size(), GameState.kills]
+		else:
+			_ink_line.text = "Lost on page %d" % (reclaim.level_index + 1)
 	if paint != null:
 		# Masterpiece: the picture, how much of it is right, and the stars.
 		var right := int(_ink.grid.accuracy() * 100.0)
@@ -166,6 +208,14 @@ func _title_for(ink_name: String, mine: int, theirs: int) -> String:
 
 
 func _on_primary() -> void:
+	if reclaim != null and _victory:
+		get_tree().paused = false
+		if GameState.reclaim_level + 1 < ReclaimSystem.level_count():
+			GameState.reclaim_level += 1
+			get_tree().reload_current_scene()
+		else:
+			_on_secondary()
+		return
 	if _victory:
 		# Keep going: the run continues as an endless one.
 		visible = false

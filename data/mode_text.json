@@ -1,0 +1,476 @@
+{
+ "reclaim": {
+  "upgrades": {
+   "rapid_fire": {
+    "name": "Quick Scrub",
+    "short": "+8% fire rate"
+   },
+   "damage": {
+    "name": "Harsh Solvent",
+    "short": "+10% damage"
+   },
+   "move_speed": {
+    "name": "Slick Soles",
+    "short": "+5% speed"
+   },
+   "max_hp": {
+    "name": "Sturdy Cloth",
+    "short": "+10 health"
+   },
+   "pickup_radius": {
+    "name": "Blotting Paper",
+    "short": "+20% pickup range"
+   },
+   "pierce": {
+    "name": "Scraper Edge",
+    "short": "Shots pierce +1"
+   },
+   "multishot": {
+    "name": "Twin Scrapers",
+    "short": "+1 parallel shot"
+   },
+   "ricochet": {
+    "name": "Skipping Sponge",
+    "short": "Shots bounce +1"
+   },
+   "explosive": {
+    "name": "Bleach Burst",
+    "short": "Shots explode"
+   },
+   "healing_ink": {
+    "name": "Fresh Page",
+    "short": "Heal on clean ground"
+   },
+   "caustic_ink": {
+    "name": "Caustic Wash",
+    "short": "Clean ground burns foes"
+   },
+   "broad_stroke": {
+    "name": "Wide Wipe",
+    "short": "+15% wipe width"
+   },
+   "wide_ripple": {
+    "name": "Wide Purge",
+    "short": "+12% Purge size"
+   },
+   "heavy_blots": {
+    "name": "Big Scrub",
+    "short": "+12% kill scrub size"
+   },
+   "slick_page": {
+    "name": "Slick Page",
+    "short": "+5% speed on clean"
+   },
+   "scatter": {
+    "name": "Scatter Rinse",
+    "short": "+2 side shots"
+   },
+   "laser": {
+    "name": "Pressure Washer",
+    "short": "Piercing wash beam"
+   },
+   "orbit": {
+    "name": "Orbiting Sponges",
+    "short": "+1 orbiting sponge"
+   },
+   "steady_hand": {
+    "name": "Steady Hand",
+    "short": "Auto-Aim +2s"
+   },
+   "ring_bomb": {
+    "name": "Ring Rinse",
+    "short": "Bomb scrubs a ring"
+   },
+   "permanent_marker": {
+    "name": "Sealed Page",
+    "short": "Purged ground stays clean"
+   },
+   "painter": {
+    "name": "Scrubbing Shots",
+    "short": "Shots clean the ground"
+   },
+   "quicksand": {
+    "name": "Sticky Solvent",
+    "short": "Clean ground slows foes"
+   },
+   "territory_tax": {
+    "name": "Clean Sweep Bonus",
+    "short": "XP for ground held"
+   },
+   "shockwave": {
+    "name": "Purge Shock",
+    "short": "+12 Purge damage"
+   },
+   "homing": {
+    "name": "Seeking Sponge",
+    "short": "Shots home in"
+   },
+   "dash": {
+    "name": "Dash",
+    "short": "Unlock Dash"
+   },
+   "mortar": {
+    "name": "Rinse Mortar",
+    "short": "Auto mortar shells"
+   },
+   "reroll": {
+    "name": "Reroll",
+    "short": "+1 card reroll"
+   },
+   "fountain": {
+    "name": "Fountain",
+    "short": "Ring of shots"
+   },
+   "quill_volley": {
+    "name": "Scraper Volley",
+    "short": "Homing scrapers"
+   },
+   "boomerang": {
+    "name": "Boomerang Scraper",
+    "short": "Returning blade"
+   },
+   "sprinkler": {
+    "name": "Sprinkler",
+    "short": "Spiral spray"
+   },
+   "chain_blot": {
+    "name": "Chain Spark",
+    "short": "Chain lightning"
+   },
+   "mines": {
+    "name": "Solvent Mines",
+    "short": "Stand still: plant mine"
+   },
+   "whip": {
+    "name": "Wiper Whip",
+    "short": "Melee swipe"
+   },
+   "stamp": {
+    "name": "Blotter Stamp",
+    "short": "Stamp slams a foe"
+   },
+   "turret": {
+    "name": "Squeegee Turret",
+    "short": "Place a turret"
+   },
+   "planes": {
+    "name": "Paper Planes",
+    "short": "Homing paper planes"
+   },
+   "tidal_wave": {
+    "name": "Cleansing Wave",
+    "short": "Rolling wave scrubs ground"
+   },
+   "ink_rain": {
+    "name": "Scrub Rain",
+    "short": "Raining solvent blasts"
+   },
+   "flamethrower": {
+    "name": "Spray Nozzle",
+    "short": "Close-range spray"
+   },
+   "saw": {
+    "name": "Scouring Saw",
+    "short": "Bouncing saw"
+   },
+   "black_hole": {
+    "name": "Drain Hole",
+    "short": "Drain, then burst"
+   },
+   "guardian": {
+    "name": "Guardian Drop",
+    "short": "Strikes close foes"
+   },
+   "rear_guard": {
+    "name": "Rear Guard",
+    "short": "+1 rear shot"
+   },
+   "side_guns": {
+    "name": "Side Guns",
+    "short": "Side shots"
+   },
+   "sniper_nib": {
+    "name": "Sniper Scraper",
+    "short": "10th shot: sniper round"
+   },
+   "echo_shot": {
+    "name": "Echo Shot",
+    "short": "Volleys repeat"
+   },
+   "splitting": {
+    "name": "Splitting Shots",
+    "short": "Shots split on hit"
+   },
+   "heavy_rounds": {
+    "name": "Heavy Rounds",
+    "short": "Bigger, harder shots"
+   },
+   "long_reach": {
+    "name": "Long Reach",
+    "short": "+15% shot range"
+   },
+   "critical": {
+    "name": "Critical Scrub",
+    "short": "+5% triple damage"
+   },
+   "frost_ink": {
+    "name": "Cold Rinse",
+    "short": "Shots slow foes"
+   },
+   "staining": {
+    "name": "Marking Shots",
+    "short": "Hit foes take +10%"
+   },
+   "bleeding_ink": {
+    "name": "Dissolving Shots",
+    "short": "Shots dissolve foes"
+   },
+   "executioner": {
+    "name": "Executioner",
+    "short": "Finish weak foes"
+   },
+   "overcharge": {
+    "name": "Overcharge",
+    "short": "Stand still: fire faster"
+   },
+   "run_and_gun": {
+    "name": "Run and Gun",
+    "short": "+6% fire rate moving"
+   },
+   "first_strike": {
+    "name": "First Strike",
+    "short": "+25% vs full health"
+   },
+   "wall_bounce": {
+    "name": "Edge Bounce",
+    "short": "Shots bounce off edges"
+   },
+   "giant_slayer": {
+    "name": "Giant Slayer",
+    "short": "+15% vs big foes"
+   },
+   "thick_ink": {
+    "name": "Sealed Coat",
+    "short": "Enemy ink bites less"
+   },
+   "living_ink": {
+    "name": "Creeping Clean",
+    "short": "Clean ground spreads itself"
+   },
+   "electric_ink": {
+    "name": "Static Wash",
+    "short": "Lightning on clean ground"
+   },
+   "thorn_ink": {
+    "name": "Prickly Floor",
+    "short": "Clean ground stings on entry"
+   },
+   "home_turf": {
+    "name": "Home Turf",
+    "short": "+5% damage on clean"
+   },
+   "ink_armor": {
+    "name": "Clean Armor",
+    "short": "-7% damage on clean"
+   },
+   "eraser_steps": {
+    "name": "Eraser Steps",
+    "short": "Steps erase enemy ink"
+   },
+   "ink_reserve": {
+    "name": "Reserve Shield",
+    "short": "Shield from ground held"
+   },
+   "double_trail": {
+    "name": "Double Wipe",
+    "short": "Two wipes"
+   },
+   "full_stride": {
+    "name": "Full Stride",
+    "short": "Wider wipe at speed"
+   },
+   "ink_sprouts": {
+    "name": "Squeegee Sprouts",
+    "short": "Clean ground grows turrets"
+   },
+   "sticky_splats": {
+    "name": "Sticky Scrubs",
+    "short": "Scrubs slow foes"
+   },
+   "chain_splat": {
+    "name": "Chain Scrub",
+    "short": "Bigger scrubs on clean"
+   },
+   "reclaim": {
+    "name": "Deep Clean",
+    "short": "Kills erase enemy ink"
+   },
+   "watermark": {
+    "name": "Memory Page",
+    "short": "Lost ground returns clean"
+   },
+   "ink_tide": {
+    "name": "Rising Clean",
+    "short": "Clean edges grow"
+   },
+   "quick_charge": {
+    "name": "Quick Charge",
+    "short": "Purge charges +10%"
+   },
+   "double_pulse": {
+    "name": "Double Purge",
+    "short": "Store 2 Purges"
+   },
+   "harvest_pulse": {
+    "name": "Harvest Purge",
+    "short": "Purge pays XP"
+   },
+   "aftershock": {
+    "name": "Aftershock",
+    "short": "Purged ground burns"
+   },
+   "pulse_shield": {
+    "name": "Purge Shield",
+    "short": "Purge shields you"
+   },
+   "big_loop": {
+    "name": "Big Purge Bonus",
+    "short": "Purge: +10% damage"
+   },
+   "chain_pulse": {
+    "name": "Chain Purge",
+    "short": "Purge refunds 10%"
+   },
+   "quick_fuse": {
+    "name": "Quick Fuse",
+    "short": "Bomb recharges +10%"
+   },
+   "cluster_bomb": {
+    "name": "Cluster Bomb",
+    "short": "Bomb splits"
+   },
+   "twin_bombs": {
+    "name": "Twin Bombs",
+    "short": "Store 2 bombs"
+   },
+   "sticky_bomb": {
+    "name": "Sticky Bomb",
+    "short": "Bomb slows foes"
+   },
+   "big_bang": {
+    "name": "Big Bang",
+    "short": "+12% bomb size"
+   },
+   "vacuum_bomb": {
+    "name": "Vacuum Bomb",
+    "short": "Bomb pulls foes in"
+   },
+   "napalm": {
+    "name": "Burning Rinse",
+    "short": "Bomb leaves fire"
+   },
+   "paper_shield": {
+    "name": "Paper Shield",
+    "short": "Blocks one hit"
+   },
+   "second_wind": {
+    "name": "Second Wind",
+    "short": "Survive death once"
+   },
+   "vampiric": {
+    "name": "Vampiric Wash",
+    "short": "Kills may heal"
+   },
+   "thorns": {
+    "name": "Thorns",
+    "short": "Hurt those who hit you"
+   },
+   "dodge": {
+    "name": "Dodge",
+    "short": "+4% dodge"
+   },
+   "longer_mercy": {
+    "name": "Longer Mercy",
+    "short": "Longer hit immunity"
+   },
+   "retaliation": {
+    "name": "Retaliation",
+    "short": "Hit: free shot ring"
+   },
+   "regeneration": {
+    "name": "Regeneration",
+    "short": "+0.2 health/sec"
+   },
+   "last_stand": {
+    "name": "Last Stand",
+    "short": "Stronger when low"
+   },
+   "ink_skate": {
+    "name": "Clean Skate",
+    "short": "Double clean-ground speed"
+   },
+   "slipstream": {
+    "name": "Slipstream",
+    "short": "Faster in straight lines"
+   },
+   "ghost_step": {
+    "name": "Ghost Step",
+    "short": "Speed burst when hit"
+   },
+   "trailblazer": {
+    "name": "Trailblazer",
+    "short": "Wipes burn foes"
+   },
+   "momentum": {
+    "name": "Momentum Shots",
+    "short": "+8% damage moving"
+   },
+   "scholar": {
+    "name": "Scholar",
+    "short": "+6% XP"
+   },
+   "lucky_draw": {
+    "name": "Lucky Draw",
+    "short": "+1 card choice"
+   },
+   "banish": {
+    "name": "Banish",
+    "short": "+1 card banish"
+   },
+   "spotter": {
+    "name": "Spotter",
+    "short": "Aim the bomb"
+   },
+   "piercing_core": {
+    "name": "Piercing Core",
+    "short": "Bomb core pierces on"
+   },
+   "ink_wall": {
+    "name": "Soap Barrier",
+    "short": "Wipe blocks foes"
+   }
+  },
+  "pickups": {
+   "giant_brush": "Giant Sponge",
+   "ink_storm": "Solvent Storm",
+   "eraser_wave": "Purge Wave",
+   "bomb_rain": "Rinse Rain"
+  },
+  "sets": {
+   "ink": "Clean",
+   "pulse": "Purge",
+   "nib": "Scraper",
+   "arsenal": "Arsenal",
+   "bomb": "Rinse",
+   "guard": "Guard",
+   "stride": "Stride",
+   "mind": "Mind"
+  },
+  "terms": {
+   "Deluge": "Purge",
+   "DELUGE READY": "PURGE READY",
+   "INK": "CLEAN",
+   "Ink": "Clean"
+  }
+ }
+}

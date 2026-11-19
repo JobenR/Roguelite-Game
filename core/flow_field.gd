@@ -85,4 +85,23 @@ func rebuild(grid: InkGrid, target: Vector2) -> void:
 
 ## Direction to walk from `pos`, or zero when the cell is cut off or at the target.
 func direction(pos: Vector2) -> Vector2:
-	return _dirs[clampi(int(pos.y / cell_size), 0, rows - 1) * cols + clampi(int(pos.x / cell_size), 0, cols - 1)]
+	var x := clampi(int(pos.x / cell_size), 0, cols - 1)
+	var y := clampi(int(pos.y / cell_size), 0, rows - 1)
+	var index := y * cols + x
+	if _dist[index] >= 0:
+		return _dirs[index]
+	# Brushing a wall: this flow cell is blocked, so lean toward the open
+	# neighbour that is closest to the target instead of standing still.
+	var best := 0x7fffffff
+	var lean := Vector2.ZERO
+	for dy in range(-1, 2):
+		for dx in range(-1, 2):
+			var nx := x + dx
+			var ny := y + dy
+			if (dx == 0 and dy == 0) or nx < 0 or ny < 0 or nx >= cols or ny >= rows:
+				continue
+			var d := _dist[ny * cols + nx]
+			if d >= 0 and d < best:
+				best = d
+				lean = Vector2(dx, dy)
+	return lean.normalized()

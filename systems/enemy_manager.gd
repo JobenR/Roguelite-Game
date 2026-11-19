@@ -70,6 +70,8 @@ func damage(enemy: Enemy, amount: float, dir: Vector2 = Vector2.ZERO) -> void:
 	if not enemy.active:
 		return
 	enemy.last_hit_dir = dir
+	if enemy.is_spawner:
+		amount *= 1.0 + Upgrades.bonus("spawner_damage")
 	if enemy.stain_left > 0.0:
 		amount *= 1.0 + enemy.stain_amount
 	enemy.hp -= amount
@@ -313,6 +315,8 @@ func _process(delta: float) -> void:
 				step = _ranged_step(enemy, toward, dist, pace, delta)
 			Enemy.Behavior.BOSS:
 				step = _boss_step(enemy, toward, dist, pace, delta)
+			Enemy.Behavior.STATIC:
+				step = Vector2.ZERO
 
 		# Push away from overlapping neighbours so the horde does not stack.
 		var push := Vector2.ZERO
@@ -360,7 +364,7 @@ func _process(delta: float) -> void:
 			var protect := -1 if randf() < enemy.ink_cut_chance * cut_scale else InkGrid.INK
 			ink_grid.paint_circle(pos, enemy.trail_radius, InkGrid.SMUDGE, protect)
 
-		if dist < enemy.radius + player_radius and not frozen:
+		if enemy.damage > 0.0 and dist < enemy.radius + player_radius and not frozen:
 			if _player.take_damage(enemy.damage) and thorns > 0.0:
 				_thorned.append(enemy)
 		if burn_tick:

@@ -41,6 +41,12 @@ func setup(arena: Rect2, enemies: EnemyManager, p_cell_size: float) -> void:
 	material.set_shader_parameter("ink_light", GameState.ink_light)
 	material.set_shader_parameter("glow_color", Color(GameState.ink_light.lerp(Color.WHITE, 0.35), 0.92))
 	material.set_shader_parameter("locked_color", Color(GameState.ink_color.darkened(0.45), 0.95))
+	var reclaim: Dictionary = DataDB.modes.get(GameState.mode_id, {}).get("reclaim", {})
+	if not reclaim.is_empty():
+		material.set_shader_parameter("reclaim_look", true)
+		material.set_shader_parameter("wall_look", true)
+		material.set_shader_parameter("enemy_color", Color(String(reclaim.get("enemy_color", "#ff3d8b")), 0.95))
+		material.set_shader_parameter("enemy_light", Color(String(reclaim.get("enemy_light", "#ffb3d1"))))
 	_bleed_image = Image.create_from_data(grid.bleed_cols, grid.bleed_rows, false, Image.FORMAT_L8, grid.bleed)
 	_bleed_texture = ImageTexture.create_from_image(_bleed_image)
 	material.set_shader_parameter("bleed_tex", _bleed_texture)
@@ -94,6 +100,10 @@ func make_painting(width: float) -> Control:
 	picture.custom_minimum_size = Vector2(width, width * grid.rows / grid.cols)
 	frame.add_child(picture)
 	return frame
+
+
+func enemy_share() -> float:
+	return grid.enemy_share()
 
 
 func smudge_share() -> float:

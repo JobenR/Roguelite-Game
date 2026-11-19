@@ -86,6 +86,7 @@ func setup(enemies: EnemyManager, bullets: BulletManager, arena: Rect2, ink: Ink
 	_trail_radius = float(stats.get("trail_radius", _trail_radius))
 	# Masterpiece mode paints with a broader stroke.
 	_trail_radius *= float(DataDB.modes.get(GameState.mode_id, {}).get("paint", {}).get("trail_mult", 1.0))
+	_trail_radius *= float(DataDB.modes.get(GameState.mode_id, {}).get("reclaim", {}).get("trail_mult", 1.0))
 	Events.ink_changed.connect(_on_ink_changed)
 	_ink_speed_bonus = float(stats.get("ink_speed_bonus", 0.0))
 	_base_max_hp = max_hp
@@ -180,6 +181,9 @@ func _move(move: Vector2, delta: float) -> void:
 		current_speed *= DataDB.arsenal_num("true_brush", "speed_mult", 1.35)
 	if on_ink:
 		current_speed *= 1.0 + _ink_speed_bonus + Upgrades.bonus("ink_speed")
+	elif _ink.grid.enemy_ink_slow > 0.0 and _ink.grid.state_at(position) == InkGrid.SMUDGE:
+		# Reclaim: the horde's glowing ink drags at your feet.
+		current_speed *= 1.0 - _ink.grid.enemy_ink_slow
 	# Slipstream: builds while you hold a straight line.
 	var stream := Upgrades.bonus("slipstream")
 	if stream > 0.0:

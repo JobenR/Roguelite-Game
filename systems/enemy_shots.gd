@@ -45,7 +45,8 @@ func _process(delta: float) -> void:
 		var hit := pos.distance_squared_to(_player.position) <= reach * reach
 		if hit:
 			_player.take_damage(float(shot["damage"]))
-		if hit or shot["life"] <= 0.0 or not _arena.has_point(pos):
+		var walled := _ink.grid.walls_stop_shots and _ink.grid.is_dead(pos)
+		if hit or walled or shot["life"] <= 0.0 or not _arena.has_point(pos):
 			_ink.grid.paint_circle(pos, float(shot["smudge"]), InkGrid.SMUDGE)
 			_shots.remove_at(i)
 		i -= 1

@@ -42,3 +42,6 @@ signal items_changed
 signal seal_collected(amount: int)
 ## Masterpiece mode: the player dipped in a well and now carries another ink.
 signal ink_changed
+## Reclaim mode: the page was won (stars earned) or lost to the horde's ink.
+signal level_won(stars: int)
+signal level_lost

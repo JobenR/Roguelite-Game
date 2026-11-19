@@ -72,12 +72,18 @@ func _process(_delta: float) -> bool:
 		_check("the Deluge floods the ground (%d cells)" % flooded, flooded > 3000 and scene.ink.grid.ink_count > ink_before)
 		_check("the Deluge kills what it hits", scene.enemies.active.size() < alive_before)
 		_check("the Deluge spends its charge", scene.pulse.charge < 1.0)
-		# Page Wipe.
+		# Page Wipe. Spawning is held so a stray new enemy cannot spoil the count.
+		scene.director.hold_spawns = 5.0
 		for i in 20:
 			scene.enemies.spawn("walker", scene.player.position + Vector2.from_angle(i) * 300.0)
 		scene.item_system.call("_use", "page_wipe")
 	if _frames == 122:
-		_check("Page Wipe cleared the screen", scene.enemies.active.size() == 0 and save.item_count("page_wipe") == 0)
+		# The wipe reaches 1000px; an enemy that happened to spawn beyond that survives.
+		var near := 0
+		for enemy: Node in scene.enemies.active:
+			if (enemy.position as Vector2).distance_to(scene.player.position) <= 1000.0:
+				near += 1
+		_check("Page Wipe cleared the screen (%d in reach, %d wipes held)" % [near, save.item_count("page_wipe")], near == 0 and save.item_count("page_wipe") == 0)
 		# Second Life: a killing blow is survived once.
 		scene.player.take_damage(999999.0)
 		_hp_before = scene.player.hp

@@ -3,7 +3,7 @@ extends Node2D
 ## Pooled enemy. Holds state only; EnemyManager moves and resolves all enemies
 ## in one loop. No physics body and no per-enemy _process.
 
-enum Behavior { CHASE, CHARGE, RANGED, BOSS }
+enum Behavior { CHASE, CHARGE, RANGED, BOSS, STATIC }
 
 var type_id: String = ""
 var display_name: String = ""
@@ -26,6 +26,7 @@ var active: bool = false
 var behavior: Behavior = Behavior.CHASE
 var heavy: bool = false      # shrugs off knockback, pulls, and crowd pushing
 var is_boss: bool = false
+var is_spawner: bool = false  # a Reclaim ink source: fixed in place, never moves
 var face_move: bool = false  # the visual turns to face the direction of travel
 # Ability state, shared by the charge, ranged and boss behaviours.
 var ability_state: int = 0
@@ -69,6 +70,7 @@ func spawn(p_type_id: String, p_data: Dictionary, pos: Vector2, hp_mult: float) 
 	ink_cut_chance = float(data.get("ink_cut_chance", 1.0))
 	heavy = bool(data.get("heavy", false))
 	is_boss = bool(data.get("boss", false))
+	is_spawner = bool(data.get("spawner", false))
 	face_move = bool(data.get("face_move", false))
 	match String(data.get("behavior", "chase")):
 		"charge":
@@ -80,6 +82,8 @@ func spawn(p_type_id: String, p_data: Dictionary, pos: Vector2, hp_mult: float) 
 		"boss":
 			behavior = Behavior.BOSS
 			ability_left = float(data.get("slam_cooldown", 6.0))
+		"static":
+			behavior = Behavior.STATIC
 		_:
 			behavior = Behavior.CHASE
 	ability_state = 0

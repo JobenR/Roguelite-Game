@@ -59,6 +59,10 @@ func _process(delta: float) -> void:
 			_effects.drip(bullet.position - step, bullet.glow, bullet.radius * 0.5)
 
 		var done := bullet.life <= 0.0
+		# Reclaim walls are cover: shots stop dead against them.
+		if not done and _ink.grid.walls_stop_shots and _ink.grid.is_dead(bullet.position):
+			_effects.drip(bullet.position, bullet.glow, bullet.radius)
+			done = true
 		if not done and not _arena.has_point(bullet.position):
 			if bullet.wall_bounces > 0:
 				# Wall Bounce: reflect off the page edge.

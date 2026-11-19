@@ -4,6 +4,7 @@ extends Control
 
 var _ink: InkSystem
 var paint: PaintSystem = null
+var reclaim: ReclaimSystem = null
 var _milestones: MilestoneSystem
 var _hp_bar: ProgressBar
 var _bomb_bar: ProgressBar
@@ -97,7 +98,7 @@ func _ready() -> void:
 	Events.strip_burned.connect(func(index: int, share: float, xp: int, perfect: bool) -> void:
 		_show_banner("STRIP %d BURNT: %d%% SAVED\n+%d XP%s" % [index, int(round(share * 100.0)), xp, "  PERFECT" if perfect else ""]))
 	Events.ultimate_ready.connect(func() -> void:
-		_show_banner("DELUGE READY")
+		_show_banner(DataDB.term("DELUGE READY"))
 		Audio.play("milestone"))
 	Events.seal_collected.connect(func(amount: int) -> void:
 		_show_banner("+%d SEALS" % amount)
@@ -116,7 +117,7 @@ func _ready() -> void:
 		_shield_bar.visible = max_value > 0.0
 		_shield_bar.max_value = maxf(max_value, 1.0)
 		_shield_bar.value = value)
-	Events.milestone_reached.connect(func(percent: int, text: String) -> void: _show_banner("INK %d%% REACHED\n%s" % [percent, text]))
+	Events.milestone_reached.connect(func(percent: int, text: String) -> void: _show_banner("%s %d%% REACHED\n%s" % [DataDB.term("INK"), percent, text]))
 	Events.secondary_charge_changed.connect(func(ratio: float) -> void: _bomb_bar.value = ratio)
 	Events.pulse_charge_changed.connect(func(ratio: float) -> void: _pulse_bar.value = ratio)
 
@@ -164,7 +165,9 @@ func _process(delta: float) -> void:
 	if _ink != null and _ink.grid != null:
 		# Floor, so the number never shows a milestone before it is reached.
 		ink_text = "   Ink %d%%" % int(_ink.ownership() * 100.0)
-		if _ink.grid.paint_on:
+		if reclaim != null:
+			ink_text = ""
+		elif _ink.grid.paint_on:
 			ink_text = "   Picture %d%%" % int(_ink.grid.accuracy() * 100.0)
 			if paint != null:
 				ink_text += "  Stars %d/3" % paint.stars()

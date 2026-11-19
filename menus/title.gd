@@ -3,7 +3,7 @@ extends Control
 ## unlock inks, buy permanent boosts, visit the store, and change settings.
 ## Built in code with the Sumi look.
 
-enum View { HOME, INKS, BOOSTS, SETTINGS, MODES, SKILLS, STORE }
+enum View { HOME, INKS, BOOSTS, SETTINGS, MODES, SKILLS, STORE, LEVELS }
 
 var _view: View = View.HOME
 var _body: VBoxContainer
@@ -15,6 +15,7 @@ func _ready() -> void:
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	get_tree().paused = false
 	Engine.time_scale = 1.0
+	DataDB.apply_mode_text("")   # a mode's reworded cards must not leak into the menu
 	Audio.refresh_music()
 	Audio.calm()
 
@@ -71,6 +72,8 @@ func _show(view: View) -> void:
 			_build_skills()
 		View.STORE:
 			_build_store()
+		View.LEVELS:
+			_build_levels()
 
 
 func _heading(text: String, size: int, color: Color) -> Label:
@@ -167,13 +170,20 @@ func _build_modes() -> void:
 	row.alignment = BoxContainer.ALIGNMENT_CENTER
 	row.add_theme_constant_override("separation", 20)
 	_body.add_child(row)
+	var count := DataDB.modes.size()
+	var card_width := minf(380.0, (1120.0 - 20.0 * (count - 1)) / count)
+	var tight := count > 3
 	for id: String in DataDB.modes:
 		var def: Dictionary = DataDB.modes[id]
 		var card := Button.new()
-		card.custom_minimum_size = Vector2(380.0, 280.0)
+		card.custom_minimum_size = Vector2(card_width, 340.0)
 		card.clip_contents = true
 		Sumi.ink_button(card)
-		card.pressed.connect(_start.bind(id))
+		# Reclaim is a campaign: pick a page first.
+		if def.has("reclaim"):
+			card.pressed.connect(_show.bind(View.LEVELS))
+		else:
+			card.pressed.connect(_start.bind(id))
 		var face := VBoxContainer.new()
 		face.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		face.alignment = BoxContainer.ALIGNMENT_CENTER
@@ -182,16 +192,22 @@ func _build_modes() -> void:
 		face.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 		face.offset_left = 22.0
 		face.offset_right = -22.0
-		var name_label := _card_text(String(def.get("name", id)), 44, Sumi.SEAL if def.has("burn") else Sumi.INK)
+		var name_label := _card_text(String(def.get("name", id)), 34 if tight else 44, Sumi.SEAL if def.has("burn") or def.has("reclaim") else Sumi.INK)
 		name_label.add_theme_font_override("font", Sumi.TITLE_FONT)
 		face.add_child(name_label)
-		face.add_child(_card_text(String(def.get("desc", "")), 18, Sumi.INK))
+		face.add_child(_card_text(String(def.get("desc", "")), 15 if tight else 18, Sumi.INK))
+		if def.has("reclaim"):
+			var cleared := 0
+			for i in ReclaimSystem.level_count():
+				if ReclaimSystem.stars_of(i) > 0:
+					cleared += 1
+			face.add_child(_card_text("Pages cleared: %d of %d" % [cleared, ReclaimSystem.level_count()], 15 if tight else 18, Sumi.SEAL))
 		if def.has("paint"):
 			var next := PaintSystem.next_picture()
 			var got := int((SaveData.data.get("pictures", {}) as Dictionary).get(next, 0))
 			face.add_child(_card_text("Next: %s (%d/3 stars)" % [String(DataDB.pictures.get(next, {}).get("name", "")), got], 18, Sumi.SEAL))
 		row.add_child(card)
-		if id == GameState.mode_id:
+		if id == (GameState.mode_id if GameState.mode_picked else "reclaim"):
 			card.grab_focus()
 	# Items that will be used in the run.
 	var bring: Array[String] = []
@@ -209,7 +225,45 @@ func _build_modes() -> void:
 	_body.add_child(_back())
 
 
+# --- Reclaim pages ---------------------------------------------------------
+
+func _build_levels() -> void:
+	_body.add_child(_heading("Reclaim: choose a page", 48, Sumi.INK))
+	var grid := GridContainer.new()
+	grid.columns = 5
+	grid.add_theme_constant_override("h_separation", 14)
+	grid.add_theme_constant_override("v_separation", 14)
+	grid.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	_body.add_child(grid)
+	var focus: Button = null
+	for i in ReclaimSystem.level_count():
+		var page := ReclaimSystem.level_data(i)
+		var open := ReclaimSystem.is_open(i)
+		var stars := ReclaimSystem.stars_of(i)
+		var button := Button.new()
+		button.custom_minimum_size = Vector2(212.0, 118.0)
+		button.clip_contents = true
+		button.disabled = not open
+		Sumi.ink_button(button, 20)
+		button.text = "%d  %s\n%s" % [i + 1, String(page.get("name", "")), ("%d of 3 stars" % stars) if open else "Locked"]
+		button.tooltip_text = String(page.get("blurb", ""))
+		button.pressed.connect(_play_page.bind(i))
+		grid.add_child(button)
+		if focus == null and open and (stars == 0 or i == ReclaimSystem.level_count() - 1):
+			focus = button
+	_body.add_child(_heading("Clear a page to open the next. 1 star for winning, 1 under par time, 1 for destroying every source.", 17, Sumi.FADED))
+	_body.add_child(_button("Back", _show.bind(View.MODES), 220.0, 50.0, 22))
+	if focus != null:
+		focus.grab_focus()
+
+
+func _play_page(index: int) -> void:
+	GameState.reclaim_level = index
+	_start("reclaim")
+
+
 func _start(mode_id: String) -> void:
+	GameState.mode_picked = true
 	GameState.mode_id = mode_id
 	get_tree().change_scene_to_file("res://modes/survival.tscn")
 

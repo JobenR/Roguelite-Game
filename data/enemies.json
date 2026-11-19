@@ -207,5 +207,57 @@
     "flank": 0.0,
     "final": true,
     "seals": 25
+  },
+  "spawner": {
+    "name": "Ink Source",
+    "hp": 400,
+    "speed": 0,
+    "radius": 46,
+    "damage": 0,
+    "xp": 30,
+    "splat_radius": 190,
+    "heavy": true,
+    "behavior": "static",
+    "spawner": true,
+    "trail_interval": 999,
+    "trail_radius": 0,
+    "ink_cut_chance": 0.0,
+    "visual": {
+      "sides": 6,
+      "rotation_deg": 0,
+      "core": "#ff3d8b",
+      "ring": true,
+      "color": "#141210"
+    },
+    "flank": 0.0,
+    "seals": 3
+  },
+  "gate_eraser": {
+    "name": "The Great Eraser",
+    "hp": 1800,
+    "speed": 44,
+    "radius": 76,
+    "damage": 32,
+    "xp": 200,
+    "splat_radius": 320,
+    "heavy": true,
+    "boss": true,
+    "trail_interval": 0.2,
+    "trail_radius": 0,
+    "ink_cut_chance": 1.0,
+    "behavior": "boss",
+    "erase_radius": 170,
+    "slam_cooldown": 5.5,
+    "slam_windup": 1.2,
+    "slam_radius": 290,
+    "slam_damage": 28,
+    "visual": {
+      "sides": 10,
+      "color": "#141210",
+      "core": "#ffd04d",
+      "ring": true
+    },
+    "flank": 0.0,
+    "seals": 12
   }
 }

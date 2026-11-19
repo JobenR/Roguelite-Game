@@ -33,7 +33,7 @@ func _ready() -> void:
 	_buttons = [
 		_button("fire", "Fire", 70.0, Vector2(-110, -110), false),
 		_button("secondary", "Bomb", 46.0, Vector2(-260, -70), false),
-		_button("pulse", "Deluge", 50.0, Vector2(-80, -260), false),
+		_button("pulse", DataDB.term("Deluge"), 50.0, Vector2(-80, -260), false),
 		_button("dash", "Dash", 40.0, Vector2(-235, -185), false),
 		_button("item", "Item", 40.0, Vector2(-350, -170), false),
 		_button("pause", "II", 24.0, Vector2(-30, 176), true),

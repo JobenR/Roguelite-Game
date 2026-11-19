@@ -1971,6 +1971,58 @@
    "rarity": "legendary",
    "short": "Auto-colour brush, 5 s",
    "mode": "masterpiece"
+  },
+  "spawner_bane": {
+   "name": "Source Bane",
+   "desc": "+25% damage to ink sources",
+   "max_level": 3,
+   "effects": [
+    {
+     "stat": "spawner_damage",
+     "add": 0.25
+    }
+   ],
+   "category": "weapon",
+   "icon": "skull",
+   "set": "nib",
+   "rarity": "rare",
+   "short": "+25% vs sources",
+   "mode": "reclaim"
+  },
+  "solvent_coat": {
+   "name": "Solvent Coat",
+   "desc": "Source ink is 15% less likely to take your clean ground",
+   "max_level": 4,
+   "effects": [
+    {
+     "stat": "creep_resist",
+     "add": 0.15
+    }
+   ],
+   "category": "ink",
+   "icon": "permanent_marker",
+   "set": "ink",
+   "rarity": "rare",
+   "short": "Creep resisted +15%",
+   "mode": "reclaim"
+  },
+  "gate_seal": {
+   "name": "Seal the Gate",
+   "desc": "A destroyed source leaves permanent clean ground around it",
+   "max_level": 3,
+   "effects": [
+    {
+     "stat": "gate_seal",
+     "add": 1
+    }
+   ],
+   "category": "ink",
+   "icon": "permanent_marker",
+   "set": "pulse",
+   "rarity": "epic",
+   "badge": "SG",
+   "short": "Dead sources stay clean",
+   "mode": "reclaim"
   }
  },
  "synergies": {

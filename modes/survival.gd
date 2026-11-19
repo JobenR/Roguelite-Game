@@ -30,7 +30,15 @@ extends Node2D
 func _ready() -> void:
 	var mode_id := GameState.mode_id if DataDB.modes.has(GameState.mode_id) else "survival"
 	var mode: Dictionary = DataDB.modes.get(mode_id, {})
+	# Cards, pickups and a few UI words are reworded per mode.
+	DataDB.apply_mode_text(mode_id)
 	var rect := Rect2(0.0, 0.0, float(mode.get("arena_width", 3840.0)), float(mode.get("arena_height", 2160.0)))
+	# Reclaim pages each have their own size.
+	var page: Dictionary = {}
+	if mode.has("reclaim"):
+		GameState.reclaim_level = clampi(GameState.reclaim_level, 0, ReclaimSystem.level_count() - 1)
+		page = ReclaimSystem.level_data(GameState.reclaim_level)
+		rect = Rect2(0.0, 0.0, float(page["arena"][0]), float(page["arena"][1]))
 
 	arena.setup(rect)
 	player.position = rect.get_center()
@@ -88,6 +96,24 @@ func _ready() -> void:
 		paint.setup(player, ink, effects, director, rect, mode["paint"])
 		run_summary.paint = paint
 		hud.paint = paint
+
+	# Reclaim: walls, ink sources, the creeping ink and the race.
+	if mode.has("reclaim"):
+		var reclaim := ReclaimSystem.new()
+		reclaim.name = "ReclaimSystem"
+		add_child(reclaim)
+		move_child(reclaim, ink.get_index() + 1)
+		reclaim.setup(player, ink, enemies, effects, director, mode["reclaim"], GameState.reclaim_level)
+		camera.reset_smoothing()
+		run_summary.reclaim = reclaim
+		hud.reclaim = reclaim
+		var race := preload("res://ui/hud/race_bar.gd").new()
+		race.reclaim = reclaim
+		race.ink = ink
+		hud.add_child(race)
+		var compass := preload("res://ui/hud/compass.gd").new()
+		compass.reclaim = reclaim
+		hud.add_child(compass)
 
 	GameState.start_run()
 	if mode.has("paint"):

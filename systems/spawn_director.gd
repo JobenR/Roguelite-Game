@@ -24,6 +24,12 @@ var _final_stage: int = 0  # 0 waiting, 1 warned, 2 spawned
 var burn: BurnSystem = null
 ## Seconds for which nothing new spawns (Masterpiece mode's touch-up lull).
 var hold_spawns: float = 0.0
+## Reclaim mode: enemies come out of the ink sources. `spawn_source` returns
+## the positions of the sources still alive (nothing spawns when none are);
+## `intensity` scales the spawn rate and `time_offset` starts the waves later.
+var spawn_source: Callable = Callable()
+var intensity: float = 1.0
+var time_offset: float = 0.0
 var ink: InkSystem = null
 
 
@@ -43,20 +49,25 @@ func setup(enemies: EnemyManager, player: Player, arena: Rect2, mode_id: String)
 func time_to_next_wave() -> float:
 	if wave_index + 1 >= _waves.size():
 		return -1.0
-	return float(_waves[wave_index + 1].get("start", 0.0)) - GameState.run_time
+	return float(_waves[wave_index + 1].get("start", 0.0)) - _clock()
+
+
+## Run time plus the level's head start, so later pages open mid-horde.
+func _clock() -> float:
+	return GameState.run_time + time_offset
 
 
 func hp_multiplier() -> float:
 	# Linear plus squared growth: gentle early, steep late, so a strong build
 	# keeps meeting resistance.
-	var minutes := GameState.run_time / 60.0
+	var minutes := _clock() / 60.0
 	return 1.0 + float(_cfg.get("hp_growth_per_minute", 0.0)) * minutes + float(_cfg.get("hp_growth_per_minute_squared", 0.0)) * minutes * minutes
 
 
 ## Most enemies allowed alive right now. The cap starts low and rises each
 ## minute, so the early horde stays a size the starting gun can manage.
 func enemy_cap() -> int:
-	var ramp := float(_cfg.get("max_enemies_start", 400.0)) + float(_cfg.get("max_enemies_per_minute", 0.0)) * GameState.run_time / 60.0
+	var ramp := float(_cfg.get("max_enemies_start", 400.0)) + float(_cfg.get("max_enemies_per_minute", 0.0)) * _clock() / 60.0
 	return mini(int(_cfg.get("max_enemies", 400)), int(ramp))
 
 
@@ -71,7 +82,7 @@ func _process(delta: float) -> void:
 	if Input.is_action_just_pressed("debug_spawn"):
 		spawn_burst(300)
 
-	while wave_index + 1 < _waves.size() and GameState.run_time >= float(_waves[wave_index + 1].get("start", 0.0)):
+	while wave_index + 1 < _waves.size() and _clock() >= float(_waves[wave_index + 1].get("start", 0.0)):
 		wave_index += 1
 		Events.wave_started.emit(wave_index)
 	# Warn a few seconds before the next wave.
@@ -83,6 +94,8 @@ func _process(delta: float) -> void:
 	if hold_spawns > 0.0:
 		hold_spawns -= delta
 		return
+	if spawn_source.is_valid() and (spawn_source.call() as Array).is_empty():
+		return   # every source is destroyed: no more reinforcements
 	if wave_index < 0:
 		return
 	var wave: Dictionary = _waves[wave_index]
@@ -91,11 +104,11 @@ func _process(delta: float) -> void:
 	_timer -= delta
 	if _timer > 0.0:
 		return
-	_timer = spawn_interval
+	_timer = spawn_interval / maxf(0.1, intensity)
 	var batch := int(wave.get("batch", 1))
 	if wave_index == _waves.size() - 1:
 		# Past the last wave the horde keeps growing.
-		var overtime := (GameState.run_time - float(wave.get("start", 0.0))) / 60.0
+		var overtime := (_clock() - float(wave.get("start", 0.0))) / 60.0
 		batch += int(overtime * float(_cfg.get("overtime_batch_per_minute", 0.0)))
 	var room := enemy_cap() - _enemies.active.size()
 	var hp_mult := hp_multiplier()
@@ -166,6 +179,16 @@ func _pick_type(wave: Dictionary) -> String:
 
 ## A point off-screen around the player, kept inside the arena.
 func _spawn_point() -> Vector2:
+	if spawn_source.is_valid():
+		var sources: Array = spawn_source.call()
+		if not sources.is_empty():
+			# Out of a source, a little off-centre and never inside a wall.
+			var at: Vector2 = sources[randi() % sources.size()]
+			for attempt in 6:
+				var point := at + Vector2.from_angle(randf() * TAU) * randf_range(50.0, 110.0)
+				if ink == null or not ink.grid.is_dead(point):
+					return point
+			return at
 	var d_min := float(_cfg.get("spawn_distance_min", 900.0))
 	var d_max := float(_cfg.get("spawn_distance_max", 1100.0))
 	var point := _player.position
