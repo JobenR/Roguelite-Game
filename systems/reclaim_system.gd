@@ -25,6 +25,14 @@ var _spawned: bool = false
 var _flow_left: float = 0.0
 var _check_left: float = 0.0
 var _boss_done: bool = false
+# Large-area erasing powers (cards): Scrub Shockwave, Pinball Sponges, Rolling Eraser.
+var _rings: Array[Dictionary] = []     # pos, r, max
+var _balls: Array[Dictionary] = []     # pos, vel, life, hit_left, seed
+var _wave_left: float = 5.0
+var _ball_left: float = 9.0
+var _aura_left: float = 0.0
+var _aura_bonus: float = 0.0
+var _aura_radius: float = 0.0
 
 
 static func level_count() -> int:
@@ -85,6 +93,10 @@ func setup(player: Player, ink: InkSystem, enemies: EnemyManager, effects: Effec
 	Events.enemy_killed.connect(_on_enemy_killed)
 
 
+func _num(id: String, key: String, fallback: float) -> float:
+	return DataDB.arsenal_num(id, key, fallback)
+
+
 ## Positions of the sources still pumping out ink and enemies.
 func live_points() -> Array:
 	var points: Array = []
@@ -134,7 +146,95 @@ func _process(delta: float) -> void:
 	if _check_left <= 0.0:
 		_check_left = 0.25
 		_check_race()
+	_run_powers(delta)
 	queue_redraw()
+
+
+## The cards that scrub large areas.
+func _run_powers(delta: float) -> void:
+	var grid := _ink.grid
+	var damage_scale := Upgrades.mult_of("damage") * (1.0 + GameState.damage_bonus)
+	# Scrub Shockwave: a ring that sweeps outward, cleaning everything it crosses.
+	var wave := Upgrades.bonus("scrub_wave")
+	if wave > 0.0:
+		_wave_left -= delta
+		if _wave_left <= 0.0:
+			_wave_left = maxf(_num("scrub_wave", "min_interval", 3.5), _num("scrub_wave", "interval", 9.0) - wave * _num("scrub_wave", "interval_per_level", 1.1))
+			var reach := _num("scrub_wave", "radius", 260.0) + wave * _num("scrub_wave", "radius_per_level", 130.0)
+			_rings.append({"pos": _player.position, "r": 0.0, "max": reach})
+			var power := (_num("scrub_wave", "damage", 16.0) + wave * _num("scrub_wave", "damage_per_level", 10.0)) * damage_scale
+			_enemies.damage_area(_player.position, reach, power)
+			_enemies.knockback(_player.position, reach, _num("scrub_wave", "knock", 140.0))
+			_effects.ring(_player.position, reach, Color(GameState.ink_light, 0.9), 0.6)
+			Events.screen_shake.emit(8.0)
+			Audio.play("pulse")
+	var i := _rings.size() - 1
+	while i >= 0:
+		var ring := _rings[i]
+		ring["r"] = float(ring["r"]) + _num("scrub_wave", "speed", 900.0) * delta
+		var r: float = ring["r"]
+		var steps := maxi(8, int(TAU * r / 14.0))
+		for k in steps:
+			grid.paint_circle((ring["pos"] as Vector2) + Vector2.from_angle(TAU * k / steps) * r, 20.0, InkGrid.INK)
+		if r >= float(ring["max"]):
+			_rings.remove_at(i)
+		i -= 1
+	# Pinball Sponges: balls that ricochet round the page for a while.
+	var pins := Upgrades.bonus("pinball")
+	if pins > 0.0:
+		_ball_left -= delta
+		if _ball_left <= 0.0:
+			_ball_left = maxf(_num("pinball", "min_interval", 7.0), _num("pinball", "interval", 16.0) - pins * _num("pinball", "interval_per_level", 1.5))
+			for n in mini(int(pins), int(_num("pinball", "max_balls", 6.0))):
+				var heading := Vector2.from_angle(TAU * (float(n) / maxf(1.0, pins)) + randf() * 0.6)
+				_balls.append({"pos": _player.position, "vel": heading * _num("pinball", "speed", 560.0),
+						"life": _num("pinball", "seconds", 6.0) + pins * _num("pinball", "seconds_per_level", 1.0), "hit_left": 0.0, "seed": randf() * 20.0})
+	var bounds := Rect2(Vector2.ZERO, Vector2(grid.cols, grid.rows) * grid.cell_size)
+	var b := _balls.size() - 1
+	while b >= 0:
+		var ball := _balls[b]
+		ball["life"] = float(ball["life"]) - delta
+		var pos: Vector2 = ball["pos"]
+		var vel: Vector2 = ball["vel"]
+		var radius := _num("pinball", "radius", 24.0)
+		var next := pos + vel * delta
+		var lead := vel.normalized() * radius
+		if grid.is_dead(next + lead) or not bounds.grow(-radius).has_point(next):
+			# Bounce: reflect the axis that is blocked (both at a corner).
+			var block_x := grid.is_dead(Vector2(pos.x + vel.x * delta, pos.y) + Vector2(signf(vel.x) * radius, 0.0)) or not bounds.grow(-radius).has_point(Vector2(next.x, pos.y))
+			var block_y := grid.is_dead(Vector2(pos.x, pos.y + vel.y * delta) + Vector2(0.0, signf(vel.y) * radius)) or not bounds.grow(-radius).has_point(Vector2(pos.x, next.y))
+			if block_x:
+				vel.x = -vel.x
+			if block_y:
+				vel.y = -vel.y
+			if not block_x and not block_y:
+				vel = -vel
+			next = pos + vel * delta
+			if grid.is_dead(next):
+				next = pos
+			Audio.play("hit")
+		ball["vel"] = vel
+		grid.paint_line(pos, next, _num("pinball", "paint", 34.0) + pins * _num("pinball", "paint_per_level", 6.0), InkGrid.INK)
+		ball["hit_left"] = float(ball["hit_left"]) - delta
+		if float(ball["hit_left"]) <= 0.0:
+			ball["hit_left"] = 0.1
+			_enemies.damage_area(next, radius + 8.0, (_num("pinball", "damage", 24.0) + pins * _num("pinball", "damage_per_level", 10.0)) * damage_scale)
+		ball["pos"] = next
+		if float(ball["life"]) <= 0.0:
+			_effects.burst(next, Vector2.ZERO, GameState.ink_color, 10)
+			_effects.ring(next, 70.0, Color(GameState.ink_light, 0.8), 0.3)
+			_balls.remove_at(b)
+		b -= 1
+	# Rolling Eraser: a scrub circle that follows you and grows with kills.
+	var rolling := Upgrades.bonus("rolling_eraser")
+	if rolling > 0.0:
+		_aura_radius = _num("rolling_eraser", "radius", 28.0) + rolling * _num("rolling_eraser", "radius_per_level", 22.0) + _aura_bonus
+		_aura_left -= delta
+		if _aura_left <= 0.0:
+			_aura_left = 0.1
+			grid.paint_circle(_player.position, _aura_radius, InkGrid.INK)
+	else:
+		_aura_radius = 0.0
 
 
 func _check_race() -> void:
@@ -175,6 +275,10 @@ func _lose() -> void:
 
 
 func _on_enemy_killed(type_id: String, pos: Vector2, _splat: float, _xp: int, _dir: Vector2) -> void:
+	var rolling := Upgrades.bonus("rolling_eraser")
+	if rolling > 0.0:
+		var cap := _num("rolling_eraser", "bonus_cap", 60.0) + rolling * _num("rolling_eraser", "bonus_cap_per_level", 20.0)
+		_aura_bonus = minf(cap, _aura_bonus + _num("rolling_eraser", "per_kill", 1.2))
 	if type_id != "spawner":
 		return
 	var best: Dictionary = {}
@@ -204,6 +308,16 @@ func _on_enemy_killed(type_id: String, pos: Vector2, _splat: float, _xp: int, _d
 
 
 func _draw() -> void:
+	# Card powers: sponges, the rolling eraser's edge and any shockwave rings.
+	if _aura_radius > 0.0:
+		draw_arc(_player.position, _aura_radius, 0.0, TAU, 48, Color(1.0, 1.0, 1.0, 0.55), 5.0)
+		draw_arc(_player.position, _aura_radius + 4.0, 0.0, TAU, 48, Color(GameState.ink_color, 0.7), 3.0)
+	for ring in _rings:
+		draw_arc(ring["pos"], float(ring["r"]), 0.0, TAU, 64, Color(1.0, 1.0, 1.0, 0.8), 8.0)
+		draw_arc(ring["pos"], float(ring["r"]) + 8.0, 0.0, TAU, 64, Color(GameState.ink_color, 0.8), 4.0)
+	for ball in _balls:
+		Brush.blot(self, ball["pos"], _num("pinball", "radius", 24.0), GameState.ink_color, float(ball["seed"]))
+		draw_circle(ball["pos"] - Vector2(7.0, 7.0), 7.0, Color(1.0, 1.0, 1.0, 0.85))
 	# A health ring round each live source, so you can see which is weakest.
 	var hot := Color(String(_cfg.get("enemy_color", "#ff3d8b")))
 	for source in sources:

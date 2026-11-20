@@ -85,6 +85,7 @@ func _process(delta: float) -> void:
 	while wave_index + 1 < _waves.size() and _clock() >= float(_waves[wave_index + 1].get("start", 0.0)):
 		wave_index += 1
 		Events.wave_started.emit(wave_index)
+		_surge()
 	# Warn a few seconds before the next wave.
 	var next_in := time_to_next_wave()
 	if next_in >= 0.0 and next_in <= float(_cfg.get("warning_seconds", 5.0)) and _warned_index != wave_index + 1:
@@ -161,6 +162,20 @@ func spawn_burst(count: int) -> void:
 	var wave: Dictionary = _waves[maxi(wave_index, 0)]
 	for i in count:
 		_enemies.spawn(_pick_type(wave), _spawn_point(), hp_multiplier())
+
+
+## Reclaim: each new wave opens with a rush out of the ink sources, so a wave
+## is something you see arrive, not only a faster trickle.
+func _surge() -> void:
+	var surge: Dictionary = _cfg.get("surge", {})
+	if surge.is_empty() or not spawn_source.is_valid() or (spawn_source.call() as Array).is_empty() or wave_index < 0:
+		return
+	var wave: Dictionary = _waves[wave_index]
+	var count := int((float(surge.get("base", 4)) + float(surge.get("per_wave", 2)) * wave_index) * intensity)
+	var room := enemy_cap() - _enemies.active.size()
+	var hp_mult := hp_multiplier()
+	for i in mini(count, room):
+		_enemies.spawn(_pick_type(wave), _spawn_point(), hp_mult)
 
 
 ## Weighted random enemy type from the wave's mix.

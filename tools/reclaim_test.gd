@@ -95,6 +95,29 @@ func _process(_delta: float) -> bool:
 		# Routing: a walker west of the wall finds the gap to reach the player.
 		scene.player.position = Vector2(1300, 900)
 		_walker = scene.enemies.spawn("walker", Vector2(1000, 900), 1.0)
+	if _frames == 450:
+		# The large-area erasing cards: shockwave, pinball sponges, rolling eraser.
+		var upgrades := root.get_node("Upgrades")
+		for id in ["scrub_wave", "scrub_wave", "pinball", "pinball", "rolling_eraser"]:
+			upgrades.apply(id)
+		scene.player.position = Vector2(300, 1300)
+		for i in grid.total_cells():
+			if grid.cells[i] == InkGrid.INK:
+				grid.set_cell(i, InkGrid.SMUDGE)
+		_rc.set("_wave_left", 0.01)
+		_rc.set("_ball_left", 0.01)
+		_smudge_before = grid.ink_count
+	if _frames == 452:
+		var rings: Array = _rc.get("_rings")
+		var balls: Array = _rc.get("_balls")
+		_check("the shockwave fired and the sponges launched (%d ring, %d balls)" % [rings.size(), balls.size()], rings.size() == 1 and balls.size() == 2)
+	if _frames == 500:
+		_check("they cleaned a large area (%d -> %d clean cells)" % [_smudge_before, grid.ink_count], grid.ink_count > _smudge_before + 8000)
+		_check("the rolling eraser circle follows the player", float(_rc.get("_aura_radius")) > 45.0 and grid.is_ink(scene.player.position))
+		var inside := true
+		for ball: Dictionary in _rc.get("_balls"):
+			inside = inside and not grid.is_dead(ball["pos"])
+		_check("no sponge is inside a wall", inside)
 	if _frames == 520:
 		_check("the walker found the gap in the wall (x=%.0f, y=%.0f)" % [(_walker as Node2D).position.x, (_walker as Node2D).position.y], _walker.active and ((_walker as Node2D).position.x > 1160.0 or (_walker as Node2D).position.y > 1000.0))
 		# Destroy one source: its ink is washed away and it stops sending enemies.

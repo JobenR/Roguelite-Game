@@ -394,109 +394,121 @@
     "waves": [
       {
         "start": 0,
-        "interval": 1.4,
+        "interval": 1.5,
         "batch": 1,
         "enemies": {
           "walker": 1
-        }
+        },
+        "label": "THE FIRST DROPS"
       },
       {
-        "start": 30,
-        "interval": 1.1,
+        "start": 25,
+        "interval": 1.2,
         "batch": 1,
         "enemies": {
-          "walker": 1
-        }
+          "walker": 5,
+          "runner": 2
+        },
+        "label": "RUNNERS RUSH IN"
       },
       {
-        "start": 60,
-        "interval": 0.9,
+        "start": 55,
+        "interval": 1.0,
         "batch": 1,
-        "label": "RUNNERS",
-        "enemies": {
-          "walker": 6,
-          "runner": 1.2
-        }
-      },
-      {
-        "start": 120,
-        "interval": 0.72,
-        "batch": 1,
-        "label": "SPITTERS",
-        "enemies": {
-          "walker": 6,
-          "runner": 2,
-          "spitter": 1.2
-        }
-      },
-      {
-        "start": 180,
-        "interval": 0.6,
-        "batch": 1,
-        "label": "BRUTES",
-        "enemies": {
-          "walker": 6,
-          "runner": 2,
-          "spitter": 1,
-          "brute": 0.36
-        }
-      },
-      {
-        "start": 240,
-        "interval": 0.5,
-        "batch": 1,
-        "label": "SPLITTERS",
         "enemies": {
           "walker": 5,
           "runner": 2,
-          "spitter": 1,
-          "brute": 0.36,
-          "splitter": 1.5
-        }
+          "spitter": 1.6
+        },
+        "label": "SPITTERS TAKE AIM"
       },
       {
-        "start": 300,
+        "start": 90,
         "interval": 0.85,
-        "batch": 2,
-        "label": "CORRUPTORS",
+        "batch": 1,
         "enemies": {
           "walker": 5,
           "runner": 2,
-          "spitter": 1,
-          "brute": 0.42,
-          "splitter": 1.5,
-          "corruptor": 0.28
-        }
+          "spitter": 1.4,
+          "brute": 0.5
+        },
+        "label": "BRUTES CHARGE"
       },
       {
-        "start": 360,
+        "start": 125,
+        "interval": 0.75,
+        "batch": 1,
+        "enemies": {
+          "walker": 5,
+          "runner": 2,
+          "spitter": 1.2,
+          "brute": 0.45,
+          "splitter": 1.5
+        },
+        "label": "SPLITTERS BURST"
+      },
+      {
+        "start": 165,
+        "interval": 0.8,
+        "batch": 2,
+        "enemies": {
+          "walker": 5,
+          "runner": 2.5,
+          "spitter": 1.3,
+          "brute": 0.5,
+          "splitter": 1.5,
+          "corruptor": 0.4
+        },
+        "label": "CORRUPTORS SMEAR"
+      },
+      {
+        "start": 210,
         "interval": 0.7,
         "batch": 2,
-        "label": "THE HORDE",
         "enemies": {
           "walker": 4,
           "runner": 2.5,
           "spitter": 1.5,
           "brute": 0.6,
           "splitter": 1.5,
-          "corruptor": 0.39
-        }
+          "corruptor": 0.45
+        },
+        "label": "THE HORDE SWELLS"
       },
       {
-        "start": 420,
-        "interval": 0.6,
+        "start": 270,
+        "interval": 0.65,
         "batch": 2,
         "enemies": {
           "walker": 4,
           "runner": 2.5,
           "spitter": 1.5,
-          "brute": 0.72,
-          "splitter": 1.5,
-          "corruptor": 0.44
-        }
+          "brute": 0.7,
+          "splitter": 1.6,
+          "corruptor": 0.5
+        },
+        "label": "NO LET UP"
+      },
+      {
+        "start": 340,
+        "interval": 0.6,
+        "batch": 3,
+        "enemies": {
+          "walker": 4,
+          "runner": 3,
+          "spitter": 1.6,
+          "brute": 0.8,
+          "splitter": 1.6,
+          "corruptor": 0.6
+        },
+        "label": "FLOOD"
       }
     ],
     "max_enemies_start": 22,
-    "max_enemies_per_minute": 22
+    "max_enemies_per_minute": 22,
+    "surge": {
+      "base": 4,
+      "per_wave": 2
+    }
   }
 }

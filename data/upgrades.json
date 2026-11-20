@@ -2023,6 +2023,60 @@
    "badge": "SG",
    "short": "Dead sources stay clean",
    "mode": "reclaim"
+  },
+  "scrub_wave": {
+   "name": "Scrub Shockwave",
+   "desc": "Every few seconds a shockwave scrubs the ground around you clean. Each level widens it and fires it sooner",
+   "max_level": 5,
+   "effects": [
+    {
+     "stat": "scrub_wave",
+     "add": 1
+    }
+   ],
+   "category": "ink",
+   "icon": "shockwave",
+   "set": "pulse",
+   "rarity": "rare",
+   "weight_mult": 12.0,
+   "short": "Wave scrubs a wider page",
+   "mode": "reclaim"
+  },
+  "pinball": {
+   "name": "Pinball Sponges",
+   "desc": "Sponges bounce around the page like pinballs for a few seconds, scrubbing the ground and crushing enemies. Each level adds a sponge, time and width",
+   "max_level": 5,
+   "effects": [
+    {
+     "stat": "pinball",
+     "add": 1
+    }
+   ],
+   "category": "weapon",
+   "icon": "orbit",
+   "set": "arsenal",
+   "rarity": "epic",
+   "weight_mult": 12.0,
+   "short": "Bouncing sponges scrub",
+   "mode": "reclaim"
+  },
+  "rolling_eraser": {
+   "name": "Rolling Eraser",
+   "desc": "A scrub circle follows you and grows with every level and every kill",
+   "max_level": 5,
+   "effects": [
+    {
+     "stat": "rolling_eraser",
+     "add": 1
+    }
+   ],
+   "category": "ink",
+   "icon": "wide_ripple",
+   "set": "ink",
+   "rarity": "rare",
+   "weight_mult": 12.0,
+   "short": "Scrub circle grows",
+   "mode": "reclaim"
   }
  },
  "synergies": {

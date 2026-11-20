@@ -271,5 +271,37 @@
     "recharge": 50,
     "recharge_per_level": 8,
     "boss_grant": 1
+  },
+  "scrub_wave": {
+    "radius": 260,
+    "radius_per_level": 130,
+    "speed": 900,
+    "interval": 9.0,
+    "interval_per_level": 1.1,
+    "min_interval": 3.5,
+    "damage": 16,
+    "damage_per_level": 10,
+    "knock": 140
+  },
+  "pinball": {
+    "interval": 16.0,
+    "interval_per_level": 1.5,
+    "min_interval": 7.0,
+    "seconds": 6.0,
+    "seconds_per_level": 1.0,
+    "speed": 560,
+    "radius": 24,
+    "paint": 34,
+    "paint_per_level": 6,
+    "damage": 24,
+    "damage_per_level": 10,
+    "max_balls": 6
+  },
+  "rolling_eraser": {
+    "radius": 28,
+    "radius_per_level": 22,
+    "per_kill": 1.2,
+    "bonus_cap": 60,
+    "bonus_cap_per_level": 20
   }
 }

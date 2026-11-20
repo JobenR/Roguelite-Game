@@ -87,10 +87,18 @@ reward.** The user picked mock-up A plus E and rejected a first attempt that
     title): every card and pickup has Reclaim wording (Deluge is Purge, Wide
     Wipe, Deep Clean...). Stats and code are shared, so a card keeps working
     in every mode. Reclaim-only cards (`"mode": "reclaim"`): Source Bane,
-    Solvent Coat, Seal the Gate. Use `DataDB.term("Deluge")` for UI words.
+    Solvent Coat, Seal the Gate, and three large-area erasers the user asked
+    for after playing (all run in `ReclaimSystem._run_powers`, numbers in
+    arsenal.json): Scrub Shockwave (a ring that sweeps outward and cleans,
+    wider each level), Pinball Sponges (balls that ricochet off walls and
+    edges scrubbing and crushing for a few seconds), Rolling Eraser (a scrub
+    circle round the player that grows with level and kills). A card's
+    `weight_mult` makes it turn up more often. Use `DataDB.term("Deluge")` for UI words.
   - Not yet built or played by the user: balance is provisional (creep
     speeds, source health, win share and par times are all in levels.json).
-    Ideas not built: levels with moving sources, hide-and-seek enemies that
+    Waves: each Reclaim wave has its own mix, a label and an opening
+    rush out of the sources (`waves.json` `surge`); the user first saw "only one
+    wave" because early waves were all walkers. Ideas not built: levels with moving sources, hide-and-seek enemies that
     avoid light, per-page enemy mixes (all pages share `waves.json` "reclaim"
     with `intensity` and `time_offset`).
 

@@ -87,7 +87,7 @@ func roll_choices(count: int) -> Array[String]:
 		# Some cards only make sense in one mode.
 		if all[id].has("mode") and String(all[id]["mode"]) != GameState.mode_id:
 			continue
-		var weight := float(weights.get(String(all[id].get("rarity", "common")), 100.0))
+		var weight := float(weights.get(String(all[id].get("rarity", "common")), 100.0)) * float(all[id].get("weight_mult", 1.0))
 		if level_of(id) > 0:
 			weight *= owned_mult
 		pool.append(id)
